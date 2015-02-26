@@ -10,9 +10,9 @@ class Client(object):
 
     @staticmethod
     def config_file(basedir='~',
-                    appdir=metadata.package,
+                    appdir='.' + metadata.package,
                     filename='bitbucket.json'):
-        config_path = path.expanduser(path.join(basedir, '.' + appdir))
+        config_path = path.expanduser(path.join(basedir, appdir))
         return path.join(config_path, filename)
 
     @staticmethod

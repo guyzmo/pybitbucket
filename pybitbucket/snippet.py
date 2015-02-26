@@ -60,7 +60,8 @@ def snippets(client, role):
     list_template = 'https://{+bitbucket_url}/2.0/snippets{?role}'
     url = expand(list_template, {'bitbucket_url': Config.bitbucket_url(),
                                  'role': role})
-    return client.paginated_get(url)
+    for snip in client.paginated_get(url):
+        yield Snippet(client, snip)
 
 
 def find_snippet_by_id(client, id):

@@ -1,0 +1,65 @@
+{
+  "pagelen": 3,
+  "values": [
+    {
+      "files": {
+      },
+      "links": {
+        "commits": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/commits"
+        },
+        "self": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9"
+        },
+        "html": {
+          "href": "https://staging.bitbucket.org/snippets/ian_buchanan/T6K9"
+        },
+        "comments": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/comments"
+        },
+        "watchers": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/watchers"
+        }
+      },
+      "title": "4",
+      "created_on": "2015-02-20T01:59:24.626945+00:00",
+      "is_unlisted": false,
+      "owner": {
+      },
+      "updated_on": "2015-02-20T01:59:24.626996+00:00",
+      "id": "T6K4",
+      "is_private": false
+    },
+    {
+      "files": {
+      },
+      "links": {
+        "commits": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/commits"
+        },
+        "self": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9"
+        },
+        "html": {
+          "href": "https://staging.bitbucket.org/snippets/ian_buchanan/T6K9"
+        },
+        "comments": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/comments"
+        },
+        "watchers": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/watchers"
+        }
+      },
+      "title": "5",
+      "created_on": "2015-02-20T01:59:24.626945+00:00",
+      "is_unlisted": false,
+      "owner": {
+      },
+      "updated_on": "2015-02-20T01:59:24.626996+00:00",
+      "id": "T6K5",
+      "is_private": false
+    }
+  ],
+  "page": 2,
+  "size": 5
+}

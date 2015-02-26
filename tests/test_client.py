@@ -2,12 +2,20 @@
 import httpretty
 from os import unsetenv
 from os import environ
+from os import path
 from requests.auth import HTTPBasicAuth
 
 from pybitbucket.bitbucket import Client
 
 
 class TestClient(object):
+
+    def test_config_file(self):
+        my_config = Client.config_file()
+        head, my_config_file = path.split(my_config)
+        assert 'bitbucket.json' == my_config_file
+        head, my_config_dir = path.split(head)
+        assert '.pybitbucket' == my_config_dir
 
     def test_default_bitbucket_url(self):
         unsetenv('BITBUCKET_URL')

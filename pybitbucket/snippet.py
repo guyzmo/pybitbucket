@@ -14,11 +14,12 @@ class Snippet(object):
 
     def __init__(self, client, d):
         self.client = client
-        self.__dict__.append(d)
-        for (name, href) in d.links:
-            # watchers, comments, and commits
-            url = href['href']
-            self.name = types.MethodType(self.client.paginated_get(url), self)
+        self.__dict__.update(d)
+        for link, href in d['links'].iteritems():
+            for head, url in href.iteritems():
+                # watchers, comments, and commits
+                setattr(self, link, types.MethodType(
+                    self.client.paginated_get, self, url))
 
     # PUT one
     # {"title": "Updated title"}
@@ -63,7 +64,7 @@ def snippets(client, role):
 
 
 def find_snippet_by_id(client, id):
-    url = Snippet.url(client.username, id)
+    url = Snippet.url(client.config.username, id)
     # No! Find may not find anything.
     response = client.session.get(url)
     if 200 == response.status_code:

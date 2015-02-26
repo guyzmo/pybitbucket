@@ -1,0 +1,70 @@
+{
+  "scm": "git",
+  "files": {
+    "LICENSE.md": {
+      "links": {
+        "self": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/files/667ad1a1c09f1c7b709f4a5a7ecba65715c12d73/LICENSE.md"
+        },
+        "html": {
+          "href": "https://staging.bitbucket.org/snippets/ian_buchanan/T6K9#LICENSE.md"
+        }
+      }
+    }
+  },
+  "links": {
+    "commits": {
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/commits"
+    },
+    "self": {
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9"
+    },
+    "html": {
+      "href": "https://staging.bitbucket.org/snippets/ian_buchanan/T6K9"
+    },
+    "comments": {
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/comments"
+    },
+    "watchers": {
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/watchers"
+    }
+  },
+  "creator": {
+    "username": "ian_buchanan",
+    "display_name": "Ian Buchanan",
+    "uuid": "{864ee891-ea88-428f-bd86-b09bdfb94479}",
+    "links": {
+      "self": {
+        "href": "https://staging.bitbucket.org/api/2.0/users/ian_buchanan"
+      },
+      "html": {
+        "href": "https://staging.bitbucket.org/ian_buchanan"
+      },
+      "avatar": {
+        "href": "https://d2isvjwd3d60f6.cloudfront.net/m/7e2dfc109a09/img/default_avatar/32/user_blue.png"
+      }
+    }
+  },
+  "title": "BSD License",
+  "created_on": "2015-02-20T01:59:24.626945+00:00",
+  "is_unlisted": false,
+  "owner": {
+    "username": "ian_buchanan",
+    "display_name": "Ian Buchanan",
+    "uuid": "{864ee891-ea88-428f-bd86-b09bdfb94479}",
+    "links": {
+      "self": {
+        "href": "https://staging.bitbucket.org/api/2.0/users/ian_buchanan"
+      },
+      "html": {
+        "href": "https://staging.bitbucket.org/ian_buchanan"
+      },
+      "avatar": {
+        "href": "https://d2isvjwd3d60f6.cloudfront.net/m/7e2dfc109a09/img/default_avatar/32/user_blue.png"
+      }
+    }
+  },
+  "updated_on": "2015-02-20T01:59:24.626996+00:00",
+  "id": "T6K9",
+  "is_private": false
+}

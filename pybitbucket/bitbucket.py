@@ -51,6 +51,17 @@ class Client(object):
                                 'From': email})
         return session
 
+    def paginated_get(self, url):
+    while url:
+        response = session.get(url).json()
+        r = namedtuple('Struct', response.keys())(*response.values())
+        for item in r.values:
+            yield item
+        if hasattr(r, 'next'):
+            url = r.next
+        else:
+            url = None
+
     def __init__(self, config_file=Config.config_file()):
         self.config = Config.load_config(config_file)
         self.auth = HTTPBasicAuth(self.config.username, self.config.password)

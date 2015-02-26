@@ -20,8 +20,7 @@ class TestClient(object):
     def test_load_test_config_file(self):
         test_dir, current_file = path.split(path.abspath(__file__))
         project_dir, test_dir = path.split(test_dir)
-        my_config_path = Client.config_file(project_dir,
-                                            test_dir)
+        my_config_path = Client.config_file(project_dir, test_dir)
         head, my_config_file = path.split(my_config_path)
         assert 'bitbucket.json' == my_config_file
         head, my_config_dir = path.split(head)

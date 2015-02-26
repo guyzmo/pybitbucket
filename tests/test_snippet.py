@@ -64,3 +64,52 @@ class TestSnippet(object):
         assert 'T6K9' == snip.id
         assert 'BSD License' == snip.title
         assert not snip.is_private
+
+    @httpretty.activate
+    def test_snippet_links(self):
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket/T6K9'
+        example_path = path.join(self.test_dir, 'example_single_snippet.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.GET, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+        snip = find_snippet_by_id(self.client, 'T6K9')
+
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket/T6K9/watchers'
+        example_path = path.join(self.test_dir, 'example_watchers.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.GET, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+        assert list(snip.watchers())
+
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket/T6K9/comments'
+        example_path = path.join(self.test_dir, 'example_comments.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.GET, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+        assert not list(snip.comments())
+
+        """
+        # Don't seem to have a valid example file yet.
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket/T6K9/commits'
+        example_path = path.join(self.test_dir, 'example_commits.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.GET, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+        assert not list(snip.commits())
+        """

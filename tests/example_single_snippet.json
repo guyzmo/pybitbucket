@@ -14,19 +14,19 @@
   },
   "links": {
     "commits": {
-      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/commits"
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/pybitbucket/T6K9/commits"
     },
     "self": {
-      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9"
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/pybitbucket/T6K9"
     },
     "html": {
-      "href": "https://staging.bitbucket.org/snippets/ian_buchanan/T6K9"
+      "href": "https://staging.bitbucket.org/snippets/pybitbucket/T6K9"
     },
     "comments": {
-      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/comments"
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/pybitbucket/T6K9/comments"
     },
     "watchers": {
-      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/T6K9/watchers"
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/pybitbucket/T6K9/watchers"
     }
   },
   "creator": {

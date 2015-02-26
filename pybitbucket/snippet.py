@@ -19,7 +19,7 @@ class Snippet(object):
             for head, url in href.iteritems():
                 # watchers, comments, and commits
                 setattr(self, link, types.MethodType(
-                    self.client.paginated_get, self, url))
+                    self.client.paginated_get, url))
 
     # PUT one
     # {"title": "Updated title"}

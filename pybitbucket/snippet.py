@@ -40,7 +40,7 @@ class Snippet(object):
         else:
             raise Exception
 
-    # GET pages
+    # GET files
     def content(self):
         pass
 

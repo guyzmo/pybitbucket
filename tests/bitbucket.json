@@ -1,10 +1,12 @@
 [
-	"bitbucket.org": {
+	{
+		"bitbucket_url": "api.bitbucket.org",
 		"username" : "pybitbucket",
 		"password" : "secret",
 		"email" : "pybitbucket@mailinator.com"		
 	},
-	"staging.bitbucket.org/api": {
+	{
+		"bitbucket_url": "staging.bitbucket.org/api",
 		"username" : "pybitbucket",
 		"password" : "secret",
 		"email" : "pybitbucket@mailinator.com"		

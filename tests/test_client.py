@@ -10,6 +10,11 @@ from pybitbucket.bitbucket import Client
 
 class TestClient(object):
 
+    def test_default_bitbucket_url(self):
+        unsetenv('BITBUCKET_URL')
+        # The default is production
+        assert 'api.bitbucket.org' == Client.bitbucket_url()
+
     def test_config_file(self):
         my_config = Client.config_file()
         head, my_config_file = path.split(my_config)
@@ -29,10 +34,14 @@ class TestClient(object):
         assert not my_config.closed
         my_config.close()
 
-    def test_default_bitbucket_url(self):
-        unsetenv('BITBUCKET_URL')
-        # The default is production
-        assert 'api.bitbucket.org' == Client.bitbucket_url()
+    def test_load_test_config_data(self):
+        test_dir, current_file = path.split(path.abspath(__file__))
+        project_dir, test_dir = path.split(test_dir)
+        my_config_path = Client.config_file(project_dir, test_dir)
+        my_config = Client.load_config(my_config_path)
+        my_bitbucket_url = Client.bitbucket_url()
+        assert my_bitbucket_url == my_config.bitbucket_url
+        assert 'pybitbucket@mailinator.com' == my_config.email
 
     def test_override_bitbucket_url(self):
         override_url = 'staging.bitbucket.org/api'

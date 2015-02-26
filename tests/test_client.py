@@ -5,6 +5,7 @@ from os import environ
 from os import path
 from requests.auth import HTTPBasicAuth
 
+from pybitbucket.bitbucket import Config
 from pybitbucket.bitbucket import Client
 
 
@@ -13,10 +14,10 @@ class TestClient(object):
     def test_default_bitbucket_url(self):
         unsetenv('BITBUCKET_URL')
         # The default is production
-        assert 'api.bitbucket.org' == Client.bitbucket_url()
+        assert 'api.bitbucket.org' == Config.bitbucket_url()
 
     def test_config_file(self):
-        my_config = Client.config_file()
+        my_config = Config.config_file()
         head, my_config_file = path.split(my_config)
         assert 'bitbucket.json' == my_config_file
         head, my_config_dir = path.split(head)
@@ -25,7 +26,7 @@ class TestClient(object):
     def test_load_test_config_file(self):
         test_dir, current_file = path.split(path.abspath(__file__))
         project_dir, test_dir = path.split(test_dir)
-        my_config_path = Client.config_file(project_dir, test_dir)
+        my_config_path = Config.config_file(project_dir, test_dir)
         head, my_config_file = path.split(my_config_path)
         assert 'bitbucket.json' == my_config_file
         head, my_config_dir = path.split(head)
@@ -37,9 +38,9 @@ class TestClient(object):
     def test_load_test_config_data(self):
         test_dir, current_file = path.split(path.abspath(__file__))
         project_dir, test_dir = path.split(test_dir)
-        my_config_path = Client.config_file(project_dir, test_dir)
-        my_config = Client.load_config(my_config_path)
-        my_bitbucket_url = Client.bitbucket_url()
+        my_config_path = Config.config_file(project_dir, test_dir)
+        my_config = Config.load_config(my_config_path)
+        my_bitbucket_url = Config.bitbucket_url()
         assert my_bitbucket_url == my_config.bitbucket_url
         assert 'pybitbucket@mailinator.com' == my_config.email
 
@@ -47,7 +48,7 @@ class TestClient(object):
         override_url = 'staging.bitbucket.org/api'
         environ['BITBUCKET_URL'] = override_url
         # Override the default when the environment variable is set
-        assert override_url == Client.bitbucket_url()
+        assert override_url == Config.bitbucket_url()
 
     def test_user_agent_header_string(self):
         user_agent_parts = Client.user_agent_header().split(' ')

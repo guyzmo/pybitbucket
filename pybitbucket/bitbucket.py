@@ -8,11 +8,6 @@ from pybitbucket import metadata
 
 
 class Config:
-    def __init__(self, d):
-        self.__dict__ = d
-
-
-class Client(object):
 
     @staticmethod
     def bitbucket_url():
@@ -29,14 +24,16 @@ class Client(object):
     def load_config(filepath):
         with open(filepath, 'r') as f:
             array_of_configs = json.load(f, object_hook=Config)
-            print Client.bitbucket_url()
-            for config in array_of_configs:
-                print config.bitbucket_url
             configs_for_env = [c for c in array_of_configs
-                               if c.bitbucket_url == Client.bitbucket_url()]
+                               if c.bitbucket_url == Config.bitbucket_url()]
             if configs_for_env:
                 return configs_for_env[0]
 
+    def __init__(self, d):
+        self.__dict__ = d
+
+
+class Client(object):
     @staticmethod
     def user_agent_header():
         return "%s/%s %s" % (metadata.package,

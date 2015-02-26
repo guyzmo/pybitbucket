@@ -21,5 +21,6 @@ class Client(object):
     def start_http_session(auth):
         session = Session()
         session.auth = auth
-        session.headers.update({'User-Agent': Client.user_agent_header()})
+        session.headers.update({'User-Agent': Client.user_agent_header(),
+                                'Accept': 'application/json'})
         return session

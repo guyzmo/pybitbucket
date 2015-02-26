@@ -42,3 +42,6 @@ class TestClient(object):
         # HTTP headers to authorize and track usage.
         assert digest == request.headers['Authorization']
         assert request.headers['User-Agent'].startswith('pybitbucket')
+        accept_params = request.headers['Accept'].split(';')
+        json = [p for p in accept_params if p == 'application/json']
+        assert any(json)

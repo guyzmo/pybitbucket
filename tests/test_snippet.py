@@ -113,3 +113,18 @@ class TestSnippet(object):
                                status=200)
         assert not list(snip.commits())
         """
+
+    @httpretty.activate
+    def test_snippet_files(self):
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket/T6K9'
+        example_path = path.join(self.test_dir, 'example_single_snippet.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.GET, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+        snip = find_snippet_by_id(self.client, 'T6K9')
+        filename = list(snip.files)[0]
+        assert 'LICENSE.md' == filename

@@ -2,6 +2,7 @@ import json
 from os import getenv
 from os import path
 from requests import Session
+from requests.auth import HTTPBasicAuth
 from requests.utils import default_user_agent
 
 from pybitbucket import metadata
@@ -34,6 +35,7 @@ class Config:
 
 
 class Client(object):
+
     @staticmethod
     def user_agent_header():
         return "%s/%s %s" % (metadata.package,
@@ -41,9 +43,15 @@ class Client(object):
                              default_user_agent())
 
     @staticmethod
-    def start_http_session(auth):
+    def start_http_session(auth, email=''):
         session = Session()
         session.auth = auth
         session.headers.update({'User-Agent': Client.user_agent_header(),
-                                'Accept': 'application/json'})
+                                'Accept': 'application/json',
+                                'From': email})
         return session
+
+    def __init__(self, config_file=Config.config_file()):
+        self.config = Config.load_config(config_file)
+        self.auth = HTTPBasicAuth(self.config.username, self.config.password)
+        self.session = Client.start_http_session(self.auth, self.config.email)

@@ -2,6 +2,7 @@ import json
 from collections import namedtuple
 from os import getenv
 from os import path
+from requests import codes
 from requests import Session
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import HTTPError
@@ -53,11 +54,21 @@ class Client(object):
                                 'From': email})
         return session
 
+    @staticmethod
+    def expect_ok(response, code=codes.ok):
+        if code == response.status_code:
+            return
+        elif 400 == response.status_code:
+            raise BadRequestError(response)
+        elif 500 <= response.status_code:
+            raise ServerError()
+        else:
+            response.raise_for_status()
+
     def paginated_get(self, url):
         while url:
             response = self.session.get(url)
-            if 200 != response.status_code:
-                response.raise_for_status()
+            self.expect_ok(response)
             json_data = response.json()
             r = namedtuple('Struct', json_data.keys())(*json_data.values())
             for item in r.values:
@@ -77,3 +88,7 @@ class BadRequestError(HTTPError):
     def __init__(self, response):
         super(BadRequestError, self).__init__(
             "400 Client Error: Bad Request from {}".format(response.url))
+
+
+class ServerError(HTTPError):
+    pass

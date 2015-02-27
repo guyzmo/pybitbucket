@@ -1,7 +1,6 @@
 import types
 from uritemplate import expand
 
-from pybitbucket.bitbucket import BadRequestError
 from pybitbucket.bitbucket import Config
 from pybitbucket.bitbucket import Client
 
@@ -64,23 +63,15 @@ class Snippet(object):
         url = self.self()
         payload = self.make_payload(is_private, is_unlisted, title)
         response = self.client.session.put(url, data=payload, files=files)
-        if 200 == response.status_code:
-            return Snippet(response.json(), client=self.client)
-        elif 400 == response.status_code:
-            raise BadRequestError(response)
-        else:
-            response.raise_for_status()
+        Client.expect_ok(response)
+        return Snippet(response.json(), client=self.client)
 
     def delete(self):
         url = self.self()
         response = self.client.session.delete(url)
         # Deletes the snippet and returns 204 (No Content).
-        if 204 == response.status_code:
-            return Snippet(response.json(), client=self.client)
-        elif 400 == response.status_code:
-            raise BadRequestError(response)
-        else:
-            response.raise_for_status()
+        Client.expect_ok(response, 204)
+        return Snippet(response.json(), client=self.client)
 
     # GET file
     def content(self, filename):
@@ -109,12 +100,8 @@ def create_snippet(files,
                             'username': client.config.username})
     payload = Snippet.make_payload(is_private, is_unlisted, title, scm)
     response = client.session.post(url, data=payload, files=files)
-    if 200 == response.status_code:
-        return Snippet(response.json(), client=client)
-    elif 400 == response.status_code:
-        raise BadRequestError(response)
-    else:
-        response.raise_for_status()
+    Client.expect_ok(response)
+    return Snippet(response.json(), client=client)
 
 
 def find_snippets_for_role(role=Role.OWNER, client=Client()):
@@ -131,9 +118,5 @@ def find_snippets_for_role(role=Role.OWNER, client=Client()):
 def find_snippet_by_id(id, client=Client()):
     url = Snippet.url(client.config.username, id)
     response = client.session.get(url)
-    if 200 == response.status_code:
-        return Snippet(response.json(), client=client)
-    elif 400 == response.status_code:
-        raise BadRequestError(response)
-    else:
-        response.raise_for_status()
+    Client.expect_ok(response)
+    return Snippet(response.json(), client=client)

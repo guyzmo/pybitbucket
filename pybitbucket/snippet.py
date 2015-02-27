@@ -6,13 +6,6 @@ from pybitbucket.bitbucket import Client
 
 
 class Snippet(object):
-    @staticmethod
-    def url(username, id):
-        template = 'https://{+bitbucket_url}/2.0/snippets/{username}/{id}'
-        return expand(template, {'bitbucket_url': Config.bitbucket_url(),
-                                 'username': username,
-                                 'id': id})
-
     def __init__(self, d, client=Client()):
         self.client = client
         self.__dict__.update(d)
@@ -23,23 +16,11 @@ class Snippet(object):
                     self.client.paginated_get, url))
         self.filenames = [str(f) for f in self.files]
 
+    def __unicode__(self):
+        return "id:{}".format(self.id)
+
     def __str__(self):
-        return '\n'.join([
-            "id          : {}".format(self.id),
-            "is_private  : {}".format(self.is_private),
-            "is_unlisted : {}".format(self.is_unlisted),
-            "title       : {}".format(self.title),
-            "files       : {}".format(self.filenames),
-            "creator     : {} ({})".format(
-                self.creator['display_name'],
-                self.creator['username']),
-            "created_on  : {}".format(self.created_on),
-            "owner       : {} ({})".format(
-                self.owner['display_name'],
-                self.owner['username']),
-            "updated_on  : {}".format(self.updated_on),
-            "scm         : {}".format(self.scm),
-            ])
+        return unicode(self).encode('utf-8')
 
     # PUT one
     # {"title": "Updated title"}
@@ -120,7 +101,10 @@ def find_snippets_for_role(role=Role.OWNER, client=Client()):
 
 
 def find_snippet_by_id(id, client=Client()):
-    url = Snippet.url(client.config.username, id)
+    template = 'https://{+bitbucket_url}/2.0/snippets/{username}/{id}'
+    url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
+                            'username': client.config.username,
+                            'id': id})
     response = client.session.get(url)
     if 200 == response.status_code:
         return Snippet(response.json(), client=client)

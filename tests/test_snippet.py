@@ -3,6 +3,7 @@ import httpretty
 from os import environ
 from os import path
 
+from pybitbucket.snippet import create_snippet
 from pybitbucket.snippet import find_snippet_by_id
 from pybitbucket.snippet import find_snippets_for_role
 from pybitbucket.snippet import Role
@@ -21,8 +22,28 @@ class TestSnippet(object):
         self.client = Client(my_config_path)
 
     @httpretty.activate
+    def test_create_snippet(self):
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket'
+        example_path = path.join(self.test_dir, 'example_single_snippet.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.POST, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+
+        example_upload = path.join(self.test_dir, 'example_upload.txt')
+        files = {'file': open(example_upload, 'rb')}
+        snip = create_snippet(files, client=self.client)
+        assert 'T6K9' == snip.id
+        assert 'BSD License' == snip.title
+        assert not snip.is_private
+
+    @httpretty.activate
     def test_snippet_list(self):
-        url1 = 'https://' + Config.bitbucket_url() + '/2.0/snippets?role=owner'
+        url1 = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets?role=owner'
         path1 = path.join(self.test_dir, 'example_snippets_page_1.json')
         with open(path1) as example1_file:
             example1 = example1_file.read()

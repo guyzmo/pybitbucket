@@ -2,6 +2,7 @@ import types
 from uritemplate import expand
 
 from pybitbucket.bitbucket import Config
+from pybitbucket.bitbucket import Client
 
 
 class Snippet(object):
@@ -22,16 +23,17 @@ class Snippet(object):
                     self.client.paginated_get, url))
 
     def __str__(self):
-        "id          : {}\n".format(self.id)
-        "is_private  : {}\n".format(self.is_private)
-        "is_unlisted : {}\n".format(self.is_unlisted)
-        "title       : {}\n".format(self.title)
-        "files       : {}\n".format(self.files)
-        "creator     : {}\n".format(self.creator)
-        "created_on  : {}\n".format(self.created_on)
-        "owner       : {}\n".format(self.owner)
-        "updated_on  : {}\n".format(self.updated_on)
-        "scm         : {}\n".format(self.scm)
+        return '\n'.join("id          : {}".format(self.id),
+                         "is_private  : {}".format(self.is_private),
+                         "is_unlisted : {}".format(self.is_unlisted),
+                         "title       : {}".format(self.title),
+                         "files       : {}".format(self.files),
+                         "creator     : {}".format(self.creator),
+                         "created_on  : {}".format(self.created_on),
+                         "owner       : {}".format(self.owner),
+                         "updated_on  : {}".format(self.updated_on),
+                         "scm         : {}".format(self.scm),
+                         )
 
     # PUT one
     # {"title": "Updated title"}
@@ -68,25 +70,38 @@ class Role(object):
     roles = [OWNER, CONTRIBUTOR, MEMBER]
 
 
-# POST
-def create_snippet():
-    pass
+def create_snippet(files,
+                   client=Client(),
+                   is_private=False,
+                   is_unlisted=False,
+                   title='',
+                   scm='git'):
+    template = 'https://{+bitbucket_url}/2.0/snippets/{username}'
+    url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
+                            'username': client.config.username})
+    payload = {
+        'title': title,
+        #'is_private': is_private,
+        #'is_unlisted': is_unlisted,
+        #'scm': scm,
+        }
+    response = client.session.post(url, data=payload, files=files)
+    return Snippet(client, response.json())
 
 
 def find_snippets_for_role(client, role=Role.OWNER):
     if role not in Role.roles:
         raise NameError("role '%s' is not in [%s]" %
                         (role, '|'.join(str(x) for x in Role.roles)))
-    list_template = 'https://{+bitbucket_url}/2.0/snippets{?role}'
-    url = expand(list_template, {'bitbucket_url': Config.bitbucket_url(),
-                                 'role': role})
+    template = 'https://{+bitbucket_url}/2.0/snippets{?role}'
+    url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
+                            'role': role})
     for snip in client.paginated_get(url):
         yield Snippet(client, snip)
 
 
 def find_snippet_by_id(client, id):
     url = Snippet.url(client.config.username, id)
-    # No! Find may not find anything.
     response = client.session.get(url)
     if 200 == response.status_code:
         return Snippet(client, response.json())

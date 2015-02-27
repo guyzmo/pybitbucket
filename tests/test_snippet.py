@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import httpretty
+import json
 from os import environ
 from os import path
 
@@ -8,6 +9,7 @@ from pybitbucket.snippet import create_snippet
 from pybitbucket.snippet import find_snippet_by_id
 from pybitbucket.snippet import find_snippets_for_role
 from pybitbucket.snippet import Role
+from pybitbucket.snippet import Snippet
 from pybitbucket.bitbucket import Config
 from pybitbucket.bitbucket import Client
 
@@ -21,6 +23,19 @@ class TestSnippet(object):
         project_dir, test_dirname = path.split(self.test_dir)
         my_config_path = Config.config_file(project_dir, test_dirname)
         self.client = Client(my_config_path)
+
+    def test_snippet_string_representation(self):
+        example_path = path.join(self.test_dir, 'example_single_snippet.json')
+        with open(example_path) as f:
+            example = json.load(f)
+        snip = Snippet(self.client, example)
+        # Just tests that the __str__ method works and
+        # that it does not use the default representation
+        snip_str = "%s" % snip
+        print(snip_str)
+        assert not snip_str.startswith('<')
+        assert not snip_str.endswith('>')
+        assert snip_str
 
     @httpretty.activate
     def test_create_snippet(self):
@@ -87,11 +102,6 @@ class TestSnippet(object):
         assert 'T6K9' == snip.id
         assert 'BSD License' == snip.title
         assert not snip.is_private
-        # Just tests that the __str__ method works and
-        # that it does not use the default representation
-        snip_str = "%s" % snip
-        assert not snip_str.startswith('<')
-        assert not snip_str.endswith('>')
 
     @httpretty.activate
     def test_snippet_links(self):

@@ -21,6 +21,7 @@ class Snippet(object):
                 # watchers, comments, and commits
                 setattr(self, link, types.MethodType(
                     self.client.paginated_get, url))
+        self.filenames = [str(f) for f in self.files]
 
     def __str__(self):
         return '\n'.join([
@@ -28,10 +29,14 @@ class Snippet(object):
             "is_private  : {}".format(self.is_private),
             "is_unlisted : {}".format(self.is_unlisted),
             "title       : {}".format(self.title),
-            "files       : {}".format(self.files),
-            "creator     : {}".format(self.creator),
+            "files       : {}".format(self.filenames),
+            "creator     : {} ({})".format(
+                self.creator['display_name'],
+                self.creator['username']),
             "created_on  : {}".format(self.created_on),
-            "owner       : {}".format(self.owner),
+            "owner       : {} ({})".format(
+                self.owner['display_name'],
+                self.owner['username']),
             "updated_on  : {}".format(self.updated_on),
             "scm         : {}".format(self.scm),
             ])

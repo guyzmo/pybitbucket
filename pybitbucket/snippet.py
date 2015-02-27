@@ -72,19 +72,25 @@ class Role(object):
 
 def create_snippet(files,
                    client=Client(),
-                   is_private=False,
-                   is_unlisted=False,
-                   title='',
-                   scm='git'):
+                   is_private=None,
+                   is_unlisted=None,
+                   title=None,
+                   scm=None):
     template = 'https://{+bitbucket_url}/2.0/snippets/{username}'
     url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
                             'username': client.config.username})
-    payload = {
-        'title': title,
-        #'is_private': is_private,
-        #'is_unlisted': is_unlisted,
-        #'scm': scm,
-        }
+    # Since server defaults may change, method defaults are None.
+    # If the parameters are not provided, then don't send them
+    # so the server can decide what defaults to use.
+    payload = {}
+    if is_private is not None:
+        payload.update({'is_private': is_private})
+    if is_unlisted is not None:
+        payload.update({'is_unlisted': is_unlisted})
+    if title is not None:
+        payload.update({'title': title})
+    if scm is not None:
+        payload.update({'scm': scm})
     response = client.session.post(url, data=payload, files=files)
     return Snippet(client, response.json())
 

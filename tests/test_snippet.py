@@ -87,6 +87,11 @@ class TestSnippet(object):
         assert 'T6K9' == snip.id
         assert 'BSD License' == snip.title
         assert not snip.is_private
+        # Just tests that the __str__ method works and
+        # that it does not use the default representation
+        snip_str = "%s" % snip
+        assert not snip_str.startswith('<')
+        assert not snip_str.endswith('>')
 
     @httpretty.activate
     def test_snippet_links(self):

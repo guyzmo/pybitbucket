@@ -23,17 +23,18 @@ class Snippet(object):
                     self.client.paginated_get, url))
 
     def __str__(self):
-        return '\n'.join("id          : {}".format(self.id),
-                         "is_private  : {}".format(self.is_private),
-                         "is_unlisted : {}".format(self.is_unlisted),
-                         "title       : {}".format(self.title),
-                         "files       : {}".format(self.files),
-                         "creator     : {}".format(self.creator),
-                         "created_on  : {}".format(self.created_on),
-                         "owner       : {}".format(self.owner),
-                         "updated_on  : {}".format(self.updated_on),
-                         "scm         : {}".format(self.scm),
-                         )
+        return '\n'.join([
+            "id          : {}".format(self.id),
+            "is_private  : {}".format(self.is_private),
+            "is_unlisted : {}".format(self.is_unlisted),
+            "title       : {}".format(self.title),
+            "files       : {}".format(self.files),
+            "creator     : {}".format(self.creator),
+            "created_on  : {}".format(self.created_on),
+            "owner       : {}".format(self.owner),
+            "updated_on  : {}".format(self.updated_on),
+            "scm         : {}".format(self.scm),
+            ])
 
     # PUT one
     # {"title": "Updated title"}

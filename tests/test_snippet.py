@@ -28,7 +28,7 @@ class TestSnippet(object):
         example_path = path.join(self.test_dir, 'example_single_snippet.json')
         with open(example_path) as f:
             example = json.load(f)
-        snip = Snippet(self.client, example)
+        snip = Snippet(example, client=self.client)
         # Just tests that the __str__ method works and
         # that it does not use the default representation
         snip_str = "%s" % snip
@@ -68,7 +68,7 @@ class TestSnippet(object):
                                body=example1,
                                status=200)
 
-        snips = find_snippets_for_role(self.client, Role.OWNER)
+        snips = find_snippets_for_role(Role.OWNER, client=self.client)
         snippet_list = []
         snippet_list.append(snips.next())
         snippet_list.append(snips.next())
@@ -98,7 +98,7 @@ class TestSnippet(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        snip = find_snippet_by_id(self.client, 'T6K9')
+        snip = find_snippet_by_id('T6K9', client=self.client)
         assert 'T6K9' == snip.id
         assert 'BSD License' == snip.title
         assert not snip.is_private
@@ -114,7 +114,7 @@ class TestSnippet(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        snip = find_snippet_by_id(self.client, 'T6K9')
+        snip = find_snippet_by_id('T6K9', client=self.client)
 
         url = 'https://' + Config.bitbucket_url() + \
             '/2.0/snippets/pybitbucket/T6K9/watchers'
@@ -163,6 +163,6 @@ class TestSnippet(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        snip = find_snippet_by_id(self.client, 'T6K9')
+        snip = find_snippet_by_id('T6K9', client=self.client)
         filename = list(snip.files)[0]
         assert 'LICENSE.md' == filename

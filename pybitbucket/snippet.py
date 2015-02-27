@@ -13,7 +13,7 @@ class Snippet(object):
                                  'username': username,
                                  'id': id})
 
-    def __init__(self, client, d):
+    def __init__(self, d, client=Client()):
         self.client = client
         self.__dict__.update(d)
         for link, href in d['links'].iteritems():
@@ -84,11 +84,11 @@ def open_files(filelist):
 
 
 def create_snippet(files,
-                   client=Client(),
                    is_private=None,
                    is_unlisted=None,
                    title=None,
-                   scm=None):
+                   scm=None,
+                   client=Client()):
     template = 'https://{+bitbucket_url}/2.0/snippets/{username}'
     url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
                             'username': client.config.username})
@@ -105,10 +105,10 @@ def create_snippet(files,
     if scm is not None:
         payload.update({'scm': scm})
     response = client.session.post(url, data=payload, files=files)
-    return Snippet(client, response.json())
+    return Snippet(response.json(), client=client)
 
 
-def find_snippets_for_role(client, role=Role.OWNER):
+def find_snippets_for_role(role=Role.OWNER, client=Client()):
     if role not in Role.roles:
         raise NameError("role '%s' is not in [%s]" %
                         (role, '|'.join(str(x) for x in Role.roles)))
@@ -116,11 +116,11 @@ def find_snippets_for_role(client, role=Role.OWNER):
     url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
                             'role': role})
     for snip in client.paginated_get(url):
-        yield Snippet(client, snip)
+        yield Snippet(snip, client=client)
 
 
-def find_snippet_by_id(client, id):
+def find_snippet_by_id(id, client=Client()):
     url = Snippet.url(client.config.username, id)
     response = client.session.get(url)
     if 200 == response.status_code:
-        return Snippet(client, response.json())
+        return Snippet(response.json(), client=client)

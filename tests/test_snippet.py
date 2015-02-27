@@ -3,8 +3,9 @@ import httpretty
 from os import environ
 from os import path
 
-from pybitbucket.snippet import snippets
 from pybitbucket.snippet import find_snippet_by_id
+from pybitbucket.snippet import find_snippets_for_role
+from pybitbucket.snippet import Role
 from pybitbucket.bitbucket import Config
 from pybitbucket.bitbucket import Client
 
@@ -30,7 +31,7 @@ class TestSnippet(object):
                                body=example1,
                                status=200)
 
-        snips = snippets(self.client, 'owner')
+        snips = find_snippets_for_role(self.client, Role.OWNER)
         snippet_list = []
         snippet_list.append(snips.next())
         snippet_list.append(snips.next())

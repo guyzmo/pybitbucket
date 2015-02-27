@@ -21,6 +21,18 @@ class Snippet(object):
                 setattr(self, link, types.MethodType(
                     self.client.paginated_get, url))
 
+    def __str__(self):
+        "id          : {}\n".format(self.id)
+        "is_private  : {}\n".format(self.is_private)
+        "is_unlisted : {}\n".format(self.is_unlisted)
+        "title       : {}\n".format(self.title)
+        "files       : {}\n".format(self.files)
+        "creator     : {}\n".format(self.creator)
+        "created_on  : {}\n".format(self.created_on)
+        "owner       : {}\n".format(self.owner)
+        "updated_on  : {}\n".format(self.updated_on)
+        "scm         : {}\n".format(self.scm)
+
     # PUT one
     # {"title": "Updated title"}
     def rename(self, title):
@@ -49,14 +61,22 @@ class Snippet(object):
         pass
 
 
+class Role(object):
+    OWNER = 'owner'
+    CONTRIBUTOR = 'contributor'
+    MEMBER = 'member'
+    roles = [OWNER, CONTRIBUTOR, MEMBER]
+
+
 # POST
-def create():
+def create_snippet():
     pass
 
 
-# GET pages
-# [--owner|--contributor|--member]
-def snippets(client, role):
+def find_snippets_for_role(client, role=Role.OWNER):
+    if role not in Role.roles:
+        raise NameError("role '%s' is not in [%s]" %
+                        (role, '|'.join(str(x) for x in Role.roles)))
     list_template = 'https://{+bitbucket_url}/2.0/snippets{?role}'
     url = expand(list_template, {'bitbucket_url': Config.bitbucket_url(),
                                  'role': role})

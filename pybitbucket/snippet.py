@@ -6,6 +6,13 @@ from pybitbucket.bitbucket import Client
 
 
 class Snippet(object):
+    @staticmethod
+    def url(username, id):
+        template = 'https://{+bitbucket_url}/2.0/snippets/{username}/{id}'
+        return expand(template, {'bitbucket_url': Config.bitbucket_url(),
+                                 'username': username,
+                                 'id': id})
+
     def __init__(self, d, client=Client()):
         self.client = client
         self.__dict__.update(d)
@@ -101,10 +108,7 @@ def find_snippets_for_role(role=Role.OWNER, client=Client()):
 
 
 def find_snippet_by_id(id, client=Client()):
-    template = 'https://{+bitbucket_url}/2.0/snippets/{username}/{id}'
-    url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
-                            'username': client.config.username,
-                            'id': id})
+    url = Snippet.url(client.config.username, id)
     response = client.session.get(url)
     if 200 == response.status_code:
         return Snippet(response.json(), client=client)

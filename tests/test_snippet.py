@@ -104,6 +104,26 @@ class TestSnippet(object):
         assert not snip.is_private
 
     @httpretty.activate
+    def test_delete_snippet(self):
+        # First, setup to get the item that you want to delete.
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket/T6K9'
+        example_path = path.join(self.test_dir, 'example_single_snippet.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.GET, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+        snip = find_snippet_by_id('T6K9', client=self.client)
+        # Next, setup for the delete request.
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket/T6K9'
+        httpretty.register_uri(httpretty.DELETE, url, status=204)
+        result = snip.delete()
+        assert result is None
+
+    @httpretty.activate
     def test_snippet_links(self):
         url = 'https://' + Config.bitbucket_url() + \
             '/2.0/snippets/pybitbucket/T6K9'

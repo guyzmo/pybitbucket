@@ -14,13 +14,6 @@ def open_files(filelist):
 
 class Snippet(object):
     @staticmethod
-    def url(username, id):
-        template = 'https://{+bitbucket_url}/2.0/snippets/{username}/{id}'
-        return expand(template, {'bitbucket_url': Config.bitbucket_url(),
-                                 'username': username,
-                                 'id': id})
-
-    @staticmethod
     def make_payload(is_private=None,
                      is_unlisted=None,
                      title=None,
@@ -60,18 +53,17 @@ class Snippet(object):
                is_private=None,
                is_unlisted=None,
                title=None):
-        url = self.self()
         payload = self.make_payload(is_private, is_unlisted, title)
-        response = self.client.session.put(url, data=payload, files=files)
+        response = self.client.session.put(
+            self.links['self']['href'], data=payload, files=files)
         Client.expect_ok(response)
         return Snippet(response.json(), client=self.client)
 
     def delete(self):
-        url = self.self()
-        response = self.client.session.delete(url)
+        response = self.client.session.delete(self.links['self']['href'])
         # Deletes the snippet and returns 204 (No Content).
         Client.expect_ok(response, 204)
-        return Snippet(response.json(), client=self.client)
+        return
 
     # GET file
     def content(self, filename):
@@ -116,7 +108,12 @@ def find_snippets_for_role(role=Role.OWNER, client=Client()):
 
 
 def find_snippet_by_id(id, client=Client()):
-    url = Snippet.url(client.config.username, id)
+    template = 'https://{+bitbucket_url}/2.0/snippets/{username}/{id}'
+    url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
+                            'username': client.config.username,
+                            'id': id})
     response = client.session.get(url)
+    if 404 == response.status_code:
+        return
     Client.expect_ok(response)
     return Snippet(response.json(), client=client)

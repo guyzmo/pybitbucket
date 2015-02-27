@@ -4,6 +4,7 @@ from os import getenv
 from os import path
 from requests import Session
 from requests.auth import HTTPBasicAuth
+from requests.exceptions import HTTPError
 from requests.utils import default_user_agent
 
 from pybitbucket import metadata
@@ -54,8 +55,11 @@ class Client(object):
 
     def paginated_get(self, url):
         while url:
-            response = self.session.get(url).json()
-            r = namedtuple('Struct', response.keys())(*response.values())
+            response = self.session.get(url)
+            if 200 != response.status_code:
+                response.raise_for_status()
+            json_data = response.json()
+            r = namedtuple('Struct', json_data.keys())(*json_data.values())
             for item in r.values:
                 yield item
             if hasattr(r, 'next'):
@@ -67,3 +71,9 @@ class Client(object):
         self.config = Config.load_config(config_file)
         self.auth = HTTPBasicAuth(self.config.username, self.config.password)
         self.session = Client.start_http_session(self.auth, self.config.email)
+
+
+class BadRequestError(HTTPError):
+    def __init__(self, response):
+        super(BadRequestError, self).__init__(
+            "400 Client Error: Bad Request from {}".format(response.url))

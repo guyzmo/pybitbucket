@@ -70,6 +70,13 @@ class Role(object):
     roles = [OWNER, CONTRIBUTOR, MEMBER]
 
 
+def open_files(filelist):
+    files = {}
+    for filename in filelist:
+        files.update({'file': open(filename, 'rb')})
+    return files
+
+
 def create_snippet(files,
                    client=Client(),
                    is_private=None,

@@ -3,6 +3,7 @@ import httpretty
 from os import environ
 from os import path
 
+from pybitbucket.snippet import open_files
 from pybitbucket.snippet import create_snippet
 from pybitbucket.snippet import find_snippet_by_id
 from pybitbucket.snippet import find_snippets_for_role
@@ -34,7 +35,7 @@ class TestSnippet(object):
                                status=200)
 
         example_upload = path.join(self.test_dir, 'example_upload.txt')
-        files = {'file': open(example_upload, 'rb')}
+        files = open_files([example_upload])
         snip = create_snippet(files, client=self.client)
         assert 'T6K9' == snip.id
         assert 'BSD License' == snip.title

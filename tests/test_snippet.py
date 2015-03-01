@@ -5,9 +5,6 @@ from os import environ
 from os import path
 
 from pybitbucket.snippet import open_files
-from pybitbucket.snippet import create_snippet
-from pybitbucket.snippet import find_snippet_by_id
-from pybitbucket.snippet import find_snippets_for_role
 from pybitbucket.snippet import Role
 from pybitbucket.snippet import Snippet
 from pybitbucket.bitbucket import Config
@@ -35,7 +32,7 @@ class TestSnippet(object):
         print(snip_str)
         assert not snip_str.startswith('<')
         assert not snip_str.endswith('>')
-        assert snip_str
+        assert snip_str.startswith('Snippet id:')
 
     @httpretty.activate
     def test_create_snippet(self):
@@ -51,7 +48,7 @@ class TestSnippet(object):
 
         example_upload = path.join(self.test_dir, 'example_upload.txt')
         files = open_files([example_upload])
-        snip = create_snippet(files, client=self.client)
+        snip = Snippet.create_snippet(files, client=self.client)
         assert 'T6K9' == snip.id
         assert 'BSD License' == snip.title
         assert not snip.is_private
@@ -68,7 +65,7 @@ class TestSnippet(object):
                                body=example1,
                                status=200)
 
-        snips = find_snippets_for_role(Role.OWNER, client=self.client)
+        snips = Snippet.find_snippets_for_role(Role.OWNER, client=self.client)
         snippet_list = []
         snippet_list.append(snips.next())
         snippet_list.append(snips.next())
@@ -98,7 +95,7 @@ class TestSnippet(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        snip = find_snippet_by_id('T6K9', client=self.client)
+        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
         assert 'T6K9' == snip.id
         assert 'BSD License' == snip.title
         assert not snip.is_private
@@ -115,7 +112,7 @@ class TestSnippet(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        snip = find_snippet_by_id('T6K9', client=self.client)
+        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
         # Next, setup for the delete request.
         url = 'https://' + Config.bitbucket_url() + \
             '/2.0/snippets/pybitbucket/T6K9'
@@ -134,7 +131,7 @@ class TestSnippet(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        snip = find_snippet_by_id('T6K9', client=self.client)
+        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
 
         url = 'https://' + Config.bitbucket_url() + \
             '/2.0/snippets/pybitbucket/T6K9/watchers'
@@ -183,6 +180,6 @@ class TestSnippet(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        snip = find_snippet_by_id('T6K9', client=self.client)
+        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
         filename = list(snip.files)[0]
         assert 'LICENSE.md' == filename

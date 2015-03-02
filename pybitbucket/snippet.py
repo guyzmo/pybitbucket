@@ -1,7 +1,6 @@
 import types
 from uritemplate import expand
 
-from pybitbucket.bitbucket import Config
 from pybitbucket.bitbucket import Client
 
 
@@ -47,8 +46,8 @@ class Snippet(object):
                        scm=None,
                        client=Client()):
         template = 'https://{+bitbucket_url}/2.0/snippets/{username}'
-        url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
-                                'username': client.config.username})
+        url = expand(template, {'bitbucket_url': client.get_bitbucket_url(),
+                                'username': client.get_username()})
         payload = Snippet.make_payload(is_private, is_unlisted, title, scm)
         response = client.session.post(url, data=payload, files=files)
         Client.expect_ok(response)
@@ -60,7 +59,7 @@ class Snippet(object):
             raise NameError("role '%s' is not in [%s]" %
                             (role, '|'.join(str(x) for x in Role.roles)))
         template = 'https://{+bitbucket_url}/2.0/snippets{?role}'
-        url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
+        url = expand(template, {'bitbucket_url': client.get_bitbucket_url(),
                                 'role': role})
         for snip in client.paginated_get(url):
             yield Snippet(snip, client=client)
@@ -68,8 +67,8 @@ class Snippet(object):
     @staticmethod
     def find_snippet_by_id(id, client=Client()):
         template = 'https://{+bitbucket_url}/2.0/snippets/{username}/{id}'
-        url = expand(template, {'bitbucket_url': Config.bitbucket_url(),
-                                'username': client.config.username,
+        url = expand(template, {'bitbucket_url': client.get_bitbucket_url(),
+                                'username': client.get_username(),
                                 'id': id})
         response = client.session.get(url)
         if 404 == response.status_code:

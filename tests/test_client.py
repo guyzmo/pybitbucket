@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 import httpretty
-from os import path
 from requests.auth import HTTPBasicAuth
 
 from pybitbucket.bitbucket import Config
 from pybitbucket.bitbucket import Client
+
+
+class TestConfig(Config):
+    bitbucket_url = 'staging.bitbucket.org/api'
+    username = 'pybitbucket'
+    password = 'secret'
+    email = 'pybitbucket@mailinator.com'
 
 
 class TestClient(object):
@@ -39,11 +45,9 @@ class TestClient(object):
 
     @httpretty.activate
     def test_client_construction(self):
-        test_dir, current_file = path.split(path.abspath(__file__))
-        project_dir, test_dir = path.split(test_dir)
-        my_config_path = Config.config_file(project_dir, test_dir)
-        client = Client(my_config_path)
-        url = 'https://' + Config.bitbucket_url() + '/1.0/user'
+        Config.configurator = TestConfig
+        client = Client()
+        url = 'https://' + client.get_bitbucket_url() + '/1.0/user'
         httpretty.register_uri(httpretty.GET, url)
         response = client.session.get(url)
         assert 200 == response.status_code

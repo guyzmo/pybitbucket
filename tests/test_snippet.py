@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import httpretty
 import json
-from os import environ
 from os import path
+from test_client import TestConfig
 
 from pybitbucket.snippet import open_files
 from pybitbucket.snippet import Role
@@ -13,13 +13,10 @@ from pybitbucket.bitbucket import Client
 
 class TestSnippet(object):
     @classmethod
-    def setup_class(self):
-        override_url = 'staging.bitbucket.org/api'
-        environ['BITBUCKET_URL'] = override_url
-        self.test_dir, current_file = path.split(path.abspath(__file__))
-        project_dir, test_dirname = path.split(self.test_dir)
-        my_config_path = Config.config_file(project_dir, test_dirname)
-        self.client = Client(my_config_path)
+    def setup_class(cls):
+        Config.configurator = TestConfig
+        cls.test_dir, current_file = path.split(path.abspath(__file__))
+        cls.client = Client()
 
     def test_snippet_string_representation(self):
         example_path = path.join(self.test_dir, 'example_single_snippet.json')
@@ -46,8 +43,9 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_create_snippet(self):
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket'
+        url = ('https://' +
+               self.client.get_bitbucket_url() +
+               '/2.0/snippets/pybitbucket')
         example_path = path.join(self.test_dir, 'example_single_snippet.json')
         with open(example_path) as f:
             example = f.read()
@@ -65,8 +63,9 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_create_snippet_with_two_files(self):
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket'
+        url = ('https://' +
+               self.client.get_bitbucket_url() +
+               '/2.0/snippets/pybitbucket')
         example_path = path.join(self.test_dir, 'example_two_file_post.json')
         with open(example_path) as f:
             example = f.read()
@@ -84,8 +83,9 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_snippet_list(self):
-        url1 = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets?role=owner'
+        url1 = ('https://' +
+                self.client.get_bitbucket_url() +
+                '/2.0/snippets?role=owner')
         path1 = path.join(self.test_dir, 'example_snippets_page_1.json')
         with open(path1) as example1_file:
             example1 = example1_file.read()
@@ -100,8 +100,9 @@ class TestSnippet(object):
         snippet_list.append(snips.next())
         snippet_list.append(snips.next())
 
-        url2 = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets?role=owner&page=2'
+        url2 = ('https://' +
+                'staging.bitbucket.org/api' +
+                '/2.0/snippets?role=owner&page=2')
         path2 = path.join(self.test_dir, 'example_snippets_page_2.json')
         with open(path2) as example2_file:
             example2 = example2_file.read()
@@ -115,8 +116,9 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_find_snippet_by_id(self):
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9'
+        url = ('https://' +
+               self.client.get_bitbucket_url() +
+               '/2.0/snippets/pybitbucket/T6K9')
         example_path = path.join(self.test_dir, 'example_single_snippet.json')
         with open(example_path) as f:
             example = f.read()
@@ -132,8 +134,9 @@ class TestSnippet(object):
     @httpretty.activate
     def test_delete_snippet(self):
         # First, setup to get the item that you want to delete.
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9'
+        url = ('https://' +
+               self.client.get_bitbucket_url() +
+               '/2.0/snippets/pybitbucket/T6K9')
         example_path = path.join(self.test_dir, 'example_single_snippet.json')
         with open(example_path) as f:
             example = f.read()
@@ -143,16 +146,18 @@ class TestSnippet(object):
                                status=200)
         snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
         # Next, setup for the delete request.
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9'
+        url = ('https://' +
+               'staging.bitbucket.org/api' +
+               '/2.0/snippets/pybitbucket/T6K9')
         httpretty.register_uri(httpretty.DELETE, url, status=204)
         result = snip.delete()
         assert result is None
 
     @httpretty.activate
     def test_snippet_links(self):
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9'
+        url = ('https://' +
+               self.client.get_bitbucket_url() +
+               '/2.0/snippets/pybitbucket/T6K9')
         example_path = path.join(self.test_dir, 'example_single_snippet.json')
         with open(example_path) as f:
             example = f.read()
@@ -162,8 +167,9 @@ class TestSnippet(object):
                                status=200)
         snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
 
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9/watchers'
+        url = ('https://' +
+               'staging.bitbucket.org/api' +
+               '/2.0/snippets/pybitbucket/T6K9/watchers')
         example_path = path.join(self.test_dir, 'example_watchers.json')
         with open(example_path) as f:
             example = f.read()
@@ -173,8 +179,9 @@ class TestSnippet(object):
                                status=200)
         assert list(snip.watchers())
 
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9/comments'
+        url = ('https://' +
+               'staging.bitbucket.org/api' +
+               '/2.0/snippets/pybitbucket/T6K9/comments')
         example_path = path.join(self.test_dir, 'example_comments.json')
         with open(example_path) as f:
             example = f.read()
@@ -186,8 +193,9 @@ class TestSnippet(object):
 
         """
         # Don't seem to have a valid example file yet.
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9/commits'
+        url = ('https://' +
+               'staging.bitbucket.org/api' +
+               '/2.0/snippets/pybitbucket/T6K9/commits')
         example_path = path.join(self.test_dir, 'example_commits.json')
         with open(example_path) as f:
             example = f.read()
@@ -200,8 +208,9 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_snippet_files(self):
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9'
+        url = ('https://' +
+               self.client.get_bitbucket_url() +
+               '/2.0/snippets/pybitbucket/T6K9')
         example_path = path.join(self.test_dir, 'example_single_snippet.json')
         with open(example_path) as f:
             example = f.read()
@@ -215,8 +224,9 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_snippet_content(self):
-        url = 'https://' + Config.bitbucket_url() + \
-            '/2.0/snippets/pybitbucket/T6K9'
+        url = ('https://' +
+               self.client.get_bitbucket_url() +
+               '/2.0/snippets/pybitbucket/T6K9')
         example_path = path.join(self.test_dir, 'example_single_snippet.json')
         with open(example_path) as f:
             example = f.read()

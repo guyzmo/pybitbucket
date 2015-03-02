@@ -7,14 +7,13 @@ from test_client import TestConfig
 from pybitbucket.snippet import open_files
 from pybitbucket.snippet import Role
 from pybitbucket.snippet import Snippet
-from pybitbucket.bitbucket import Config
 from pybitbucket.bitbucket import Client
 
 
 class TestSnippet(object):
     @classmethod
     def setup_class(cls):
-        Config.configurator = TestConfig
+        Client.configurator = TestConfig
         cls.test_dir, current_file = path.split(path.abspath(__file__))
         cls.client = Client()
 

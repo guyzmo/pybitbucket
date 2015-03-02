@@ -1,0 +1,80 @@
+{
+  "scm": "git",
+  "files": {
+    "example_upload_2.rst": {
+      "links": {
+        "self": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/TKyE/files/6bdda2d9c3f1d4fbf1d57154b092791b13455b1b/example_upload_2.rst"
+        },
+        "html": {
+          "href": "https://staging.bitbucket.org/snippets/ian_buchanan/TKyE#example_upload_2.rst"
+        }
+      }
+    },
+    "example_upload_1.txt": {
+      "links": {
+        "self": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/TKyE/files/6bdda2d9c3f1d4fbf1d57154b092791b13455b1b/example_upload_1.txt"
+        },
+        "html": {
+          "href": "https://staging.bitbucket.org/snippets/ian_buchanan/TKyE#example_upload_1.txt"
+        }
+      }
+    }    
+  },
+  "links": {
+    "commits": {
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/ij6d/commits"
+    },
+    "self": {
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/ij6d"
+    },
+    "html": {
+      "href": "https://staging.bitbucket.org/snippets/ian_buchanan/ij6d"
+    },
+    "comments": {
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/ij6d/comments"
+    },
+    "watchers": {
+      "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/ij6d/watchers"
+    }
+  },
+  "creator": {
+    "username": "ian_buchanan",
+    "display_name": "Ian Buchanan",
+    "uuid": "{864ee891-ea88-428f-bd86-b09bdfb94479}",
+    "links": {
+      "self": {
+        "href": "https://staging.bitbucket.org/api/2.0/users/ian_buchanan"
+      },
+      "html": {
+        "href": "https://staging.bitbucket.org/ian_buchanan"
+      },
+      "avatar": {
+        "href": "https://d2isvjwd3d60f6.cloudfront.net/m/d8674304dc16/img/default_avatar/32/user_blue.png"
+      }
+    }
+  },
+  "title": "",
+  "created_on": "2015-03-02T13:40:11.573479+00:00",
+  "is_unlisted": false,
+  "owner": {
+    "username": "ian_buchanan",
+    "display_name": "Ian Buchanan",
+    "uuid": "{864ee891-ea88-428f-bd86-b09bdfb94479}",
+    "links": {
+      "self": {
+        "href": "https://staging.bitbucket.org/api/2.0/users/ian_buchanan"
+      },
+      "html": {
+        "href": "https://staging.bitbucket.org/ian_buchanan"
+      },
+      "avatar": {
+        "href": "https://d2isvjwd3d60f6.cloudfront.net/m/d8674304dc16/img/default_avatar/32/user_blue.png"
+      }
+    }
+  },
+  "updated_on": "2015-03-02T13:40:11.573526+00:00",
+  "id": "ij6d",
+  "is_private": false
+}

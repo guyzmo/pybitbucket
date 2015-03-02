@@ -6,9 +6,9 @@ from pybitbucket.bitbucket import Client
 
 
 def open_files(filelist):
-    files = {}
+    files = []
     for filename in filelist:
-        files.update({'file': open(filename, 'rb')})
+        files.append(('file', (filename, open(filename, 'rb'))))
     return files
 
 

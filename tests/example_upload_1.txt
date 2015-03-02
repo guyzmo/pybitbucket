@@ -1,4 +1,6 @@
-# The MIT License (MIT) for Snippet
+# Snippet 1
+
+## The MIT License (MIT) for Snippet
 
 Copyright (c) 2015 Ian Buchanan
 

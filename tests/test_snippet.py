@@ -34,6 +34,16 @@ class TestSnippet(object):
         assert not snip_str.endswith('>')
         assert snip_str.startswith('Snippet id:')
 
+    def test_create_open_files_from_filelist(self):
+        example_1 = path.join(self.test_dir, 'example_upload_1.txt')
+        example_2 = path.join(self.test_dir, 'example_upload_2.rst')
+        files = open_files([example_1, example_2])
+        assert 2 == len(files)
+        head, tail = files[0]
+        assert 'file' == head
+        filename, file = tail
+        assert example_1 == filename
+
     @httpretty.activate
     def test_create_snippet(self):
         url = 'https://' + Config.bitbucket_url() + \
@@ -46,12 +56,31 @@ class TestSnippet(object):
                                body=example,
                                status=200)
 
-        example_upload = path.join(self.test_dir, 'example_upload.txt')
+        example_upload = path.join(self.test_dir, 'example_upload_1.txt')
         files = open_files([example_upload])
         snip = Snippet.create_snippet(files, client=self.client)
         assert 'T6K9' == snip.id
         assert 'BSD License' == snip.title
         assert not snip.is_private
+
+    @httpretty.activate
+    def test_create_snippet_with_two_files(self):
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket'
+        example_path = path.join(self.test_dir, 'example_two_file_post.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.POST, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+
+        example_upload_1 = path.join(self.test_dir, 'example_upload_1.txt')
+        example_upload_2 = path.join(self.test_dir, 'example_upload_2.rst')
+        files = open_files([example_upload_1, example_upload_2])
+        snip = Snippet.create_snippet(files, client=self.client)
+        expected = ['example_upload_1.txt', 'example_upload_2.rst']
+        assert expected == snip.filenames
 
     @httpretty.activate
     def test_snippet_list(self):

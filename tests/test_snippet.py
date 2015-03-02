@@ -212,3 +212,28 @@ class TestSnippet(object):
         snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
         filename = list(snip.files)[0]
         assert 'LICENSE.md' == filename
+
+    @httpretty.activate
+    def test_snippet_content(self):
+        url = 'https://' + Config.bitbucket_url() + \
+            '/2.0/snippets/pybitbucket/T6K9'
+        example_path = path.join(self.test_dir, 'example_single_snippet.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(httpretty.GET, url,
+                               content_type='application/json',
+                               body=example,
+                               status=200)
+
+        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
+
+        url = ("https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/"
+               "T6K9/files/667ad1a1c09f1c7b709f4a5a7ecba65715c12d73/"
+               "LICENSE.md")
+        httpretty.register_uri(httpretty.GET, url,
+                               content_type='application/json',
+                               body='example',
+                               status=200)
+
+        c = snip.content('LICENSE.md')
+        assert 'example' == c

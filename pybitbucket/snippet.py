@@ -114,10 +114,12 @@ class Snippet(object):
         Client.expect_ok(response, 204)
         return
 
-    # GET file
     def content(self, filename):
-        pass
+        url = self.files[filename]['links']['self']['href']
+        response = self.client.session.get(url)
+        Client.expect_ok(response)
+        return response.content
 
-    # GET commit
     def commit(self, sha1):
+        # Commits still cause a 500 error in staging
         pass

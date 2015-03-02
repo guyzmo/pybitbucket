@@ -8,7 +8,7 @@ Information describing the project.
 package = 'pybitbucket'
 project = "PyBitbucket"
 project_no_spaces = project.replace(' ', '')
-version = '0.2.0'
+version = '0.3.0'
 description = 'A Python wrapper for the Bitbucket API'
 authors = ['Ian Buchanan']
 authors_string = ', '.join(authors)

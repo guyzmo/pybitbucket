@@ -45,8 +45,9 @@ class TestClient(object):
 
     @httpretty.activate
     def test_client_construction(self):
-        Config.configurator = TestConfig
+        Client.configurator = TestConfig
         client = Client()
+        assert 'staging.bitbucket.org/api' == client.config.bitbucket_url
         url = 'https://' + client.get_bitbucket_url() + '/1.0/user'
         httpretty.register_uri(httpretty.GET, url)
         response = client.session.get(url)

@@ -66,8 +66,6 @@ class Client(object):
     def __init__(self, config=None):
         if not config:
             config = self.configurator()
-        #config_file = Config.config_file()
-        #self.config = Config.load_config(config_file)
         self.config = config
         self.auth = HTTPBasicAuth(self.config.username, self.config.password)
         self.session = Client.start_http_session(self.auth, self.config.email)

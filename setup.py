@@ -48,6 +48,9 @@ CODE_DIRECTORY = 'pybitbucket'
 DOCS_DIRECTORY = 'docs'
 TESTS_DIRECTORY = 'tests'
 PYTEST_FLAGS = ['--doctest-modules']
+TEST_REPORT_FILE = 'TESTS-TestSuites.xml'
+PYTEST_FLAGS = ['--doctest-modules', '--junitxml=' + TEST_REPORT_FILE]
+
 
 # Import metadata. Normally this would just be:
 #

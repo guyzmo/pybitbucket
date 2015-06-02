@@ -1,0 +1,29 @@
+{
+  "username": "evzijst",
+  "website": "",
+  "display_name": "Erik van Zijst",
+  "uuid": "{a288a0ab-e13b-43f0-a689-c4ef0a249875}",
+  "links": {
+    "self": {
+      "href": "https://api.bitbucket.org/2.0/users/evzijst"
+    },
+    "repositories": {
+      "href": "https://api.bitbucket.org/2.0/repositories/evzijst"
+    },
+    "html": {
+      "href": "https://bitbucket.org/evzijst"
+    },
+    "followers": {
+      "href": "https://api.bitbucket.org/2.0/users/evzijst/followers"
+    },
+    "avatar": {
+      "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2015/Apr/17/2785371717-4-evzijst-avatar_avatar.png"
+    },
+    "following": {
+      "href": "https://api.bitbucket.org/2.0/users/evzijst/following"
+    }
+  },
+  "created_on": "2010-07-07T05:16:36+00:00",
+  "location": "@erikvanzijst",
+  "type": "user"
+}

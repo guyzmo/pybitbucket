@@ -1,0 +1,297 @@
+{
+  "pagelen": 10,
+  "values": [
+    {
+      "username": "mg",
+      "website": "http://geisler.net/",
+      "display_name": "Martin Geisler",
+      "uuid": "{9d06909e-8680-4a7e-ae4a-07afcfbded7e}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/mg"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/mg"
+        },
+        "html": {
+          "href": "https://bitbucket.org/mg"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/mg/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/6bf0300fc4a5c9012fd254d3da2a6e69?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2Ff6605851edb0%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/mg/following"
+        }
+      },
+      "created_on": "2008-08-02T14:04:28.157840+00:00",
+      "location": "Switzerland",
+      "type": "user"
+    },
+    {
+      "username": "ayucat",
+      "website": "http://blog.livedoor.jp/ayucat/",
+      "display_name": "ayucat t",
+      "uuid": "{c34c843a-ba4c-40b2-abd0-5977aa5c3834}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/ayucat"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ayucat"
+        },
+        "html": {
+          "href": "https://bitbucket.org/ayucat"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/ayucat/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2008/Aug/15/080730_190511_avatar.JPG"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/ayucat/following"
+        }
+      },
+      "created_on": "2008-08-15T18:07:25.176646+00:00",
+      "location": "Japan",
+      "type": "user"
+    },
+    {
+      "username": "baratrion",
+      "website": "",
+      "display_name": "Mehmet Catalbas",
+      "uuid": "{a80af637-385d-471f-a605-28ac099affb1}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/baratrion"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/baratrion"
+        },
+        "html": {
+          "href": "https://bitbucket.org/baratrion"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/baratrion/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2013/Jul/17/baratrion-avatar-2298271509-4_avatar.png"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/baratrion/following"
+        }
+      },
+      "created_on": "2008-12-02T14:17:14+00:00",
+      "location": "Istanbul",
+      "type": "user"
+    },
+    {
+      "username": "remco",
+      "website": "",
+      "display_name": "Remco Wendt",
+      "uuid": "{449145cf-eca8-4db7-8a9d-917fb9785eaa}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/remco"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/remco"
+        },
+        "html": {
+          "href": "https://bitbucket.org/remco"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/remco/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2015/Jan/21/971787528-1-remco-avatar_avatar.png"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/remco/following"
+        }
+      },
+      "created_on": "2009-05-25T11:16:20.223401+00:00",
+      "location": "Amsterdam",
+      "type": "user"
+    },
+    {
+      "username": "davidchambers",
+      "website": "http://davidchambersdesign.com/",
+      "display_name": "David Chambers",
+      "uuid": "{10babd73-0c34-4afa-a652-e3de60d19d2f}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/davidchambers"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/davidchambers"
+        },
+        "html": {
+          "href": "https://bitbucket.org/davidchambers"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/davidchambers/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/5f41fa18e9774f1a2ea7c519f476c348?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2Ff6605851edb0%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/davidchambers/following"
+        }
+      },
+      "created_on": "2009-06-26T15:24:35+00:00",
+      "location": "San Francisco",
+      "type": "user"
+    },
+    {
+      "username": "Nesizer",
+      "website": "http://nesizer.org/",
+      "display_name": "Mikkel Madsen",
+      "uuid": "{8f318f71-8fa4-4ea2-9810-6600eb280429}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/Nesizer"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/Nesizer"
+        },
+        "html": {
+          "href": "https://bitbucket.org/Nesizer"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/Nesizer/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/8895e3d660ca3e925db44efa93755769?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2Ff6605851edb0%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/Nesizer/following"
+        }
+      },
+      "created_on": "2009-08-04T21:48:09.378615+00:00",
+      "location": "Denmark",
+      "type": "user"
+    },
+    {
+      "username": "tback",
+      "website": "http://till.backha.us/",
+      "display_name": "Till Backhaus",
+      "uuid": "{a3ecab24-427a-43c6-8d08-a57e09e54723}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/tback"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/tback"
+        },
+        "html": {
+          "href": "https://bitbucket.org/tback"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/tback/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/c27fe87b3d46633d41ab1f2661388deb?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2Ff6605851edb0%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/tback/following"
+        }
+      },
+      "created_on": "2010-01-31T09:31:37.298750+00:00",
+      "location": "",
+      "type": "user"
+    },
+    {
+      "username": "jaimeirurzun",
+      "website": "http://www.jaimeirurzun.com/",
+      "display_name": "Jaime Irurzun",
+      "uuid": "{a9139f9d-189a-4eab-9c1c-fe65745bd50d}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/jaimeirurzun"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/jaimeirurzun"
+        },
+        "html": {
+          "href": "https://bitbucket.org/jaimeirurzun"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/jaimeirurzun/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/3a28f72cca1843e8173a4e1318f92208?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2Ff6605851edb0%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/jaimeirurzun/following"
+        }
+      },
+      "created_on": "2010-02-07T19:50:17.242006+00:00",
+      "location": "London, UK",
+      "type": "user"
+    },
+    {
+      "username": "jstepka",
+      "website": "http://www.bitbucket.org/",
+      "display_name": "Justen Stepka",
+      "uuid": "{2eb8a41b-f724-4925-8b0a-f06117538c92}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/jstepka"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/jstepka"
+        },
+        "html": {
+          "href": "https://bitbucket.org/jstepka"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/jstepka/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2013/Dec/04/jstepka-avatar-2286464126-9_avatar.png"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/jstepka/following"
+        }
+      },
+      "created_on": "2010-03-22T23:24:44+00:00",
+      "location": "San Francisco",
+      "type": "user"
+    },
+    {
+      "username": "cmclaughlin",
+      "website": "",
+      "display_name": "Charles McLaughlin",
+      "uuid": "{4ed54eb1-e07b-42e3-8bcd-342838c8d814}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/cmclaughlin"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/cmclaughlin"
+        },
+        "html": {
+          "href": "https://bitbucket.org/cmclaughlin"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/cmclaughlin/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/19336db62e2916dd4de189d085681703?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2Ff6605851edb0%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/cmclaughlin/following"
+        }
+      },
+      "created_on": "2010-03-26T05:35:55+00:00",
+      "location": "San Francisco",
+      "type": "user"
+    }
+  ],
+  "page": 1,
+  "size": 10
+}

@@ -38,7 +38,7 @@ class TestRepository(object):
             'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
-            'teamsinspace%2Fteamsinspace.bitbucket.org')
+            'teamsinspace/teamsinspace.bitbucket.org')
         example_path = path.join(
             self.test_dir,
             'example_single_repository.json')
@@ -63,7 +63,7 @@ class TestRepository(object):
             'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
-            'teamsinspace%2Fteamsinspace.bitbucket.org')
+            'teamsinspace/teamsinspace.bitbucket.org')
         example_path = path.join(
             self.test_dir,
             'example_single_repository.json')
@@ -88,7 +88,7 @@ class TestRepository(object):
             'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
-            'teamsinspace%2Fteamsinspace.bitbucket.org')
+            'teamsinspace/teamsinspace.bitbucket.org')
         example_path = path.join(
             self.test_dir,
             'example_single_repository.json')
@@ -182,7 +182,7 @@ class TestRepository(object):
             'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
-            'teamsinspace%2Fteamsinspace.bitbucket.org')
+            'teamsinspace/teamsinspace.bitbucket.org')
         example_path = path.join(
             self.test_dir,
             'example_single_repository.json')
@@ -231,7 +231,7 @@ class TestRepository(object):
             'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
-            'teamsinspace%2Fteamsinspace.bitbucket.org')
+            'teamsinspace/teamsinspace.bitbucket.org')
         example_path = path.join(
             self.test_dir,
             'example_single_repository.json')
@@ -275,7 +275,7 @@ class TestRepository(object):
             'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
-            'teamsinspace%2Fteamsinspace.bitbucket.org')
+            'teamsinspace/teamsinspace.bitbucket.org')
         example_path = path.join(
             self.test_dir,
             'example_single_repository.json')

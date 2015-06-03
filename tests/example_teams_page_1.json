@@ -1,0 +1,107 @@
+{
+  "pagelen": 3,
+  "values": [
+    {
+      "username": "atlassian",
+      "website": "http://www.atlassian.com/",
+      "_type": "team",
+      "display_name": "Atlassian",
+      "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2014/Dec/11/1709210254-8-atlassian-avatar_avatar.png"
+        },
+        "members": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian/members"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian/following"
+        }
+      },
+      "created_on": "2010-05-07T18:19:04.176462+00:00",
+      "location": "Sydney, Australia",
+      "type": "team"
+    },
+    {
+      "username": "atlassianlabs",
+      "website": "",
+      "_type": "team",
+      "display_name": "Atlassian Labs",
+      "uuid": "{6f461d1e-a3dd-433b-a0e3-7a69daf6ea47}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianlabs"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassianlabs"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassianlabs"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianlabs/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/25684ff9a10a541311a1fd5ec99cda45?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2F178574514dce%2Fimg%2Fdefault_team_avatar%2F32%2Fteam_blue.png&s=32"
+        },
+        "members": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianlabs/members"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianlabs/following"
+        }
+      },
+      "created_on": "2013-02-01T05:10:43+00:00",
+      "location": "",
+      "type": "team"
+    },
+    {
+      "username": "atlassianblabs",
+      "website": "",
+      "_type": "team",
+      "display_name": "Atlassian Blabs",
+      "uuid": "{6f461d1e-a3dd-433b-a0e3-7a69daf6ea47}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianblabs"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassianblabs"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassianblabs"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianblabs/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/25684ff9a10a541311a1fd5ec99cda45?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2F178574514dce%2Fimg%2Fdefault_team_avatar%2F32%2Fteam_blue.png&s=32"
+        },
+        "members": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianblabs/members"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianblabs/following"
+        }
+      },
+      "created_on": "2013-02-01T05:10:43+00:00",
+      "location": "",
+      "type": "team"
+    }
+  ],
+  "page": 1,
+  "size": 5,
+  "next": "https://staging.bitbucket.org/api/2.0/teams?role=admin&page=2"
+}

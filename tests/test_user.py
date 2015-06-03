@@ -8,7 +8,7 @@ from pybitbucket.user import User
 from pybitbucket.bitbucket import Client
 
 
-class TestSnippet(object):
+class TestUser(object):
     @classmethod
     def setup_class(cls):
         Client.configurator = TestConfig

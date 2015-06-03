@@ -1,0 +1,73 @@
+{
+  "pagelen": 3,
+  "values": [
+    {
+      "username": "atlasagain",
+      "website": "http://www.atlassian.com/",
+      "_type": "team",
+      "display_name": "Atlasagain",
+      "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlasagain"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlasagain"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlasagain"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlasagain/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2014/Dec/11/1709210254-8-atlassian-avatar_avatar.png"
+        },
+        "members": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlasagain/members"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlasagain/following"
+        }
+      },
+      "created_on": "2010-05-07T18:19:04.176462+00:00",
+      "location": "Sydney, Australia",
+      "type": "team"
+    },
+    {
+      "username": "atlassianslabs",
+      "website": "",
+      "_type": "team",
+      "display_name": "Atlassian Slabs",
+      "uuid": "{6f461d1e-a3dd-433b-a0e3-7a69daf6ea47}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianslabs"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassianslabs"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassianslabs"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianslabs/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/25684ff9a10a541311a1fd5ec99cda45?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2F178574514dce%2Fimg%2Fdefault_team_avatar%2F32%2Fteam_blue.png&s=32"
+        },
+        "members": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianslabs/members"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassianslabs/following"
+        }
+      },
+      "created_on": "2013-02-01T05:10:43+00:00",
+      "location": "",
+      "type": "team"
+    }
+  ],
+  "page": 2,
+  "size": 5
+}

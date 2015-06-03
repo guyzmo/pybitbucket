@@ -1,0 +1,187 @@
+{
+  "pagelen": 50,
+  "values": [
+    {
+      "username": "mbertrand80",
+      "website": "",
+      "_type": "user",
+      "display_name": "Marcus Bertrand",
+      "uuid": "{fd840bec-fba7-4426-aaea-ba1e043f559c}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/mbertrand80"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/mbertrand80"
+        },
+        "html": {
+          "href": "https://bitbucket.org/mbertrand80"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/mbertrand80/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2013/Jul/23/mbertrand80-avatar-2003019544-7_avatar.png"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/mbertrand80/following"
+        }
+      },
+      "created_on": "2011-12-13T06:01:30+00:00",
+      "location": "San Francisco, CA",
+      "type": "user"
+    },
+    {
+      "username": "dans9190",
+      "website": "",
+      "_type": "user",
+      "display_name": "Daniel  Stevens",
+      "uuid": "{1cd06601-cd0e-4fce-be03-e9ac226978b7}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/dans9190"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/dans9190"
+        },
+        "html": {
+          "href": "https://bitbucket.org/dans9190"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/dans9190/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2014/Jan/29/dans9190-avatar-2647033047-1_avatar.png"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/dans9190/following"
+        }
+      },
+      "created_on": "2013-12-10T14:44:13+00:00",
+      "location": "",
+      "type": "user"
+    },
+    {
+      "username": "ike_delorenzo",
+      "website": "",
+      "_type": "user",
+      "display_name": "Ike DeLorenzo",
+      "uuid": "{949ba772-a75c-4425-8092-d6a2daaf13ab}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/ike_delorenzo"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ike_delorenzo"
+        },
+        "html": {
+          "href": "https://bitbucket.org/ike_delorenzo"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/ike_delorenzo/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2014/Dec/19/428995120-6-ike_delorenzo-avatar_avatar.png"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/ike_delorenzo/following"
+        }
+      },
+      "created_on": "2014-10-21T21:35:54+00:00",
+      "location": "",
+      "type": "user"
+    },
+    {
+      "username": "Dan-is-testing",
+      "website": null,
+      "_type": "user",
+      "display_name": "Dan Stevens",
+      "uuid": "{1c1e4d0d-9f93-46ed-8e94-8dd22f6c6bd0}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/Dan-is-testing"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/Dan-is-testing"
+        },
+        "html": {
+          "href": "https://bitbucket.org/Dan-is-testing"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/Dan-is-testing/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/b622d88ee3ae75a632898cf6d9be9dc3?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2F178574514dce%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/Dan-is-testing/following"
+        }
+      },
+      "created_on": "2014-12-22T19:50:55.170672+00:00",
+      "location": null,
+      "type": "user"
+    },
+    {
+      "username": "ccecic",
+      "website": null,
+      "_type": "user",
+      "display_name": "Caitlin Cecic",
+      "uuid": "{05d95a6c-6f86-4f5c-85e3-c61595e8e088}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/ccecic"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ccecic"
+        },
+        "html": {
+          "href": "https://bitbucket.org/ccecic"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/ccecic/followers"
+        },
+        "avatar": {
+          "href": "https://secure.gravatar.com/avatar/d6204fe7246067081dfedce509f6e49d?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2F178574514dce%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/ccecic/following"
+        }
+      },
+      "created_on": "2015-03-03T14:48:47.288770+00:00",
+      "location": null,
+      "type": "user"
+    },
+    {
+      "username": "emmap1",
+      "website": null,
+      "_type": "user",
+      "display_name": "Emma Persona",
+      "uuid": "{af486389-c695-4981-96a6-d556291f6dc2}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/users/emmap1"
+        },
+        "repositories": {
+          "href": "https://api.bitbucket.org/2.0/repositories/emmap1"
+        },
+        "html": {
+          "href": "https://bitbucket.org/emmap1"
+        },
+        "followers": {
+          "href": "https://api.bitbucket.org/2.0/users/emmap1/followers"
+        },
+        "avatar": {
+          "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2015/May/08/3515280093-3-emmap1-avatar_avatar.png"
+        },
+        "following": {
+          "href": "https://api.bitbucket.org/2.0/users/emmap1/following"
+        }
+      },
+      "created_on": "2015-05-08T21:31:35.508002+00:00",
+      "location": null,
+      "type": "user"
+    }
+  ],
+  "page": 1,
+  "size": 6
+}

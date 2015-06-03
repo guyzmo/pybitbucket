@@ -1,0 +1,144 @@
+{
+  "pagelen": 10,
+  "values": [
+    {
+      "description": "This updates everything to work on my machine -- entry points were not getting set correctly when installed.",
+      "links": {
+        "decline": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/decline"
+        },
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/commits"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1"
+        },
+        "comments": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/comments"
+        },
+        "merge": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/merge"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/snippet/pull-request/1"
+        },
+        "activity": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/activity"
+        },
+        "diff": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/diff"
+        },
+        "approve": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/approve"
+        }
+      },
+      "author": {
+        "username": "MatthewTurk",
+        "display_name": "Matthew Turk",
+        "uuid": "{b3f0b280-55fc-4e8a-8bd1-40478d4cbdbf}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/MatthewTurk"
+          },
+          "html": {
+            "href": "https://bitbucket.org/MatthewTurk"
+          },
+          "avatar": {
+            "href": "https://secure.gravatar.com/avatar/b279d746f54e2cd6062e8279a767c4bc?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2F178574514dce%2Fimg%2Fdefault_avatar%2F32%2Fuser_blue.png&s=32"
+          }
+        }
+      },
+      "close_source_branch": true,
+      "title": "Update entrypoint handling",
+      "destination": {
+        "commit": {
+          "hash": "caa6dd9bc980",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/commit/caa6dd9bc980"
+            }
+          }
+        },
+        "repository": {
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet"
+            },
+            "html": {
+              "href": "https://bitbucket.org/atlassian/snippet"
+            },
+            "avatar": {
+              "href": "https://d3oaxc4q5k2d6q.cloudfront.net/m/178574514dce/img/language-avatars/python_16.png"
+            }
+          },
+          "name": "snippet",
+          "full_name": "atlassian/snippet",
+          "uuid": "{1a9cfbd1-ebbe-43e6-97ab-5ac82acc6bd1}"
+        },
+        "branch": {
+          "name": "master"
+        }
+      },
+      "reason": "",
+      "closed_by": {
+        "username": "ian_buchanan",
+        "display_name": "Ian Buchanan",
+        "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+          },
+          "html": {
+            "href": "https://bitbucket.org/ian_buchanan"
+          },
+          "avatar": {
+            "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2014/Oct/17/ian_buchanan-avatar-415803637-7_avatar.png"
+          }
+        }
+      },
+      "source": {
+        "commit": {
+          "hash": "0a57b2802a5b",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/MatthewTurk/snippet/commit/0a57b2802a5b"
+            }
+          }
+        },
+        "repository": {
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/MatthewTurk/snippet"
+            },
+            "html": {
+              "href": "https://bitbucket.org/MatthewTurk/snippet"
+            },
+            "avatar": {
+              "href": "https://d3oaxc4q5k2d6q.cloudfront.net/m/178574514dce/img/language-avatars/python_16.png"
+            }
+          },
+          "name": "snippet",
+          "full_name": "MatthewTurk/snippet",
+          "uuid": "{dcb69a25-35b0-440b-8f84-9409337c072a}"
+        },
+        "branch": {
+          "name": "entrypoint"
+        }
+      },
+      "state": "MERGED",
+      "created_on": "2015-06-01T21:19:41.720167+00:00",
+      "updated_on": "2015-06-01T23:07:09.531948+00:00",
+      "merge_commit": {
+        "hash": "b9a703d5b884",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/commit/b9a703d5b884"
+          }
+        }
+      },
+      "id": 1
+    }
+  ],
+  "page": 1,
+  "size": 1
+}

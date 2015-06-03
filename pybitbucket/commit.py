@@ -48,19 +48,47 @@ class Commit(object):
 
     @staticmethod
     def find_commits_in_repository(
-            repository_full_name,
+            username,
+            repository_name,
+            branch=None,
+            include=[],
+            exclude=[],
             client=Client()):
         template = (
             'https://{+bitbucket_url}' +
-            '/2.0/repositories/{full_name}/commits')
+            '/2.0/repositories/{username}/{repository_name}' +
+            '/commits{/branch}{?include*,exclude*}')
         url = expand(
             template,
             {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'full_name': repository_full_name
+                'username': username,
+                'repository_name': repository_name,
+                'branch': branch,
+                'include': include,
+                'exclude': exclude
             })
         for commit in client.paginated_get(url):
             yield Commit(commit, client=client)
+
+    @staticmethod
+    def find_commits_in_repository_full_name(
+            repository_full_name,
+            branch=None,
+            include=[],
+            exclude=[],
+            client=Client()):
+        if not '/' in repository_full_name:
+            raise NameError(
+                "Repository full name must be in the form: username/name")
+        username, repository_name = repository_full_name.split('/')
+        yield Commit.find_commits_in_repository(
+            username,
+            repository_name,
+            branch=branch,
+            include=include,
+            exclude=exclude,
+            client=client)
 
     @staticmethod
     def remote_relationship(url, client=Client()):

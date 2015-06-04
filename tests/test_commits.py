@@ -122,7 +122,7 @@ class TestCommit(object):
         assert 'teamsinspace.bitbucket.org' == repo.name
 
     @httpretty.activate
-    def test_repository_links(self):
+    def test_commit_comments(self):
         commit_hash = 'c021208234c65439f57b8244517a2b850b3ecf44'
         url = (
             'https://' +
@@ -166,3 +166,55 @@ class TestCommit(object):
             body=example,
             status=200)
         assert list(commit.comments())
+
+    @httpretty.activate
+    def test_commit_approval(self):
+        commit_hash = 'c021208234c65439f57b8244517a2b850b3ecf44'
+        url = (
+            'https://' +
+            self.client.get_bitbucket_url() +
+            '/2.0/repositories/' +
+            'teamsinspace/teamsinspace.bitbucket.org' +
+            '/commit/' +
+            commit_hash)
+        example_path = path.join(
+            self.test_dir,
+            'example_single_commit.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        commit = Commit.find_commit_in_repository_by_revision(
+            'teamsinspace',
+            'teamsinspace.bitbucket.org',
+            commit_hash,
+            client=self.client)
+
+        url = (
+            'https://' +
+            'api.bitbucket.org' +
+            '/2.0/repositories/' +
+            'teamsinspace/teamsinspace.bitbucket.org' +
+            '/commit/' +
+            commit_hash +
+            '/approve')
+        example_path = path.join(self.test_dir, 'example_approve_commit.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(
+            httpretty.POST,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        assert commit.approve()
+
+        httpretty.register_uri(
+            httpretty.DELETE,
+            url,
+            status=204)
+        assert commit.unapprove()

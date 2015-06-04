@@ -103,6 +103,20 @@ class Commit(object):
                 # comments, patch, diff, approve
                 yield item
 
+    @staticmethod
+    def post_commit_approval(url, client=Client()):
+        response = client.session.post(url)
+        Client.expect_ok(response)
+        json_data = response.json()
+        return json_data.get('approved')
+
+    @staticmethod
+    def delete_commit_approval(url, client=Client()):
+        response = client.session.delete(url)
+        # Deletes the approval and returns 204 (No Content).
+        Client.expect_ok(response, 204)
+        return True
+
     def __init__(self, data, client=Client()):
         self.dict = data
         self.client = client
@@ -110,10 +124,15 @@ class Commit(object):
         for link, body in data['links'].iteritems():
             if link == 'clone':
                 self.clone = {item['name']: item['href'] for item in body}
+            elif link == 'approve':
+                setattr(self, 'approve', types.MethodType(
+                    Commit.post_commit_approval, body['href'], self.client))
+                setattr(self, 'unapprove', types.MethodType(
+                    Commit.delete_commit_approval, body['href'], self.client))
             else:
                 for head, url in body.iteritems():
                     setattr(self, link, types.MethodType(
-                        Repository.remote_relationship, url, self.client))
+                        Commit.remote_relationship, url, self.client))
         self.raw_author = self.author['raw']
         self.author = User(self.author['user'], client=client)
         self.repository = Repository(self.repository, client=client)

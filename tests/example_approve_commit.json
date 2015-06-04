@@ -1,0 +1,20 @@
+{
+  "role": "PARTICIPANT",
+  "user": {
+    "username": "ian_buchanan",
+    "display_name": "Ian Buchanan",
+    "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+      },
+      "html": {
+        "href": "https://bitbucket.org/ian_buchanan"
+      },
+      "avatar": {
+        "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2014/Oct/17/ian_buchanan-avatar-415803637-7_avatar.png"
+      }
+    }
+  },
+  "approved": true
+}

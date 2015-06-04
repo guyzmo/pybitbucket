@@ -31,35 +31,48 @@ class TestTeam(object):
 
     @httpretty.activate
     def test_team_list(self):
-        url1 = ('https://' +
-                self.client.get_bitbucket_url() +
-                '/2.0/teams?role=admin')
-        path1 = path.join(self.test_dir, 'example_teams_page_1.json')
+        url1 = (
+            'https://' +
+            self.client.get_bitbucket_url() +
+            '/2.0/teams?role=admin')
+        path1 = path.join(
+            self.test_dir,
+            'example_teams_page_1.json')
         with open(path1) as example1_file:
             example1 = example1_file.read()
-        httpretty.register_uri(httpretty.GET, url1,
-                               content_type='application/json',
-                               body=example1,
-                               status=200)
+        httpretty.register_uri(
+            httpretty.GET,
+            url1,
+            content_type='application/json',
+            body=example1,
+            status=200)
 
         teams = Team.find_teams_for_role(TeamRole.ADMIN, client=self.client)
-        team_list = []
+        team_list = list()
         team_list.append(teams.next())
         team_list.append(teams.next())
         team_list.append(teams.next())
 
-        url2 = ('https://' +
-                'staging.bitbucket.org/api' +
-                '/2.0/teams?role=admin&page=2')
-        path2 = path.join(self.test_dir, 'example_teams_page_2.json')
+        url2 = (
+            'https://' +
+            'staging.bitbucket.org/api' +
+            '/2.0/teams?role=admin&page=2')
+        path2 = path.join(
+            self.test_dir,
+            'example_teams_page_2.json')
         with open(path2) as example2_file:
             example2 = example2_file.read()
-        httpretty.register_uri(httpretty.GET, url2,
-                               content_type='application/json',
-                               body=example2,
-                               status=200)
-        team_list.append(teams.next())
-        team_list.append(teams.next())
+        httpretty.register_uri(
+            httpretty.GET,
+            url2,
+            content_type='application/json',
+            body=example2,
+            status=200)
+
+        for t in teams:
+            team_list.append(t)
+        s = "%s" % team_list[0]
+        assert s.startswith('Team username:')
         assert 5 == len(team_list)
 
     @httpretty.activate

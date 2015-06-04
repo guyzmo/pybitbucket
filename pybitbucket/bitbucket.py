@@ -1,4 +1,3 @@
-from collections import namedtuple
 from requests import codes
 from requests import Session
 from requests.auth import HTTPBasicAuth
@@ -17,20 +16,23 @@ class Config(object):
 
 class Client(object):
     configurator = Config
+    bitbucket_types = set()
 
     @staticmethod
     def user_agent_header():
-        return "%s/%s %s" % (metadata.package,
-                             metadata.version,
-                             default_user_agent())
+        return "%s/%s %s" % (
+            metadata.package,
+            metadata.version,
+            default_user_agent())
 
     @staticmethod
     def start_http_session(auth, email=''):
         session = Session()
         session.auth = auth
-        session.headers.update({'User-Agent': Client.user_agent_header(),
-                                'Accept': 'application/json',
-                                'From': email})
+        session.headers.update({
+            'User-Agent': Client.user_agent_header(),
+            'Accept': 'application/json',
+            'From': email})
         return session
 
     @staticmethod
@@ -44,18 +46,23 @@ class Client(object):
         else:
             response.raise_for_status()
 
-    def paginated_get(self, url):
+    def convert_to_object(self, data):
+        for t in Client.bitbucket_types:
+            if t.is_type(data):
+                return t(data, client=self)
+        return data
+
+    def remote_relationship(self, url):
         while url:
             response = self.session.get(url)
             self.expect_ok(response)
             json_data = response.json()
-            r = namedtuple('Struct', json_data.keys())(*json_data.values())
-            for item in r.values:
-                yield item
-            if hasattr(r, 'next'):
-                url = r.next
+            if json_data.get('page'):
+                for item in json_data.get('values'):
+                    yield self.convert_to_object(item)
             else:
-                url = None
+                yield self.convert_to_object(json_data)
+            url = json_data.get('next')
 
     def get_bitbucket_url(self):
         return self.config.bitbucket_url

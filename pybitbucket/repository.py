@@ -56,8 +56,8 @@ class Repository(object):
             {
                 'bitbucket_url': client.get_bitbucket_url()
             })
-        for repo in client.paginated_get(url):
-            yield Repository(repo, client=client)
+        for repo in client.remote_relationship(url):
+            yield repo
 
     @staticmethod
     def find_repositories_for_username(username, role=None, client=Client()):
@@ -75,26 +75,15 @@ class Repository(object):
                 'username': username,
                 'role': role
             })
-        for repo in client.paginated_get(url):
-            yield Repository(repo, client=client)
+        for repo in client.remote_relationship(url):
+            yield repo
 
     @staticmethod
-    def remote_relationship(url, client=Client()):
-        # TODO: avatar
-        for item in client.paginated_get(url):
-            if item.get('_type') == 'repository':
-                # forks
-                yield Repository(item, client=client)
-            elif item.get('type') == 'user':
-                # Should work for watchers, but doesn't.
-                # The JSON doesn't type watchers as users.
-                yield User(item, client=client)
-            else:
-                # commits, pullrequests
-                yield item
+    def is_type(data):
+        return data.get('_type') == 'repository'
 
     def __init__(self, data, client=Client()):
-        self.dict = data
+        self.data = data
         self.client = client
         self.__dict__.update(data)
         if data.get('owner'):
@@ -104,14 +93,20 @@ class Repository(object):
                 self.clone = {item['name']: item['href'] for item in body}
             else:
                 for head, url in body.iteritems():
-                    setattr(self, link, types.MethodType(
-                        Repository.remote_relationship, url, self.client))
+                    setattr(
+                        self,
+                        link,
+                        types.MethodType(
+                            self.client.remote_relationship,
+                            url))
 
     def __repr__(self):
-        return "Repository({})".repr(self.dict)
+        return "Repository({})".repr(self.data)
 
     def __unicode__(self):
         return "Repository full_name:{}".format(self.full_name)
 
     def __str__(self):
         return unicode(self).encode('utf-8')
+
+Client.bitbucket_types.add(Repository)

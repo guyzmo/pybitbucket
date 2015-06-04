@@ -68,8 +68,8 @@ class Commit(object):
                 'include': include,
                 'exclude': exclude
             })
-        for commit in client.paginated_get(url):
-            yield Commit(commit, client=client)
+        for commit in client.remote_relationship(url):
+            yield commit
 
     @staticmethod
     def find_commits_in_repository_full_name(
@@ -91,19 +91,6 @@ class Commit(object):
             client=client)
 
     @staticmethod
-    def remote_relationship(url, client=Client()):
-        for item in client.paginated_get(url):
-            if item.get('_type') == 'repository':
-                # repository is in-line so this won't get triggered.
-                yield Repository(item, client=client)
-            elif item.get('type') == 'user':
-                # author is in-line so this won't get triggered.
-                yield User(item, client=client)
-            else:
-                # comments, patch, diff, approve
-                yield item
-
-    @staticmethod
     def post_commit_approval(url, client=Client()):
         response = client.session.post(url)
         Client.expect_ok(response)
@@ -117,8 +104,12 @@ class Commit(object):
         Client.expect_ok(response, 204)
         return True
 
+    @staticmethod
+    def is_type(data):
+        return data.get('hash')
+
     def __init__(self, data, client=Client()):
-        self.dict = data
+        self.data = data
         self.client = client
         self.__dict__.update(data)
         for link, body in data['links'].iteritems():
@@ -131,17 +122,23 @@ class Commit(object):
                     Commit.delete_commit_approval, body['href'], self.client))
             else:
                 for head, url in body.iteritems():
-                    setattr(self, link, types.MethodType(
-                        Commit.remote_relationship, url, self.client))
+                    setattr(
+                        self,
+                        link,
+                        types.MethodType(
+                            self.client.remote_relationship,
+                            url))
         self.raw_author = self.author['raw']
         self.author = User(self.author['user'], client=client)
         self.repository = Repository(self.repository, client=client)
 
     def __repr__(self):
-        return "Commit({})".repr(self.dict)
+        return "Commit({})".repr(self.data)
 
     def __unicode__(self):
         return "Commit hash:{}".format(self.hash)
 
     def __str__(self):
         return unicode(self).encode('utf-8')
+
+Client.bitbucket_types.add(Commit)

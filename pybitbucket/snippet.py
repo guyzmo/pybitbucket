@@ -91,18 +91,25 @@ class Snippet(object):
         return data.get('id') and not data.get('destination')
 
     def __init__(self, data, client=Client()):
-        print data
         self.data = data
+        # Need some special handling for booleans.
+        # Might be workaround for bug in the response JSON?
+        for (is_a, value) in data.iteritems():
+            if is_a.startswith('is_'):
+                data[is_a] = (value in ('True', 'true'))
         self.client = client
         self.__dict__.update(data)
-        for link, href in data['links'].iteritems():
-            for head, url in href.iteritems():
-                setattr(
-                    self,
-                    link,
-                    types.MethodType(
-                        self.client.remote_relationship,
-                        url))
+        for link, body in data['links'].iteritems():
+            if link == 'clone':
+                self.clone = {item['name']: item['href'] for item in body}
+            else:
+                for head, url in body.iteritems():
+                    setattr(
+                        self,
+                        link,
+                        types.MethodType(
+                            self.client.remote_relationship,
+                            url))
         self.filenames = [str(f) for f in data['files']]
 
     def __repr__(self):
@@ -135,6 +142,8 @@ class Snippet(object):
         return
 
     def content(self, filename):
+        if not self.files.get(filename):
+            return
         url = self.files[filename]['links']['self']['href']
         response = self.client.session.get(url)
         Client.expect_ok(response)

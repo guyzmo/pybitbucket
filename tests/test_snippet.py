@@ -4,6 +4,8 @@ import json
 from os import path
 from test_client import TestConfig
 
+from util import data_from_file
+
 from pybitbucket.snippet import open_files
 from pybitbucket.snippet import Role
 from pybitbucket.snippet import Snippet
@@ -17,13 +19,16 @@ class TestSnippet(object):
         cls.test_dir, current_file = path.split(path.abspath(__file__))
         cls.client = Client()
 
-    def test_snippet_string_representation(self):
+    def load_example_snippet(self):
         example_path = path.join(
             self.test_dir,
             'example_single_snippet.json')
         with open(example_path) as f:
             example = json.load(f)
-        snip = Snippet(example, client=self.client)
+        return Snippet(example, client=self.client)
+
+    def test_snippet_string_representation(self):
+        snip = self.load_example_snippet()
         # Just tests that the __str__ method works and
         # that it does not use the default representation
         snip_str = "%s" % snip
@@ -48,16 +53,15 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_create_snippet(self):
+        snip_id = 'Xqoz8'
         url = (
             'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/snippets/' +
             'pybitbucket')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_single_snippet.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.POST,
             url,
@@ -68,10 +72,15 @@ class TestSnippet(object):
             self.test_dir,
             'example_upload_1.txt')
         files = open_files([example_upload])
-        snip = Snippet.create_snippet(files, client=self.client)
-        assert 'T6K9' == snip.id
-        assert 'BSD License' == snip.title
-        assert not snip.is_private
+        new_snip = Snippet.create_snippet(files, client=self.client)
+        # I did not create a pullrequest
+        assert not new_snip.data.get('destination')
+        assert snip_id == new_snip.id
+        # I got the right title.
+        assert 'Test Snippet' == new_snip.title
+        # I got a public snippet.
+        assert False == new_snip.data['is_private']
+        assert False == new_snip.is_private
 
     @httpretty.activate
     def test_create_snippet_with_two_files(self):
@@ -80,11 +89,9 @@ class TestSnippet(object):
             self.client.get_bitbucket_url() +
             '/2.0/snippets/' +
             'pybitbucket')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_two_file_post.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.POST,
             url,
@@ -109,11 +116,9 @@ class TestSnippet(object):
             self.client.get_bitbucket_url() +
             '/2.0/snippets' +
             '?role=owner')
-        path1 = path.join(
+        example1 = data_from_file(
             self.test_dir,
             'example_snippets_page_1.json')
-        with open(path1) as example1_file:
-            example1 = example1_file.read()
         httpretty.register_uri(
             httpretty.GET,
             url1,
@@ -131,9 +136,9 @@ class TestSnippet(object):
             'staging.bitbucket.org/api' +
             '/2.0/snippets' +
             '?role=owner&page=2')
-        path2 = path.join(self.test_dir, 'example_snippets_page_2.json')
-        with open(path2) as example2_file:
-            example2 = example2_file.read()
+        example2 = data_from_file(
+            self.test_dir,
+            'example_snippets_page_2.json')
         httpretty.register_uri(
             httpretty.GET,
             url2,
@@ -146,53 +151,36 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_find_snippet_by_id(self):
+        snip_id = 'Xqoz8'
         url = (
             'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/snippets/' +
-            'pybitbucket/T6K9')
-        example_path = path.join(
+            'pybitbucket/' +
+            snip_id)
+        example = data_from_file(
             self.test_dir,
             'example_single_snippet.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
             content_type='application/json',
             body=example,
             status=200)
-        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
-        assert 'T6K9' == snip.id
-        assert 'BSD License' == snip.title
-        assert not snip.is_private
+        found_snip = Snippet.find_snippet_by_id(snip_id, client=self.client)
+        # I did not get a pullrequest
+        assert not found_snip.data.get('destination')
+        assert snip_id == found_snip.id
+        # I got the right title.
+        assert 'Test Snippet' == found_snip.title
+        # I got a public snippet.
+        assert False == found_snip.data['is_private']
+        assert False == found_snip.is_private
 
     @httpretty.activate
     def test_delete_snippet(self):
-        # First, setup to get the item that you want to delete.
-        url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9')
-        example_path = path.join(
-            self.test_dir,
-            'example_single_snippet.json')
-        with open(example_path) as f:
-            example = f.read()
-        httpretty.register_uri(
-            httpretty.GET,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
-        # Next, setup for the delete request.
-        url = (
-            'https://' +
-            'staging.bitbucket.org/api' +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9')
+        snip = self.load_example_snippet()
+        url = snip.data['links']['self']['href']
         httpretty.register_uri(
             httpretty.DELETE,
             url,
@@ -202,34 +190,11 @@ class TestSnippet(object):
 
     @httpretty.activate
     def test_snippet_links(self):
-        url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9')
-        example_path = path.join(
-            self.test_dir,
-            'example_single_snippet.json')
-        with open(example_path) as f:
-            example = f.read()
-        httpretty.register_uri(
-            httpretty.GET,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
-
-        url = (
-            'https://' +
-            'staging.bitbucket.org/api' +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9/watchers')
-        example_path = path.join(
+        snip = self.load_example_snippet()
+        url = snip.data['links']['watchers']['href']
+        example = data_from_file(
             self.test_dir,
             'example_watchers.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -238,16 +203,10 @@ class TestSnippet(object):
             status=200)
         assert list(snip.watchers())
 
-        url = (
-            'https://' +
-            'staging.bitbucket.org/api' +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9/comments')
-        example_path = path.join(
+        url = snip.data['links']['comments']['href']
+        example = data_from_file(
             self.test_dir,
             'example_comments.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -256,51 +215,13 @@ class TestSnippet(object):
             status=200)
         assert not list(snip.comments())
 
-        """
-        # Don't seem to have a valid example file yet.
-        url = ('https://' +
-               'staging.bitbucket.org/api' +
-               '/2.0/snippets/pybitbucket/T6K9/commits')
-        example_path = path.join(self.test_dir, 'example_commits.json')
-        with open(example_path) as f:
-            example = f.read()
-        httpretty.register_uri(httpretty.GET, url,
-                               content_type='application/json',
-                               body=example,
-                               status=200)
-        assert not list(snip.commits())
-        """
-
     @httpretty.activate
     def test_snippet_commits(self):
-        url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9')
-        example_path = path.join(
-            self.test_dir,
-            'example_single_snippet.json')
-        with open(example_path) as f:
-            example = f.read()
-        httpretty.register_uri(
-            httpretty.GET,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
-
-        url = (
-            'https://' +
-            'staging.bitbucket.org/api' +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9/commits')
-        example_path = path.join(
+        snip = self.load_example_snippet()
+        url = snip.data['links']['commits']['href']
+        example = data_from_file(
             self.test_dir,
             'example_commits.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -311,59 +232,26 @@ class TestSnippet(object):
         assert 'c021208234c65439f57b8244517a2b850b3ecf44' == commit.hash
         assert 'Testing with some copied html' == commit.message
 
-    @httpretty.activate
     def test_snippet_files(self):
-        url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9')
-        example_path = path.join(
-            self.test_dir,
-            'example_single_snippet.json')
-        with open(example_path) as f:
-            example = f.read()
-        httpretty.register_uri(
-            httpretty.GET,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
+        snip = self.load_example_snippet()
         filename = list(snip.files)[0]
         assert 'LICENSE.md' == filename
 
     @httpretty.activate
     def test_snippet_content(self):
-        url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/snippets/' +
-            'pybitbucket/T6K9')
-        example_path = path.join(
-            self.test_dir,
-            'example_single_snippet.json')
-        with open(example_path) as f:
-            example = f.read()
-        httpretty.register_uri(
-            httpretty.GET,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        snip = Snippet.find_snippet_by_id('T6K9', client=self.client)
-        url = (
-            'https://' +
-            'staging.bitbucket.org/api' +
-            '/2.0/snippets/' +
-            'ian_buchanan/T6K9/files/' +
-            '667ad1a1c09f1c7b709f4a5a7ecba65715c12d73/' +
-            'LICENSE.md')
+        snip = self.load_example_snippet()
+        filename = 'LICENSE.md'
+        url = snip.data['files'][filename]['links']['self']['href']
         httpretty.register_uri(
             httpretty.GET,
             url,
             content_type='application/json',
             body='example',
             status=200)
-        c = snip.content('LICENSE.md')
-        assert 'example' == c
+        content = snip.content(filename)
+        assert 'example' == content
+
+    def test_file_is_not_in_the_snippet(self):
+        snip = self.load_example_snippet()
+        content = snip.content('this_file_is_not_in_the_snippet.test')
+        assert not content

@@ -3,6 +3,7 @@ import httpretty
 from os import path
 from test_client import TestConfig
 
+from util import data_from_file
 from pybitbucket.bitbucket import Client
 
 
@@ -13,12 +14,6 @@ class TestRemoteRelationships(object):
         cls.test_dir, current_file = path.split(path.abspath(__file__))
         cls.client = Client()
 
-    def data_from_file(self, filename):
-        filepath = path.join(self.test_dir, filename)
-        with open(filepath) as f:
-            data = f.read()
-        return data
-
     @httpretty.activate
     def test_single_item(self):
         url = (
@@ -26,7 +21,9 @@ class TestRemoteRelationships(object):
             'api.bitbucket.org' +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
-        example = self.data_from_file('example_single_repository.json')
+        example = data_from_file(
+            self.test_dir,
+            'example_single_repository.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -44,7 +41,9 @@ class TestRemoteRelationships(object):
             'https://' +
             'api.bitbucket.org' +
             '/2.0/repositories')
-        example = self.data_from_file('example_repositories.json')
+        example = data_from_file(
+            self.test_dir,
+            'example_repositories.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -63,7 +62,9 @@ class TestRemoteRelationships(object):
             self.client.get_bitbucket_url() +
             '/2.0/snippets' +
             '?role=owner')
-        example1 = self.data_from_file('example_snippets_page_1.json')
+        example1 = data_from_file(
+            self.test_dir,
+            'example_snippets_page_1.json')
         httpretty.register_uri(
             httpretty.GET,
             url1,
@@ -83,7 +84,9 @@ class TestRemoteRelationships(object):
             'staging.bitbucket.org/api' +
             '/2.0/snippets' +
             '?role=owner&page=2')
-        example2 = self.data_from_file('example_snippets_page_2.json')
+        example2 = data_from_file(
+            self.test_dir,
+            'example_snippets_page_2.json')
         httpretty.register_uri(
             httpretty.GET,
             url2,

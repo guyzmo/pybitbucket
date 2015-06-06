@@ -255,3 +255,34 @@ class TestSnippet(object):
         snip = self.load_example_snippet()
         content = snip.content('this_file_is_not_in_the_snippet.test')
         assert not content
+
+    @httpretty.activate
+    def test_navigating_from_snippet_list_to_files(self):
+        url = (
+            'https://' +
+            self.client.get_bitbucket_url() +
+            '/2.0/snippets' +
+            '?role=owner')
+        example = data_from_file(
+            self.test_dir,
+            'example_snippets.json')
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        snips = Snippet.find_snippets_for_role(Role.OWNER, client=self.client)
+        one_snip = snips.next()
+        # one snip has no files yet
+        url = one_snip.data['links']['self']['href']
+        example = data_from_file(
+            self.test_dir,
+            'example_single_snippet.json')
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        assert one_snip.self().next().files

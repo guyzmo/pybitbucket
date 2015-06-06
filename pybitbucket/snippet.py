@@ -110,7 +110,8 @@ class Snippet(object):
                         types.MethodType(
                             self.client.remote_relationship,
                             url))
-        self.filenames = [str(f) for f in data['files']]
+        if data.get('files'):
+            self.filenames = [str(f) for f in data['files']]
 
     def __repr__(self):
         return "Snippet({})".repr(self.data)

@@ -265,10 +265,10 @@ setup_dict = dict(
     ] + python_version_specific_requires,
     # Allow tests to be run with `python setup.py test'.
     tests_require=[
-        'pytest==2.5.1',
+        'pytest==2.7.1',
         'mock==1.0.1',
-        'flake8==2.1.0',
-        'httpretty==0.8.7',
+        'flake8==2.4.1',
+        'httpretty==0.8.10',
     ],
     cmdclass={'test': TestAllCommand},
     zip_safe=False,  # don't use eggs

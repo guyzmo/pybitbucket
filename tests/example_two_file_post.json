@@ -1,16 +1,6 @@
 {
   "scm": "git",
   "files": {
-    "example_upload_2.rst": {
-      "links": {
-        "self": {
-          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/TKyE/files/6bdda2d9c3f1d4fbf1d57154b092791b13455b1b/example_upload_2.rst"
-        },
-        "html": {
-          "href": "https://staging.bitbucket.org/snippets/ian_buchanan/TKyE#example_upload_2.rst"
-        }
-      }
-    },
     "example_upload_1.txt": {
       "links": {
         "self": {
@@ -20,7 +10,17 @@
           "href": "https://staging.bitbucket.org/snippets/ian_buchanan/TKyE#example_upload_1.txt"
         }
       }
-    }    
+    },
+    "example_upload_2.rst": {
+      "links": {
+        "self": {
+          "href": "https://staging.bitbucket.org/api/2.0/snippets/ian_buchanan/TKyE/files/6bdda2d9c3f1d4fbf1d57154b092791b13455b1b/example_upload_2.rst"
+        },
+        "html": {
+          "href": "https://staging.bitbucket.org/snippets/ian_buchanan/TKyE#example_upload_2.rst"
+        }
+      }
+    }
   },
   "links": {
     "commits": {

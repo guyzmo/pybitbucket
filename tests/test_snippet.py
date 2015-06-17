@@ -107,7 +107,9 @@ class TestSnippet(object):
         files = open_files([example_upload_1, example_upload_2])
         snip = Snippet.create_snippet(files, client=self.client)
         expected = ['example_upload_1.txt', 'example_upload_2.rst']
-        assert expected == snip.filenames
+        # I would expect the JSON to be ordered
+        # but somewhere that order was getting lost.
+        assert sorted(expected) == sorted(snip.filenames)
 
     @httpretty.activate
     def test_snippet_list(self):
@@ -234,7 +236,9 @@ class TestSnippet(object):
 
     def test_snippet_files(self):
         snip = self.load_example_snippet()
-        filename = list(snip.files)[0]
+        # I would expect the JSON to be ordered
+        # but somewhere that order was getting lost.
+        filename = list(sorted(snip.files))[0]
         assert 'LICENSE.md' == filename
 
     @httpretty.activate

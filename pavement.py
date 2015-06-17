@@ -21,7 +21,7 @@ options(setup=setup_dict)
 
 install_distutils_tasks()
 
-## Miscellaneous helper functions
+# Miscellaneous helper functions
 
 
 def print_passed():
@@ -62,7 +62,7 @@ class cwd(object):
         os.chdir(self.oldcwd)
 
 
-## Task-related functions
+# Task-related functions
 
 def _doc_make(*make_args):
     """Run make in sphinx' docs directory.
@@ -84,7 +84,7 @@ def _doc_make(*make_args):
     return retcode
 
 
-## Tasks
+# Tasks
 
 @task
 @needs('doc_html', 'setuptools.command.sdist')
@@ -235,8 +235,8 @@ def doc_open():
 def get_tasks():
     """Get all paver-defined tasks."""
     from paver.tasks import environment
-    for task in environment.get_tasks():
-        print(task.shortname)
+    for t in environment.get_tasks():
+        print(t.shortname)
 
 
 @task

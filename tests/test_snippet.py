@@ -79,8 +79,8 @@ class TestSnippet(object):
         # I got the right title.
         assert 'Test Snippet' == new_snip.title
         # I got a public snippet.
-        assert False == new_snip.data['is_private']
-        assert False == new_snip.is_private
+        assert new_snip.data['is_private'] is False
+        assert new_snip.is_private is False
 
     @httpretty.activate
     def test_create_snippet_with_two_files(self):
@@ -174,8 +174,8 @@ class TestSnippet(object):
         # I got the right title.
         assert 'Test Snippet' == found_snip.title
         # I got a public snippet.
-        assert False == found_snip.data['is_private']
-        assert False == found_snip.is_private
+        assert found_snip.data['is_private'] is False
+        assert found_snip.is_private is False
 
     @httpretty.activate
     def test_delete_snippet(self):

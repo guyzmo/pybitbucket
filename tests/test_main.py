@@ -6,10 +6,11 @@ from pytest import raises
 #     from pytest.mark import parametrize
 #
 import pytest
-parametrize = pytest.mark.parametrize
 
 from pybitbucket import metadata
 from pybitbucket.main import main
+
+parametrize = pytest.mark.parametrize
 
 
 class TestMain(object):

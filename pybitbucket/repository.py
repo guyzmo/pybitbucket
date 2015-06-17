@@ -39,7 +39,7 @@ class Repository(object):
     def find_repository_by_full_name(
             repository_full_name,
             client=Client()):
-        if not '/' in repository_full_name:
+        if '/' not in repository_full_name:
             raise NameError(
                 "Repository full name must be in the form: username/name")
         username, repository_name = repository_full_name.split('/')

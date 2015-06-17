@@ -36,7 +36,7 @@ class Commit(object):
             repository_full_name,
             revision,
             client=Client()):
-        if not '/' in repository_full_name:
+        if '/' not in repository_full_name:
             raise NameError(
                 "Repository full name must be in the form: username/name")
         username, repository_name = repository_full_name.split('/')
@@ -78,7 +78,7 @@ class Commit(object):
             include=[],
             exclude=[],
             client=Client()):
-        if not '/' in repository_full_name:
+        if '/' not in repository_full_name:
             raise NameError(
                 "Repository full name must be in the form: username/name")
         username, repository_name = repository_full_name.split('/')

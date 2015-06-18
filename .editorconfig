@@ -1,25 +1,17 @@
 # -*- mode: conf-unix; -*-
-
-# EditorConfig is awesome: http://EditorConfig.org
+# http://editorconfig.org
 
 # top-most EditorConfig file
 root = true
 
 # defaults
 [*]
-insert_final_newline = true     
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
 
-# 4 space indentation
+# 4 space indentation for Python
 [*.{ini,py,py.tpl,rst}]
 indent_style = space
 indent_size = 4
-
-# 4-width tabbed indentation
-[*.{sh,bat.tpl,Makefile.tpl}]
-indent_style = tab
-indent_size = 4
-
-# and travis does its own thing
-[.travis.yml]
-indent_style = space
-indent_size = 2

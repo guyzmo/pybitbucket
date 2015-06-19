@@ -15,6 +15,8 @@ import sys
 import imp
 import subprocess
 
+from pybitbucket import metadata
+
 # Python 2.6 subprocess.check_output compatibility. Thanks Greg Hewgill!
 if 'check_output' not in dir(subprocess):
     def check_output(cmd_args, *args, **kwargs):
@@ -64,7 +66,11 @@ PYTEST_FLAGS = ['--doctest-modules', '--junitxml=' + TEST_REPORT_FILE]
 # metadata has no dependencies, otherwise they will need to be added to
 # the setup_requires keyword.
 metadata = imp.load_source(
-    'metadata', os.path.join(CODE_DIRECTORY, 'metadata.py'))
+    'metadata',
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        CODE_DIRECTORY,
+        'metadata.py'))
 
 
 # Miscellaneous helper functions

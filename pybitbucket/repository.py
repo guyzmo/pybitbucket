@@ -1,7 +1,6 @@
-import types
 from uritemplate import expand
 
-from pybitbucket.bitbucket import Client
+from pybitbucket.bitbucket import BitbucketBase, Client
 from pybitbucket.user import User
 
 
@@ -13,7 +12,18 @@ class RepositoryRole(object):
     roles = [OWNER, ADMIN, CONTRIBUTOR, MEMBER]
 
 
-class Repository(object):
+class Repository(BitbucketBase):
+    id_attribute = 'full_name'
+
+    @staticmethod
+    def is_type(data):
+        return data.get('_type') == 'repository'
+
+    def __init__(self, data, client=Client()):
+        super(Repository, self).__init__(data, client=client)
+        if data.get('owner'):
+            self.owner = User(data['owner'], client=client)
+
     @staticmethod
     def find_repository_by_username_and_name(
             username,
@@ -78,35 +88,5 @@ class Repository(object):
         for repo in client.remote_relationship(url):
             yield repo
 
-    @staticmethod
-    def is_type(data):
-        return data.get('_type') == 'repository'
-
-    def __init__(self, data, client=Client()):
-        self.data = data
-        self.client = client
-        self.__dict__.update(data)
-        if data.get('owner'):
-            self.owner = User(data['owner'], client=client)
-        for link, body in data['links'].iteritems():
-            if link == 'clone':
-                self.clone = {item['name']: item['href'] for item in body}
-            else:
-                for head, url in body.iteritems():
-                    setattr(
-                        self,
-                        link,
-                        types.MethodType(
-                            self.client.remote_relationship,
-                            url))
-
-    def __repr__(self):
-        return "Repository({})".repr(self.data)
-
-    def __unicode__(self):
-        return "Repository full_name:{}".format(self.full_name)
-
-    def __str__(self):
-        return unicode(self).encode('utf-8')
 
 Client.bitbucket_types.add(Repository)

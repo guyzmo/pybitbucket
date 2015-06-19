@@ -1,5 +1,7 @@
-from requests import codes
-from requests import Session
+from future.utils import python_2_unicode_compatible
+from functools import partial
+
+from requests import codes, Session
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import HTTPError
 from requests.utils import default_user_agent
@@ -20,7 +22,7 @@ class Client(object):
 
     @staticmethod
     def user_agent_header():
-        return "%s/%s %s" % (
+        return u'%s/%s %s' % (
             metadata.package,
             metadata.version,
             default_user_agent())
@@ -78,10 +80,49 @@ class Client(object):
         self.session = Client.start_http_session(self.auth, self.config.email)
 
 
+@python_2_unicode_compatible
+class BitbucketBase(object):
+    id_attribute = 'id'
+
+    def __init__(self, data, client=Client()):
+        # Need some special handling for booleans.
+        # Might be workaround for bug in the response JSON?
+        data = {
+            key: (
+                (value in ('True', 'true'))
+                if key.startswith('is_')
+                else value)
+            for (key, value)
+            in data.items()}
+        self.data = data
+        self.client = client
+        self.__dict__.update(data)
+        for link, body in data['links'].items():
+            if link == 'clone':
+                self.clone = {item['name']: item['href'] for item in body}
+            else:
+                for head, url in body.items():
+                    setattr(
+                        self,
+                        link,
+                        partial(self.client.remote_relationship, url=url))
+
+    def __repr__(self):
+        return u'{name}({data})'.format(
+            name=type(self).__name__,
+            data=repr(self.data))
+
+    def __str__(self):
+        return u'{name} {id}:{data}'.format(
+            name=type(self).__name__,
+            id=self.id_attribute,
+            data=getattr(self, self.id_attribute))
+
+
 class BadRequestError(HTTPError):
     def __init__(self, response):
         super(BadRequestError, self).__init__(
-            "400 Client Error: Bad Request from {}".format(response.url))
+            u'400 Client Error: Bad Request to {}'.format(response.url))
 
 
 class ServerError(HTTPError):

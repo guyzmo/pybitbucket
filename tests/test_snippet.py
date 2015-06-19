@@ -129,9 +129,9 @@ class TestSnippet(object):
             status=200)
         snips = Snippet.find_snippets_for_role(Role.OWNER, client=self.client)
         snippet_list = []
-        snippet_list.append(snips.next())
-        snippet_list.append(snips.next())
-        snippet_list.append(snips.next())
+        snippet_list.append(next(snips))
+        snippet_list.append(next(snips))
+        snippet_list.append(next(snips))
 
         url2 = (
             'https://' +
@@ -147,8 +147,8 @@ class TestSnippet(object):
             content_type='application/json',
             body=example2,
             status=200)
-        snippet_list.append(snips.next())
-        snippet_list.append(snips.next())
+        snippet_list.append(next(snips))
+        snippet_list.append(next(snips))
         assert 5 == len(snippet_list)
 
     @httpretty.activate
@@ -230,7 +230,7 @@ class TestSnippet(object):
             content_type='application/json',
             body=example,
             status=200)
-        commit = snip.commits().next()
+        commit = next(snip.commits())
         assert 'c021208234c65439f57b8244517a2b850b3ecf44' == commit.hash
         assert 'Testing with some copied html' == commit.message
 
@@ -253,7 +253,7 @@ class TestSnippet(object):
             body='example',
             status=200)
         content = snip.content(filename)
-        assert 'example' == content
+        assert 'example' == content.decode('utf-8')
 
     def test_file_is_not_in_the_snippet(self):
         snip = self.load_example_snippet()
@@ -277,7 +277,7 @@ class TestSnippet(object):
             body=example,
             status=200)
         snips = Snippet.find_snippets_for_role(Role.OWNER, client=self.client)
-        one_snip = snips.next()
+        one_snip = next(snips)
         # one snip has no files yet
         url = one_snip.data['links']['self']['href']
         example = data_from_file(
@@ -289,4 +289,4 @@ class TestSnippet(object):
             content_type='application/json',
             body=example,
             status=200)
-        assert one_snip.self().next().files
+        assert next(one_snip.self()).files

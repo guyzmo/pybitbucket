@@ -75,9 +75,9 @@ class TestRemoteRelationships(object):
         snip_iter = self.client.remote_relationship(url1)
 
         snippet_list = list()
-        snippet_list.append(snip_iter.next())
-        snippet_list.append(snip_iter.next())
-        snippet_list.append(snip_iter.next())
+        snippet_list.append(next(snip_iter))
+        snippet_list.append(next(snip_iter))
+        snippet_list.append(next(snip_iter))
 
         url2 = (
             'https://' +

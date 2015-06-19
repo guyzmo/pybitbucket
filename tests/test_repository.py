@@ -127,8 +127,8 @@ class TestRepository(object):
             'teamsinspace',
             client=self.client)
         repo_list = []
-        repo_list.append(repos.next())
-        repo_list.append(repos.next())
+        repo_list.append(next(repos))
+        repo_list.append(next(repos))
         assert 2 == len(repo_list)
 
     @httpretty.activate
@@ -151,8 +151,8 @@ class TestRepository(object):
             role=RepositoryRole.MEMBER,
             client=self.client)
         repo_list = []
-        repo_list.append(repos.next())
-        repo_list.append(repos.next())
+        repo_list.append(next(repos))
+        repo_list.append(next(repos))
         assert 2 == len(repo_list)
 
     @httpretty.activate
@@ -172,8 +172,8 @@ class TestRepository(object):
 
         repos = Repository.find_public_repositories(client=self.client)
         repo_list = []
-        repo_list.append(repos.next())
-        repo_list.append(repos.next())
+        repo_list.append(next(repos))
+        repo_list.append(next(repos))
         assert 2 == len(repo_list)
 
     @httpretty.activate
@@ -220,7 +220,7 @@ class TestRepository(object):
         assert list(repo.watchers())
         """
         # Would rather that watchers were typed as users, like so:
-        user = repo.watchers().next()
+        user = next(repo.watchers())
         assert 'teamsinspace' == user.username
         assert 'Teams In Space' == user.display_name
         """
@@ -264,7 +264,7 @@ class TestRepository(object):
             content_type='application/json',
             body=example,
             status=200)
-        fork = repo.forks().next()
+        fork = next(repo.forks())
         assert 'sewshi/teamsinspace.bitbucket.org' == fork.full_name
         assert 'teamsinspace.bitbucket.org' == fork.name
         assert not fork.is_private

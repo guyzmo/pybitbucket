@@ -1,7 +1,6 @@
-import types
 from uritemplate import expand
 
-from pybitbucket.bitbucket import Client
+from pybitbucket.bitbucket import BitbucketBase, Client
 
 
 class TeamRole(object):
@@ -11,7 +10,9 @@ class TeamRole(object):
     roles = [ADMIN, CONTRIBUTOR, MEMBER]
 
 
-class Team(object):
+class Team(BitbucketBase):
+    id_attribute = 'username'
+
     @staticmethod
     def find_teams_for_role(role=TeamRole.ADMIN, client=Client()):
         if role not in TeamRole.roles:
@@ -43,26 +44,5 @@ class Team(object):
     def is_type(data):
         return data.get('type') == 'team'
 
-    def __init__(self, data, client=Client()):
-        self.data = data
-        self.client = client
-        self.__dict__.update(data)
-        for link, href in data['links'].iteritems():
-            for head, url in href.iteritems():
-                setattr(
-                    self,
-                    link,
-                    types.MethodType(
-                        self.client.remote_relationship,
-                        url))
-
-    def __repr__(self):
-        return "Team({})".repr(self.data)
-
-    def __unicode__(self):
-        return "Team username:{}".format(self.username)
-
-    def __str__(self):
-        return unicode(self).encode('utf-8')
 
 Client.bitbucket_types.add(Team)

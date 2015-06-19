@@ -47,11 +47,13 @@ class TestTeam(object):
             body=example1,
             status=200)
 
-        teams = Team.find_teams_for_role(TeamRole.ADMIN, client=self.client)
+        teams = Team.find_teams_for_role(
+            TeamRole.ADMIN,
+            client=self.client)
         team_list = list()
-        team_list.append(teams.next())
-        team_list.append(teams.next())
-        team_list.append(teams.next())
+        team_list.append(next(teams))
+        team_list.append(next(teams))
+        team_list.append(next(teams))
 
         url2 = (
             'https://' +
@@ -115,6 +117,6 @@ class TestTeam(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        member = team.members().next()
+        member = next(team.members())
         assert 'mbertrand80' == member.username
         assert 'Marcus Bertrand' == member.display_name

@@ -1,7 +1,6 @@
-import types
 from uritemplate import expand
 
-from pybitbucket.bitbucket import Client
+from pybitbucket.bitbucket import BitbucketBase, Client
 
 
 def open_files(filelist):
@@ -18,7 +17,18 @@ class Role(object):
     roles = [OWNER, CONTRIBUTOR, MEMBER]
 
 
-class Snippet(object):
+class Snippet(BitbucketBase):
+    id_attribute = 'id'
+
+    @staticmethod
+    def is_type(data):
+        return data.get('id') and not data.get('destination')
+
+    def __init__(self, data, client=Client()):
+        super(Snippet, self).__init__(data, client=client)
+        if data.get('files'):
+            self.filenames = [str(f) for f in data['files']]
+
     @staticmethod
     def make_payload(
             is_private=None,
@@ -85,42 +95,6 @@ class Snippet(object):
             return
         Client.expect_ok(response)
         return Snippet(response.json(), client=client)
-
-    @staticmethod
-    def is_type(data):
-        return data.get('id') and not data.get('destination')
-
-    def __init__(self, data, client=Client()):
-        self.data = data
-        # Need some special handling for booleans.
-        # Might be workaround for bug in the response JSON?
-        for (is_a, value) in data.iteritems():
-            if is_a.startswith('is_'):
-                data[is_a] = (value in ('True', 'true'))
-        self.client = client
-        self.__dict__.update(data)
-        for link, body in data['links'].iteritems():
-            if link == 'clone':
-                self.clone = {item['name']: item['href'] for item in body}
-            else:
-                for head, url in body.iteritems():
-                    setattr(
-                        self,
-                        link,
-                        types.MethodType(
-                            self.client.remote_relationship,
-                            url))
-        if data.get('files'):
-            self.filenames = [str(f) for f in data['files']]
-
-    def __repr__(self):
-        return "Snippet({})".repr(self.data)
-
-    def __unicode__(self):
-        return "Snippet id:{}".format(self.id)
-
-    def __str__(self):
-        return unicode(self).encode('utf-8')
 
     def modify(
             self,

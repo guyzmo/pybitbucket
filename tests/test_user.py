@@ -68,6 +68,6 @@ class TestUser(object):
                                content_type='application/json',
                                body=example,
                                status=200)
-        follower = user.followers().next()
-        assert 'mg' == follower.username
-        assert 'Martin Geisler' == follower.display_name
+        my_follower = next(user.followers())
+        assert 'mg' == my_follower.username
+        assert 'Martin Geisler' == my_follower.display_name

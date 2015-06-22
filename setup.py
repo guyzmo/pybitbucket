@@ -258,7 +258,7 @@ setup_dict = dict(
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
@@ -282,11 +282,7 @@ setup_dict = dict(
     entry_points={
         'console_scripts': [
             'pybitbucket_cli = pybitbucket.main:entry_point'
-        ],
-        # if you have a gui, use this
-        # 'gui_scripts': [
-        #     'pybitbucket_gui = pybitbucket.gui:entry_point'
-        # ]
+        ]
     }
 )
 

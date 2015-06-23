@@ -268,14 +268,17 @@ setup_dict = dict(
     ],
     packages=find_packages(exclude=(TESTS_DIRECTORY,)),
     install_requires=[
+        'future >= 0.14, < 1',
+        'requests >= 2.7, < 3',
+        'uritemplate >= 0.6, < 1'
         # your module dependencies
     ] + python_version_specific_requires,
     # Allow tests to be run with `python setup.py test'.
     tests_require=[
-        'pytest==2.7.1',
-        'mock==1.0.1',
-        'flake8==2.4.1',
-        'httpretty==0.8.10',
+        'pytest >= 2.7, < 3',
+        'mock >= 1.0, < 2',
+        'flake8 >= 2.4, < 3',
+        'httpretty >= 0.8, < 1',
     ],
     cmdclass={'test': TestAllCommand},
     zip_safe=False,  # don't use eggs

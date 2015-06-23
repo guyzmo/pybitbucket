@@ -39,7 +39,7 @@ For example, to find all your snippets:
 
 ::
 
-for snip in Snippet.find_snippets_for_role():
+for snip in Snippet.find_snippets_for_role(client=Client()):
     print(snip)
 
 The method says "for role" but, if not provided, it will use the default of owner.
@@ -89,9 +89,17 @@ s = '\n'.join([
     ]) if snip else 'Snippet not found.'
 print(s)
 
-TODO: How does anyone know which attributes are available?
-They aren't in the Python code.
-You have to examine the JSON payloads.
+What attributes are available?
+You will not find them hardcoded in Python.
+They are populated dynamically from the JSON response.
+You can query the list via a convenience method:
+
+::
+
+snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+print(snip.attributes())
+
+Beware. The attributes for the same resource may change depending on how you got to it.
 
 Navigate Relationships
 ======================
@@ -104,9 +112,25 @@ snip = Snippet.find_snippet_by_id("Xqoz8", Client())
 for commit in snip.commits():
     print(commit)
 
-TODO: How does anyone know which relationships are available?
-They aren't in the Python code.
-You have to examine the JSON payloads.
+What relationships are available?
+You will not find them hardcoded in Python.
+They are populated dynamically from the JSON response.
+You can query the list via a convenience method:
+
+::
+
+snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+print(snip.relationships())
+
+Just like attributes, the relationships for the same resource may change depending on how you got to it.
+If you need the canonical resource with all attributes, use the :code:`self()` relationship:
+
+::
+
+snips = Snippet.find_snippets_for_role(client=Client())
+one_snip = next(snips)    # one_snip has no files relationship in this context.
+real_snip = next(one_snip.self())
+print(real_snip.files)
 
 ----------
 Developing
@@ -134,8 +158,6 @@ Project Setup
 TODO
 ----
 
-* Method to list the Bitbucket attributes for a class.
-* Method to list the Bitbucket relationships for a class.
 * :code:`POST` and :code:`DELETE` for :code:`snippet.comments` from `snippets Endpoint <https://confluence.atlassian.com/display/BITBUCKET/snippets+endpoint>`_.
 * :code:`PUT` and :code:`DELETE` for :code:`snippet.watch` from `snippets Endpoint <https://confluence.atlassian.com/display/BITBUCKET/snippets+endpoint>`_.
 * More version 2 endpoints:

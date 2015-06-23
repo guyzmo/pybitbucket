@@ -107,6 +107,12 @@ class BitbucketBase(object):
                         link,
                         partial(self.client.remote_relationship, url=url))
 
+    def attributes(self):
+        return list(self.data.keys())
+
+    def relationships(self):
+        return list(self.data['links'].keys())
+
     def __repr__(self):
         return u'{name}({data})'.format(
             name=type(self).__name__,

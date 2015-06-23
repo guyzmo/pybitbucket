@@ -33,9 +33,15 @@ class Commit(BitbucketBase):
                         self,
                         link,
                         partial(self.client.remote_relationship, url=url))
-        self.raw_author = self.author['raw']
-        self.author = User(self.author['user'], client=client)
-        self.repository = Repository(self.repository, client=client)
+        if self.data.get('author'):
+            self.raw_author = self.data['author']['raw']
+            self.author = User(
+                self.data['author']['user'],
+                client=client)
+        if self.data.get('repository'):
+            self.repository = Repository(
+                self.data['repository'],
+                client=client)
 
     @staticmethod
     def find_commit_in_repository_by_revision(

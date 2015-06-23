@@ -124,4 +124,72 @@ class Snippet(BitbucketBase):
         Client.expect_ok(response)
         return response.content
 
+
+class Comment(BitbucketBase):
+    id_attribute = 'id'
+
+    @staticmethod
+    def is_type(data):
+        return data.get('id') and data.get('content') and data.get('snippet')
+
+    def delete(self):
+        response = self.client.session.delete(self.links['self']['href'])
+        # Deletes the comment and returns 204 (No Content).
+        Client.expect_ok(response, 204)
+        return
+
+    @staticmethod
+    def make_payload(content):
+        return {'content':{'raw': content}}
+
+    @staticmethod
+    def create_comment(
+            content,
+            snippet_id,
+            username=None,
+            client=Client()):
+        if username is None:
+            username = client.get_username()
+        template = (
+            'https://{+bitbucket_url}' +
+            '/2.0/snippets/{username}/{snippet_id}' +
+            '/comments')
+        url = expand(
+            template, {
+                'bitbucket_url': client.get_bitbucket_url(),
+                'username': username,
+                'snippet_id': snippet_id,
+            })
+        payload = Comment.make_payload(content)
+        response = client.session.post(url, data=payload)
+        Client.expect_ok(response)
+        return Comment(response.json(), client=client)
+
+    @staticmethod
+    def find_comment_for_snippet_by_id(
+            snippet_id,
+            comment_id,
+            username=None,
+            client=Client()):
+        if username is None:
+            username = client.get_username()
+        template = (
+            'https://{+bitbucket_url}' +
+            '/2.0/snippets/{username}/{snippet_id}' +
+            '/comments/{comment_id}')
+        url = expand(
+            template, {
+                'bitbucket_url': client.get_bitbucket_url(),
+                'username': username,
+                'snippet_id': snippet_id,
+                'comment_id': comment_id,
+            })
+        response = client.session.get(url)
+        if 404 == response.status_code:
+            return
+        Client.expect_ok(response)
+        return Snippet(response.json(), client=client)
+
+
 Client.bitbucket_types.add(Snippet)
+Client.bitbucket_types.add(Comment)

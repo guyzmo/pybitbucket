@@ -16,10 +16,10 @@ In the simple case for your own scripts, you can just hardcode credentials:
 
 ::
 
-class MyConfig(Config):
-    username = 'your_username_here'
-    password = 'your_secret_password_here'
-    email = 'pybitbucket@mailinator.com'
+    class MyConfig(Config):
+        username = 'your_username_here'
+        password = 'your_secret_password_here'
+        email = 'pybitbucket@mailinator.com'
 
 For a more sophisticated example, see the `implementation from Snippet <https://bitbucket.org/atlassian/snippet/src/master/snippet/config.py>`_.
 That implementation reads and writes credentials from a file so command-line users do not have to type them out everytime.
@@ -29,8 +29,8 @@ To "plug in" your implementation, just do:
 
 ::
 
-Client.configurator = MyConfig
-client = Client()
+    Client.configurator = MyConfig
+    client = Client()
 
 Find Things
 ===========
@@ -39,8 +39,8 @@ For example, to find all your snippets:
 
 ::
 
-for snip in Snippet.find_snippets_for_role(client=Client()):
-    print(snip)
+    for snip in Snippet.find_snippets_for_role(client=Client()):
+        print(snip)
 
 The method says "for role" but, if not provided, it will use the default of owner.
 Hence, all your snippets.
@@ -63,10 +63,10 @@ For example, to create a new snippet:
 
 ::
 
-snip = Snippet.create_snippet(
-    files=open_files(["README.rst"]),
-    title="My New Snippet",
-    client=Client())
+    snip = Snippet.create_snippet(
+        files=open_files(["README.rst"]),
+        title="My New Snippet",
+        client=Client())
 
 Only snippets can be created.
 
@@ -77,17 +77,17 @@ For example, to examine attributes on a snippet:
 
 ::
 
-snip = Snippet.find_snippet_by_id("Xqoz8", Client())
-s = '\n'.join([
-    "id          : {}".format(snip.id),
-    "is_private  : {}".format(snip.is_private),
-    "title       : {}".format(snip.title),
-    "files       : {}".format(snip.filenames),
-    "created_on  : {}".format(snip.created_on),
-    "updated_on  : {}".format(snip.updated_on),
-    "scm         : {}".format(snip.scm),
-    ]) if snip else 'Snippet not found.'
-print(s)
+    snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+    s = '\n'.join([
+        "id          : {}".format(snip.id),
+        "is_private  : {}".format(snip.is_private),
+        "title       : {}".format(snip.title),
+        "files       : {}".format(snip.filenames),
+        "created_on  : {}".format(snip.created_on),
+        "updated_on  : {}".format(snip.updated_on),
+        "scm         : {}".format(snip.scm),
+        ]) if snip else 'Snippet not found.'
+    print(s)
 
 What attributes are available?
 You will not find them hardcoded in Python.
@@ -96,8 +96,8 @@ You can query the list via a convenience method:
 
 ::
 
-snip = Snippet.find_snippet_by_id("Xqoz8", Client())
-print(snip.attributes())
+    snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+    print(snip.attributes())
 
 Beware. The attributes for the same resource may change depending on how you got to it.
 
@@ -108,9 +108,9 @@ For example, to list the commits for a snippet:
 
 ::
 
-snip = Snippet.find_snippet_by_id("Xqoz8", Client())
-for commit in snip.commits():
-    print(commit)
+    snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+    for commit in snip.commits():
+        print(commit)
 
 What relationships are available?
 You will not find them hardcoded in Python.
@@ -119,18 +119,18 @@ You can query the list via a convenience method:
 
 ::
 
-snip = Snippet.find_snippet_by_id("Xqoz8", Client())
-print(snip.relationships())
+    snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+    print(snip.relationships())
 
 Just like attributes, the relationships for the same resource may change depending on how you got to it.
 If you need the canonical resource with all attributes, use the :code:`self()` relationship:
 
 ::
 
-snips = Snippet.find_snippets_for_role(client=Client())
-one_snip = next(snips)    # one_snip has no files relationship in this context.
-real_snip = next(one_snip.self())
-print(real_snip.files)
+    snips = Snippet.find_snippets_for_role(client=Client())
+    one_snip = next(snips)    # one_snip has no files relationship in this context.
+    real_snip = next(one_snip.self())
+    print(real_snip.files)
 
 ----------
 Developing

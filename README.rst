@@ -158,7 +158,6 @@ Project Setup
 TODO
 ----
 
-* :code:`POST` and :code:`DELETE` for :code:`snippet.comments` from `snippets Endpoint <https://confluence.atlassian.com/display/BITBUCKET/snippets+endpoint>`_.
 * :code:`PUT` and :code:`DELETE` for :code:`snippet.watch` from `snippets Endpoint <https://confluence.atlassian.com/display/BITBUCKET/snippets+endpoint>`_.
 * More version 2 endpoints:
     - branch-restrictions

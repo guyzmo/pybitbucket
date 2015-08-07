@@ -7,7 +7,7 @@ from test_client import TestConfig
 from util import data_from_file
 
 from pybitbucket.snippet import open_files
-from pybitbucket.snippet import Role
+from pybitbucket.snippet import SnippetRole
 from pybitbucket.snippet import Snippet
 from pybitbucket.bitbucket import Client
 
@@ -127,7 +127,9 @@ class TestSnippet(object):
             content_type='application/json',
             body=example1,
             status=200)
-        snips = Snippet.find_snippets_for_role(Role.OWNER, client=self.client)
+        snips = Snippet.find_snippets_for_role(
+            SnippetRole.OWNER,
+            client=self.client)
         snippet_list = []
         snippet_list.append(next(snips))
         snippet_list.append(next(snips))
@@ -276,7 +278,9 @@ class TestSnippet(object):
             content_type='application/json',
             body=example,
             status=200)
-        snips = Snippet.find_snippets_for_role(Role.OWNER, client=self.client)
+        snips = Snippet.find_snippets_for_role(
+            SnippetRole.OWNER,
+            client=self.client)
         one_snip = next(snips)
         # one snip has no files yet
         url = one_snip.data['links']['self']['href']

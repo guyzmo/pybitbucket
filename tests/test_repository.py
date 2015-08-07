@@ -8,6 +8,7 @@ from util import data_from_file
 
 from pybitbucket.repository import Repository
 from pybitbucket.repository import RepositoryRole
+from pybitbucket.repository import RepositoryForkPolicy
 from pybitbucket.bitbucket import Client
 
 
@@ -323,3 +324,31 @@ class TestRepository(object):
             status=204)
         result = repo.delete()
         assert result is None
+
+    @httpretty.activate
+    def test_create_repository(self):
+        username = 'teamsinspace'
+        repo_name = 'new-repository4'
+        url = (
+            'https://' +
+            self.client.get_bitbucket_url() +
+            '/2.0/repositories/' +
+            username + '/' + repo_name)
+        example = data_from_file(
+            self.test_dir,
+            'example_single_repository.json')
+        httpretty.register_uri(
+            httpretty.POST,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        new_repo = Repository.create_repository(
+            username,
+            repo_name,
+            RepositoryForkPolicy.ALLOW_FORKS,
+            bool(0),
+            client=self.client)
+        # I got a public repo.
+        assert new_repo.data['is_private'] is False
+        assert new_repo.is_private is False

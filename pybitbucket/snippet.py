@@ -10,7 +10,7 @@ def open_files(filelist):
     return files
 
 
-class Role(object):
+class SnippetRole(object):
     OWNER = 'owner'
     CONTRIBUTOR = 'contributor'
     MEMBER = 'member'
@@ -69,10 +69,11 @@ class Snippet(BitbucketBase):
         return Snippet(response.json(), client=client)
 
     @staticmethod
-    def find_snippets_for_role(role=Role.OWNER, client=Client()):
-        if role not in Role.roles:
-            raise NameError("role '%s' is not in [%s]" %
-                            (role, '|'.join(str(x) for x in Role.roles)))
+    def find_snippets_for_role(role=SnippetRole.OWNER, client=Client()):
+        if role not in SnippetRole.roles:
+            raise NameError(
+                "role '%s' is not in [%s]" %
+                (role, '|'.join(str(x) for x in SnippetRole.roles)))
         template = 'https://{+bitbucket_url}/2.0/snippets{?role}'
         url = expand(
             template, {

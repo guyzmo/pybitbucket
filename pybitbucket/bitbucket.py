@@ -54,7 +54,7 @@ class Client(object):
         elif 400 == response.status_code:
             raise BadRequestError(response)
         elif 500 <= response.status_code:
-            raise ServerError()
+            raise ServerError(response)
         else:
             response.raise_for_status()
 
@@ -137,9 +137,21 @@ class BitbucketBase(object):
 
 class BadRequestError(HTTPError):
     def __init__(self, response):
-        super(BadRequestError, self).__init__(
-            u'400 Client Error: Bad Request to {}'.format(response.url))
+        super(BadRequestError, self).__init__(u'''\
+Attempted to request {url} but Bitbucket considered it a bad request.
+{code} - {text}\
+'''.format(
+            url=response.url,
+            code=response.status_code,
+            text=response.text))
 
 
 class ServerError(HTTPError):
-    pass
+    def __init__(self, response):
+        super(ServerError, self).__init__(u'''\
+Attempted to request {url} but encountered a server error.
+{code} - {text}\
+'''.format(
+            url=response.url,
+            code=response.status_code,
+            text=response.text))

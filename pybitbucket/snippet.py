@@ -110,12 +110,6 @@ class Snippet(BitbucketBase):
         Client.expect_ok(response)
         return Snippet(response.json(), client=self.client)
 
-    def delete(self):
-        response = self.client.session.delete(self.links['self']['href'])
-        # Deletes the snippet and returns 204 (No Content).
-        Client.expect_ok(response, 204)
-        return
-
     def content(self, filename):
         if not self.files.get(filename):
             return
@@ -131,12 +125,6 @@ class Comment(BitbucketBase):
     @staticmethod
     def is_type(data):
         return data.get('id') and data.get('content') and data.get('snippet')
-
-    def delete(self):
-        response = self.client.session.delete(self.links['self']['href'])
-        # Deletes the comment and returns 204 (No Content).
-        Client.expect_ok(response, 204)
-        return
 
     @staticmethod
     def make_payload(content):

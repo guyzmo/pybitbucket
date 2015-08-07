@@ -117,6 +117,12 @@ class BitbucketBase(object):
                         link,
                         partial(self.client.remote_relationship, url=url))
 
+    def delete(self):
+        response = self.client.session.delete(self.links['self']['href'])
+        # Deletes the snippet and returns 204 (No Content).
+        Client.expect_ok(response, 204)
+        return
+
     def attributes(self):
         return list(self.data.keys())
 

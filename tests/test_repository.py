@@ -4,6 +4,7 @@ import json
 from os import path
 from test_client import TestConfig
 
+from util import data_from_file
 
 from pybitbucket.repository import Repository
 from pybitbucket.repository import RepositoryRole
@@ -17,13 +18,16 @@ class TestRepository(object):
         cls.test_dir, current_file = path.split(path.abspath(__file__))
         cls.client = Client()
 
-    def test_repository_string_representation(self):
+    def load_example_repository(self):
         example_path = path.join(
             self.test_dir,
             'example_single_repository.json')
         with open(example_path) as f:
             example = json.load(f)
-        repo = Repository(example, client=self.client)
+        return Repository(example, client=self.client)
+
+    def test_repository_string_representation(self):
+        repo = self.load_example_repository()
         # Just tests that the __str__ method works and
         # that it does not use the default representation
         repo_str = "%s" % repo
@@ -39,11 +43,9 @@ class TestRepository(object):
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_single_repository.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -64,11 +66,9 @@ class TestRepository(object):
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_single_repository.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -89,11 +89,9 @@ class TestRepository(object):
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_single_repository.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -113,9 +111,9 @@ class TestRepository(object):
         url = ('https://' +
                self.client.get_bitbucket_url() +
                '/2.0/repositories/teamsinspace')
-        example_path = path.join(self.test_dir, 'example_repositories.json')
-        with open(example_path) as example_file:
-            example = example_file.read()
+        example = data_from_file(
+            self.test_dir,
+            'example_repositories.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -136,9 +134,9 @@ class TestRepository(object):
         url = ('https://' +
                self.client.get_bitbucket_url() +
                '/2.0/repositories/teamsinspace?role=member')
-        example_path = path.join(self.test_dir, 'example_repositories.json')
-        with open(example_path) as example_file:
-            example = example_file.read()
+        example = data_from_file(
+            self.test_dir,
+            'example_repositories.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -160,9 +158,9 @@ class TestRepository(object):
         url = ('https://' +
                self.client.get_bitbucket_url() +
                '/2.0/repositories')
-        example_path = path.join(self.test_dir, 'example_repositories.json')
-        with open(example_path) as example_file:
-            example = example_file.read()
+        example = data_from_file(
+            self.test_dir,
+            'example_repositories.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -183,11 +181,9 @@ class TestRepository(object):
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_single_repository.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -204,11 +200,9 @@ class TestRepository(object):
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +
             '/watchers')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_watchers.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -232,11 +226,9 @@ class TestRepository(object):
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_single_repository.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -253,11 +245,9 @@ class TestRepository(object):
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +
             '/forks')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_forks.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -276,11 +266,9 @@ class TestRepository(object):
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
-        example_path = path.join(
+        example = data_from_file(
             self.test_dir,
             'example_single_repository.json')
-        with open(example_path) as f:
-            example = f.read()
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -297,9 +285,9 @@ class TestRepository(object):
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +
             '/commits')
-        example_path = path.join(self.test_dir, 'example_commits.json')
-        with open(example_path) as f:
-            example = f.read()
+        example = data_from_file(
+            self.test_dir,
+            'example_commits.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -314,9 +302,9 @@ class TestRepository(object):
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +
             '/pullrequests')
-        example_path = path.join(self.test_dir, 'example_pullrequests.json')
-        with open(example_path) as f:
-            example = f.read()
+        example = data_from_file(
+            self.test_dir,
+            'example_pullrequests.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -324,3 +312,14 @@ class TestRepository(object):
             body=example,
             status=200)
         assert list(repo.pullrequests())
+
+    @httpretty.activate
+    def test_delete_repository(self):
+        repo = self.load_example_repository()
+        url = repo.data['links']['self']['href']
+        httpretty.register_uri(
+            httpretty.DELETE,
+            url,
+            status=204)
+        result = repo.delete()
+        assert result is None

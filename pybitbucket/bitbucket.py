@@ -1,3 +1,13 @@
+"""
+Core classes for communicating with the Bitbucket API.
+
+Classes:
+- Config: prototype for HTTP connection information
+- Client: abstraction over HTTP requests to Bitbucket API
+- BitbucketBase: parent class for Bitbucket resources
+- BadRequestError: exception wrapping bad HTTP requests
+- ServerError: exception wrapping server errors
+"""
 from future.utils import python_2_unicode_compatible
 from functools import partial
 

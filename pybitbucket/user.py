@@ -1,3 +1,6 @@
+"""
+Provides a class for manipulating User resources on Bitbucket.
+"""
 from uritemplate import expand
 
 from pybitbucket.bitbucket import BitbucketBase, Client

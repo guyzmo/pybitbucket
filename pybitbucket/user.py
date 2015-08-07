@@ -10,6 +10,18 @@ class User(BitbucketBase):
     id_attribute = 'username'
 
     @staticmethod
+    def find_current_user(client=Client()):
+        template = 'https://{+bitbucket_url}/2.0/user'
+        url = expand(
+            template, {
+                'bitbucket_url': client.get_bitbucket_url()})
+        response = client.session.get(url)
+        if 404 == response.status_code:
+            return
+        Client.expect_ok(response)
+        return User(response.json(), client=client)
+
+    @staticmethod
     def find_user_by_username(username, client=Client()):
         template = 'https://{+bitbucket_url}/2.0/users/{username}'
         url = expand(

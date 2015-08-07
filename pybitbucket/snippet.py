@@ -140,7 +140,7 @@ class Comment(BitbucketBase):
 
     @staticmethod
     def make_payload(content):
-        return {'content':{'raw': content}}
+        return {'content': {'raw': content}}
 
     @staticmethod
     def create_comment(

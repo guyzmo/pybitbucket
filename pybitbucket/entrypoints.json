@@ -1,0 +1,13 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://api.bitbucket.org/"
+    },
+    "currentUser": {
+      "href": "https://api.bitbucket.org/2.0/user"
+    },
+    "userByUsername": {
+      "href": "https://api.bitbucket.org/2.0/users{/username}"
+    }
+  }
+}

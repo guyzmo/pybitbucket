@@ -11,6 +11,8 @@ Classes:
 """
 from future.utils import python_2_unicode_compatible
 from functools import partial
+from os import path
+import json
 
 from requests import codes, Session
 from requests.auth import HTTPBasicAuth
@@ -136,6 +138,20 @@ class BitbucketBase(object):
             name=type(self).__name__,
             id=self.id_attribute,
             data=getattr(self, self.id_attribute))
+
+
+class Bitbucket(BitbucketBase):
+    def __init__(self, client=Client()):
+        self.client = client
+        current_dir, current_file = path.split(path.abspath(__file__))
+        entrypoints_path = path.join(current_dir, 'entrypoints.json')
+        with open(entrypoints_path) as f:
+            data = json.load(f)
+        for name, url in links_from(data):
+            setattr(self, name, partial(
+                self.client.remote_relationship,
+                url=url))
+        # use "variables" to inspect uritemplate for method parameters
 
 
 class BadRequestError(HTTPError):

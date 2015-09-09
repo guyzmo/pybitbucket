@@ -1,0 +1,32 @@
+# -*- coding: utf-8 -*-
+import httpretty
+from os import path
+from test_client import TestConfig
+
+from pybitbucket.bitbucket import Bitbucket
+from pybitbucket.bitbucket import Client
+
+
+class TestEntrypoints(object):
+    @classmethod
+    def setup_class(cls):
+        Client.configurator = TestConfig
+        cls.test_dir, current_file = path.split(path.abspath(__file__))
+        cls.client = Client()
+
+    @httpretty.activate
+    def test_find_current_user(self):
+        url = ('https://api.bitbucket.org/2.0/user')
+        example_path = path.join(self.test_dir, 'example_single_user.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        user = Bitbucket(client=self.client).currentUser().next()
+
+        assert 'evzijst' == user.username
+        assert 'Erik van Zijst' == user.display_name

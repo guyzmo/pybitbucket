@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Core classes for communicating with the Bitbucket API.
 
@@ -17,6 +18,7 @@ from requests.exceptions import HTTPError
 from requests.utils import default_user_agent
 
 from pybitbucket import metadata
+from pybitbucket.util import links_from
 
 
 class Config(object):
@@ -107,15 +109,10 @@ class BitbucketBase(object):
         self.data = data
         self.client = client
         self.__dict__.update(data)
-        for link, body in data['links'].items():
-            if link == 'clone':
-                self.clone = {item['name']: item['href'] for item in body}
-            else:
-                for head, url in body.items():
-                    setattr(
-                        self,
-                        link,
-                        partial(self.client.remote_relationship, url=url))
+        for name, url in links_from(data):
+            setattr(self, name, partial(
+                self.client.remote_relationship,
+                url=url))
 
     def delete(self):
         response = self.client.session.delete(self.links['self']['href'])

@@ -55,6 +55,11 @@ class Repository(BitbucketBase):
         super(Repository, self).__init__(data, client=client)
         if data.get('owner'):
             self.owner = User(data['owner'], client=client)
+        if data.get('links').get('clone'):
+            self.clone = {
+                clone_method['name']: clone_method['href']
+                for clone_method
+                in data['links']['clone']}
 
     @staticmethod
     def expect_bool(name, value):

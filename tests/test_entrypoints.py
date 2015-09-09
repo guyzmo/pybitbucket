@@ -27,6 +27,22 @@ class TestEntrypoints(object):
             body=example,
             status=200)
         user = Bitbucket(client=self.client).currentUser().next()
+        assert 'evzijst' == user.username
+        assert 'Erik van Zijst' == user.display_name
 
+    @httpretty.activate
+    def test_find_user_by_username(self):
+        url = ('https://api.bitbucket.org/2.0/users/evzijst')
+        example_path = path.join(self.test_dir, 'example_single_user.json')
+        with open(example_path) as f:
+            example = f.read()
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        user = Bitbucket(client=self.client).userByUsername(
+            username='evzijst').next()
         assert 'evzijst' == user.username
         assert 'Erik van Zijst' == user.display_name

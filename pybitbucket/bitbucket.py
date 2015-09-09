@@ -9,15 +9,15 @@ Classes:
 - BadRequestError: exception wrapping bad HTTP requests
 - ServerError: exception wrapping server errors
 """
+import json
 from future.utils import python_2_unicode_compatible
 from functools import partial
 from os import path
-import json
-
 from requests import codes, Session
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import HTTPError
 from requests.utils import default_user_agent
+from uritemplate import expand
 
 from pybitbucket import metadata
 from pybitbucket.util import links_from
@@ -68,7 +68,8 @@ class Client(object):
                 return t(data, client=self)
         return data
 
-    def remote_relationship(self, url):
+    def remote_relationship(self, template, **keywords):
+        url = expand(template, keywords)
         while url:
             response = self.session.get(url)
             self.expect_ok(response)
@@ -114,7 +115,7 @@ class BitbucketBase(object):
         for name, url in links_from(data):
             setattr(self, name, partial(
                 self.client.remote_relationship,
-                url=url))
+                template=url))
 
     def delete(self):
         response = self.client.session.delete(self.links['self']['href'])
@@ -150,7 +151,7 @@ class Bitbucket(BitbucketBase):
         for name, url in links_from(data):
             setattr(self, name, partial(
                 self.client.remote_relationship,
-                url=url))
+                template=url))
         # use "variables" to inspect uritemplate for method parameters
 
 

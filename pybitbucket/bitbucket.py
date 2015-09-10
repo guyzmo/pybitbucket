@@ -152,7 +152,6 @@ class Bitbucket(BitbucketBase):
             setattr(self, name, partial(
                 self.client.remote_relationship,
                 template=url))
-        # use "variables" to inspect uritemplate for method parameters
 
 
 class BadRequestError(HTTPError):

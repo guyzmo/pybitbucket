@@ -8,6 +8,36 @@
     },
     "userByUsername": {
       "href": "https://api.bitbucket.org/2.0/users{/username}"
+    },
+    "teamByUsername": {
+      "href": "https://api.bitbucket.org/2.0/users{/username}"
+    },
+    "teamsForRole": {
+      "href": "https://api.bitbucket.org/2.0/teams{?role}"
+    },
+    "commitsInRepository": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/username,repository_name}/commits{/branch}{?include*,exclude*}"
+    },
+    "commitInRepositoryByRevision": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/username,repository_name}/commit{/revision}"
+    },
+    "repositoryByUsernameAndName": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/username,repository_name}"
+    },
+    "repositoriesThatArePublic": {
+      "href": "https://api.bitbucket.org/2.0/repositories"
+    },
+    "repositoriesByUsernameAndRole": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/username}{?role}"
+    },
+    "snippetBySnippetId": {
+      "href": "https://api.bitbucket.org/2.0/snippets{/username,snippet_id}"
+    }
+    "snippetsForRole": {
+      "href": "https://api.bitbucket.org/2.0/snippets{?role}"
+    },
+    "snippetCommentByCommentId": {
+      "href": "https://api.bitbucket.org/2.0/snippets{/username,snippet_id}/comments{/comment_id}"
     }
   }
 }

@@ -26,7 +26,7 @@ class TestEntrypoints(object):
             content_type='application/json',
             body=example,
             status=200)
-        user = Bitbucket(client=self.client).currentUser().next()
+        user = Bitbucket(client=self.client).userForMyself().next()
         assert 'evzijst' == user.username
         assert 'Erik van Zijst' == user.display_name
 

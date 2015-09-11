@@ -15,7 +15,7 @@ class User(BitbucketBase):
     """
     @staticmethod
     def find_current_user(client=Client()):
-        return next(Bitbucket(client=client).currentUser())
+        return next(Bitbucket(client=client).userForMyself())
 
     """
     A convenience method for finding a specific user.

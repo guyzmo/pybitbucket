@@ -114,9 +114,7 @@ class TestSnippet(object):
     @httpretty.activate
     def test_snippet_list(self):
         url1 = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/snippets' +
+            'https://api.bitbucket.org/2.0/snippets' +
             '?role=owner')
         example1 = data_from_file(
             self.test_dir,
@@ -157,9 +155,7 @@ class TestSnippet(object):
     def test_find_snippet_by_id(self):
         snip_id = 'Xqoz8'
         url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/snippets/' +
+            'https://api.bitbucket.org/2.0/snippets/' +
             'pybitbucket/' +
             snip_id)
         example = data_from_file(
@@ -171,7 +167,7 @@ class TestSnippet(object):
             content_type='application/json',
             body=example,
             status=200)
-        found_snip = Snippet.find_snippet_by_id(snip_id, client=self.client)
+        found_snip = Snippet.find_my_snippet_by_id(snip_id, client=self.client)
         # I did not get a pullrequest
         assert not found_snip.data.get('destination')
         assert snip_id == found_snip.id
@@ -265,9 +261,7 @@ class TestSnippet(object):
     @httpretty.activate
     def test_navigating_from_snippet_list_to_files(self):
         url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/snippets' +
+            'https://api.bitbucket.org/2.0/snippets' +
             '?role=owner')
         example = data_from_file(
             self.test_dir,

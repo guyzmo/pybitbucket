@@ -30,7 +30,7 @@
     "repositoriesByUsernameAndRole": {
       "href": "https://api.bitbucket.org/2.0/repositories{/username}{?role}"
     },
-    "snippetBySnippetId": {
+    "snippetByUsernameAndSnippetId": {
       "href": "https://api.bitbucket.org/2.0/snippets{/username,snippet_id}"
     },
     "snippetsForRole": {

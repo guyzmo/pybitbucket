@@ -1,6 +1,10 @@
+"""
+Provides classes for manipulating Snippet resources
+and their Comments on Bitbucket.
+"""
 from uritemplate import expand
 
-from pybitbucket.bitbucket import BitbucketBase, Client
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
 
 
 def open_files(filelist):
@@ -68,34 +72,29 @@ class Snippet(BitbucketBase):
         Client.expect_ok(response)
         return Snippet(response.json(), client=client)
 
+    """
+    A convenience method for finding snippets by the user's role.
+    The method is a generator Snippet objects.
+    """
     @staticmethod
     def find_snippets_for_role(role=SnippetRole.OWNER, client=Client()):
         if role not in SnippetRole.roles:
             raise NameError(
                 "role '%s' is not in [%s]" %
                 (role, '|'.join(str(x) for x in SnippetRole.roles)))
-        template = 'https://{+bitbucket_url}/2.0/snippets{?role}'
-        url = expand(
-            template, {
-                'bitbucket_url': client.get_bitbucket_url(),
-                'role': role})
-        for snip in client.remote_relationship(url):
-            yield snip
+        return Bitbucket(client=client).snippetsForRole(role=role)
 
+    """
+    A convenience method for finding a specific snippet.
+    In contrast to the pure hypermedia driven method on the Bitbucket
+    class, this method returns a Snippet object, instead of the
+    generator.
+    """
     @staticmethod
-    def find_snippet_by_id(id, client=Client()):
-        template = 'https://{+bitbucket_url}/2.0/snippets/{username}/{id}'
-        url = expand(
-            template, {
-                'bitbucket_url': client.get_bitbucket_url(),
-                'username': client.get_username(),
-                'id': id
-            })
-        response = client.session.get(url)
-        if 404 == response.status_code:
-            return
-        Client.expect_ok(response)
-        return Snippet(response.json(), client=client)
+    def find_my_snippet_by_id(id, client=Client()):
+        return next(Bitbucket(client=client).snippetByUsernameAndSnippetId(
+            username=client.get_username(),
+            snippet_id=id))
 
     def modify(
             self,
@@ -154,6 +153,12 @@ class Comment(BitbucketBase):
         Client.expect_ok(response)
         return Comment(response.json(), client=client)
 
+    """
+    A convenience method for finding a specific comment on a snippet.
+    In contrast to the pure hypermedia driven method on the Bitbucket
+    class, this method returns a Comment object, instead of the
+    generator.
+    """
     @staticmethod
     def find_comment_for_snippet_by_id(
             snippet_id,
@@ -162,22 +167,10 @@ class Comment(BitbucketBase):
             client=Client()):
         if username is None:
             username = client.get_username()
-        template = (
-            'https://{+bitbucket_url}' +
-            '/2.0/snippets/{username}/{snippet_id}' +
-            '/comments/{comment_id}')
-        url = expand(
-            template, {
-                'bitbucket_url': client.get_bitbucket_url(),
-                'username': username,
-                'snippet_id': snippet_id,
-                'comment_id': comment_id,
-            })
-        response = client.session.get(url)
-        if 404 == response.status_code:
-            return
-        Client.expect_ok(response)
-        return Snippet(response.json(), client=client)
+        return next(Bitbucket(client=client).snippetCommentByCommentId(
+            username=username,
+            snippet_id=snippet_id,
+            comment_id=comment_id))
 
 
 Client.bitbucket_types.add(Snippet)

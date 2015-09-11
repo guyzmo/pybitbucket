@@ -1,38 +1,32 @@
 """
 Provides a class for manipulating User resources on Bitbucket.
 """
-from uritemplate import expand
-
-from pybitbucket.bitbucket import BitbucketBase, Client
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
 
 
 class User(BitbucketBase):
     id_attribute = 'username'
 
+    """
+    A convenience method for finding the current user.
+    In contrast to the pure hypermedia driven method on the Bitbucket
+    class, this method returns a User object, instead of the
+    generator.
+    """
     @staticmethod
     def find_current_user(client=Client()):
-        template = 'https://{+bitbucket_url}/2.0/user'
-        url = expand(
-            template, {
-                'bitbucket_url': client.get_bitbucket_url()})
-        response = client.session.get(url)
-        if 404 == response.status_code:
-            return
-        Client.expect_ok(response)
-        return User(response.json(), client=client)
+        return next(Bitbucket(client=client).userForMyself())
 
+    """
+    A convenience method for finding a specific user.
+    In contrast to the pure hypermedia driven method on the Bitbucket
+    class, this method returns a User object, instead of the
+    generator.
+    """
     @staticmethod
     def find_user_by_username(username, client=Client()):
-        template = 'https://{+bitbucket_url}/2.0/users/{username}'
-        url = expand(
-            template, {
-                'bitbucket_url': client.get_bitbucket_url(),
-                'username': username})
-        response = client.session.get(url)
-        if 404 == response.status_code:
-            return
-        Client.expect_ok(response)
-        return User(response.json(), client=client)
+        return next(Bitbucket(client=client).userByUsername(
+            username=username))
 
     @staticmethod
     def is_type(data):

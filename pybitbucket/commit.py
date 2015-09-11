@@ -12,27 +12,19 @@ class Commit(BitbucketBase):
 
     # Must override base constructor to account for approve and unapprove
     def __init__(self, data, client=Client()):
-        self.data = data
-        self.client = client
-        self.__dict__.update(data)
-        for link, body in data['links'].items():
-            if link == 'clone':
-                self.clone = {item['name']: item['href'] for item in body}
-            elif link == 'approve':
-                setattr(
-                    self,
-                    'approve',
-                    partial(self.post_commit_approval, url=body['href']))
-                setattr(
-                    self,
-                    'unapprove',
-                    partial(self.delete_commit_approval, url=body['href']))
-            else:
-                for head, url in body.items():
-                    setattr(
-                        self,
-                        link,
-                        partial(self.client.remote_relationship, url=url))
+        super(Commit, self).__init__(data, client=client)
+        # approve and unapprove are just different verbs for same url
+        if self.data.get('links').get('approve').get('href'):
+            url = data['links']['approve']['href']
+            setattr(
+                self,
+                'approve',
+                partial(self.post_commit_approval, template=url))
+            setattr(
+                self,
+                'unapprove',
+                partial(self.delete_commit_approval, template=url))
+        # sugar for some embedded resources
         if self.data.get('author'):
             self.raw_author = self.data['author']['raw']
             self.author = User(
@@ -126,14 +118,14 @@ class Commit(BitbucketBase):
             exclude=exclude,
             client=client)
 
-    def post_commit_approval(self, url):
-        response = self.client.session.post(url)
+    def post_commit_approval(self, template):
+        response = self.client.session.post(template)
         Client.expect_ok(response)
         json_data = response.json()
         return json_data.get('approved')
 
-    def delete_commit_approval(self, url):
-        response = self.client.session.delete(url)
+    def delete_commit_approval(self, template):
+        response = self.client.session.delete(template)
         # Deletes the approval and returns 204 (No Content).
         Client.expect_ok(response, 204)
         return True

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Core classes for communicating with the Bitbucket API.
 
@@ -8,15 +9,18 @@ Classes:
 - BadRequestError: exception wrapping bad HTTP requests
 - ServerError: exception wrapping server errors
 """
+import json
 from future.utils import python_2_unicode_compatible
 from functools import partial
-
+from os import path
 from requests import codes, Session
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import HTTPError
 from requests.utils import default_user_agent
+from uritemplate import expand
 
 from pybitbucket import metadata
+from pybitbucket.util import links_from
 
 
 class Config(object):
@@ -64,7 +68,8 @@ class Client(object):
                 return t(data, client=self)
         return data
 
-    def remote_relationship(self, url):
+    def remote_relationship(self, template, **keywords):
+        url = expand(template, keywords)
         while url:
             response = self.session.get(url)
             self.expect_ok(response)
@@ -107,15 +112,10 @@ class BitbucketBase(object):
         self.data = data
         self.client = client
         self.__dict__.update(data)
-        for link, body in data['links'].items():
-            if link == 'clone':
-                self.clone = {item['name']: item['href'] for item in body}
-            else:
-                for head, url in body.items():
-                    setattr(
-                        self,
-                        link,
-                        partial(self.client.remote_relationship, url=url))
+        for name, url in links_from(data):
+            setattr(self, name, partial(
+                self.client.remote_relationship,
+                template=url))
 
     def delete(self):
         response = self.client.session.delete(self.links['self']['href'])
@@ -139,6 +139,19 @@ class BitbucketBase(object):
             name=type(self).__name__,
             id=self.id_attribute,
             data=getattr(self, self.id_attribute))
+
+
+class Bitbucket(BitbucketBase):
+    def __init__(self, client=Client()):
+        self.client = client
+        current_dir, current_file = path.split(path.abspath(__file__))
+        entrypoints_path = path.join(current_dir, 'entrypoints.json')
+        with open(entrypoints_path) as f:
+            data = json.load(f)
+        for name, url in links_from(data):
+            setattr(self, name, partial(
+                self.client.remote_relationship,
+                template=url))
 
 
 class BadRequestError(HTTPError):

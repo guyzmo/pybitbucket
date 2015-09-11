@@ -30,32 +30,32 @@ class TestUser(object):
 
     @httpretty.activate
     def test_find_user_by_username(self):
-        url = ('https://' +
-               self.client.get_bitbucket_url() +
-               '/2.0/users/evzijst')
+        url = ('https://api.bitbucket.org/2.0/users/evzijst')
         example_path = path.join(self.test_dir, 'example_single_user.json')
         with open(example_path) as f:
             example = f.read()
-        httpretty.register_uri(httpretty.GET, url,
-                               content_type='application/json',
-                               body=example,
-                               status=200)
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
         user = User.find_user_by_username('evzijst', client=self.client)
         assert 'evzijst' == user.username
         assert 'Erik van Zijst' == user.display_name
 
     @httpretty.activate
     def test_followers_link(self):
-        url = ('https://' +
-               self.client.get_bitbucket_url() +
-               '/2.0/users/evzijst')
+        url = ('https://api.bitbucket.org/2.0/users/evzijst')
         example_path = path.join(self.test_dir, 'example_single_user.json')
         with open(example_path) as f:
             example = f.read()
-        httpretty.register_uri(httpretty.GET, url,
-                               content_type='application/json',
-                               body=example,
-                               status=200)
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
         user = User.find_user_by_username('evzijst', client=self.client)
 
         url = ('https://' +
@@ -64,27 +64,28 @@ class TestUser(object):
         example_path = path.join(self.test_dir, 'example_followers.json')
         with open(example_path) as f:
             example = f.read()
-        httpretty.register_uri(httpretty.GET, url,
-                               content_type='application/json',
-                               body=example,
-                               status=200)
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
         my_follower = next(user.followers())
         assert 'mg' == my_follower.username
         assert 'Martin Geisler' == my_follower.display_name
 
     @httpretty.activate
     def test_find_current_user(self):
-        url = ('https://' +
-               self.client.get_bitbucket_url() +
-               '/2.0/user')
+        url = ('https://api.bitbucket.org/2.0/user')
         example_path = path.join(self.test_dir, 'example_single_user.json')
         with open(example_path) as f:
             example = f.read()
-        httpretty.register_uri(httpretty.GET, url,
-                               content_type='application/json',
-                               body=example,
-                               status=200)
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
         user = User.find_current_user(client=self.client)
-
         assert 'evzijst' == user.username
         assert 'Erik van Zijst' == user.display_name

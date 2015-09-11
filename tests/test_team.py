@@ -31,10 +31,7 @@ class TestTeam(object):
 
     @httpretty.activate
     def test_team_list(self):
-        url1 = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/teams?role=admin')
+        url1 = ('https://api.bitbucket.org/2.0/teams?role=admin')
         path1 = path.join(
             self.test_dir,
             'example_teams_page_1.json')
@@ -79,32 +76,32 @@ class TestTeam(object):
 
     @httpretty.activate
     def test_find_team_by_username(self):
-        url = ('https://' +
-               self.client.get_bitbucket_url() +
-               '/2.0/teams/teamsinspace')
+        url = ('https://api.bitbucket.org/2.0/teams/teamsinspace')
         example_path = path.join(self.test_dir, 'example_single_team.json')
         with open(example_path) as f:
             example = f.read()
-        httpretty.register_uri(httpretty.GET, url,
-                               content_type='application/json',
-                               body=example,
-                               status=200)
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
         team = Team.find_team_by_username('teamsinspace', client=self.client)
         assert 'teamsinspace' == team.username
         assert 'Teams In Space' == team.display_name
 
     @httpretty.activate
     def test_members_link(self):
-        url = ('https://' +
-               self.client.get_bitbucket_url() +
-               '/2.0/teams/teamsinspace')
+        url = ('https://api.bitbucket.org/2.0/teams/teamsinspace')
         example_path = path.join(self.test_dir, 'example_single_team.json')
         with open(example_path) as f:
             example = f.read()
-        httpretty.register_uri(httpretty.GET, url,
-                               content_type='application/json',
-                               body=example,
-                               status=200)
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
         team = Team.find_team_by_username('teamsinspace', client=self.client)
 
         url = ('https://' +
@@ -113,10 +110,12 @@ class TestTeam(object):
         example_path = path.join(self.test_dir, 'example_members.json')
         with open(example_path) as f:
             example = f.read()
-        httpretty.register_uri(httpretty.GET, url,
-                               content_type='application/json',
-                               body=example,
-                               status=200)
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
         member = next(team.members())
         assert 'mbertrand80' == member.username
         assert 'Marcus Bertrand' == member.display_name

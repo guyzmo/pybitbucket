@@ -40,9 +40,7 @@ class TestRepository(object):
     @httpretty.activate
     def test_find_repository_by_full_name(self):
         url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/repositories/' +
+            'https://api.bitbucket.org/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
         example = data_from_file(
             self.test_dir,
@@ -63,9 +61,7 @@ class TestRepository(object):
     @httpretty.activate
     def test_repository_owner(self):
         url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/repositories/' +
+            'https://api.bitbucket.org/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
         example = data_from_file(
             self.test_dir,
@@ -86,9 +82,7 @@ class TestRepository(object):
     @httpretty.activate
     def test_repository_clone(self):
         url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/repositories/' +
+            'https://api.bitbucket.org/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
         example = data_from_file(
             self.test_dir,
@@ -109,9 +103,7 @@ class TestRepository(object):
 
     @httpretty.activate
     def test_find_repositories_for_username(self):
-        url = ('https://' +
-               self.client.get_bitbucket_url() +
-               '/2.0/repositories/teamsinspace')
+        url = ('https://api.bitbucket.org/2.0/repositories/teamsinspace')
         example = data_from_file(
             self.test_dir,
             'example_repositories.json')
@@ -132,9 +124,9 @@ class TestRepository(object):
 
     @httpretty.activate
     def test_find_repositories_for_username_in_role(self):
-        url = ('https://' +
-               self.client.get_bitbucket_url() +
-               '/2.0/repositories/teamsinspace?role=member')
+        url = (
+            'https://api.bitbucket.org/2.0/repositories/' +
+            'teamsinspace?role=member')
         example = data_from_file(
             self.test_dir,
             'example_repositories.json')
@@ -156,9 +148,7 @@ class TestRepository(object):
 
     @httpretty.activate
     def test_find_all_public_repositories(self):
-        url = ('https://' +
-               self.client.get_bitbucket_url() +
-               '/2.0/repositories')
+        url = ('https://api.bitbucket.org/2.0/repositories')
         example = data_from_file(
             self.test_dir,
             'example_repositories.json')
@@ -177,11 +167,10 @@ class TestRepository(object):
 
     @httpretty.activate
     def test_repository_watchers(self):
+        repo_full_name = 'teamsinspace/teamsinspace.bitbucket.org'
         url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/repositories/' +
-            'teamsinspace/teamsinspace.bitbucket.org')
+            'https://api.bitbucket.org/2.0/repositories/' +
+            repo_full_name)
         example = data_from_file(
             self.test_dir,
             'example_single_repository.json')
@@ -192,14 +181,12 @@ class TestRepository(object):
             body=example,
             status=200)
         repo = Repository.find_repository_by_full_name(
-            'teamsinspace/teamsinspace.bitbucket.org',
+            repo_full_name,
             client=self.client)
 
         url = (
-            'https://' +
-            'api.bitbucket.org' +
-            '/2.0/repositories/' +
-            'teamsinspace/teamsinspace.bitbucket.org' +
+            'https://api.bitbucket.org/2.0/repositories/' +
+            repo_full_name +
             '/watchers')
         example = data_from_file(
             self.test_dir,
@@ -223,9 +210,7 @@ class TestRepository(object):
     @httpretty.activate
     def test_repository_forks(self):
         url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/repositories/' +
+            'https://api.bitbucket.org/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
         example = data_from_file(
             self.test_dir,
@@ -263,9 +248,7 @@ class TestRepository(object):
     @httpretty.activate
     def test_repository_links(self):
         url = (
-            'https://' +
-            self.client.get_bitbucket_url() +
-            '/2.0/repositories/' +
+            'https://api.bitbucket.org/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org')
         example = data_from_file(
             self.test_dir,
@@ -349,6 +332,6 @@ class TestRepository(object):
             RepositoryForkPolicy.ALLOW_FORKS,
             bool(0),
             client=self.client)
-        # I got a public repo.
+        # Make what came back is a public repo.
         assert new_repo.data['is_private'] is False
         assert new_repo.is_private is False

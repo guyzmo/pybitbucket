@@ -92,8 +92,20 @@ class Snippet(BitbucketBase):
     """
     @staticmethod
     def find_my_snippet_by_id(id, client=Client()):
-        return next(Bitbucket(client=client).snippetByUsernameAndSnippetId(
-            username=client.get_username(),
+        return next(Bitbucket(client=client).snippetByOwnerAndSnippetId(
+            owner=client.get_username(),
+            snippet_id=id))
+
+    """
+    A convenience method for finding a specific snippet.
+    In contrast to the pure hypermedia driven method on the Bitbucket
+    class, this method returns a Snippet object, instead of the
+    generator.
+    """
+    @staticmethod
+    def find_snippet_by_owner_and_id(owner, id, client=Client()):
+        return next(Bitbucket(client=client).snippetByOwnerAndSnippetId(
+            owner=owner,
             snippet_id=id))
 
     def modify(

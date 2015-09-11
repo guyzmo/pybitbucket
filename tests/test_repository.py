@@ -102,7 +102,7 @@ class TestRepository(object):
             'teamsinspace/teamsinspace.bitbucket.org.git') == clone_url
 
     @httpretty.activate
-    def test_find_repositories_for_username(self):
+    def test_find_repositories_for_owner(self):
         url = ('https://api.bitbucket.org/2.0/repositories/teamsinspace')
         example = data_from_file(
             self.test_dir,
@@ -114,7 +114,7 @@ class TestRepository(object):
             body=example,
             status=200)
 
-        repos = Repository.find_repositories_for_username(
+        repos = Repository.find_repositories_by_owner_and_role(
             'teamsinspace',
             client=self.client)
         repo_list = []
@@ -123,7 +123,7 @@ class TestRepository(object):
         assert 2 == len(repo_list)
 
     @httpretty.activate
-    def test_find_repositories_for_username_in_role(self):
+    def test_find_repositories_by_owner_and_role(self):
         url = (
             'https://api.bitbucket.org/2.0/repositories/' +
             'teamsinspace?role=member')
@@ -137,7 +137,7 @@ class TestRepository(object):
             body=example,
             status=200)
 
-        repos = Repository.find_repositories_for_username(
+        repos = Repository.find_repositories_by_owner_and_role(
             'teamsinspace',
             role=RepositoryRole.MEMBER,
             client=self.client)

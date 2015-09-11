@@ -145,13 +145,13 @@ class Repository(BitbucketBase):
     generator.
     """
     @staticmethod
-    def find_repository_by_username_and_name(
-            username,
+    def find_repository_by_owner_and_name(
+            owner,
             repository_name,
             client=Client()):
         return next(
-            Bitbucket(client=client).repositoryByUsernameAndRepositoryName(
-                username=username,
+            Bitbucket(client=client).repositoryByOwnerAndRepositoryName(
+                owner=owner,
                 repository_name=repository_name))
 
     """
@@ -167,9 +167,9 @@ class Repository(BitbucketBase):
         if '/' not in repository_full_name:
             raise NameError(
                 "Repository full name must be in the form: username/name")
-        username, repository_name = repository_full_name.split('/')
-        return Repository.find_repository_by_username_and_name(
-            username,
+        owner, repository_name = repository_full_name.split('/')
+        return Repository.find_repository_by_owner_and_name(
+            owner,
             repository_name,
             client=client)
 
@@ -186,15 +186,34 @@ class Repository(BitbucketBase):
     The method is a generator Repository objects.
     """
     @staticmethod
-    def find_repositories_for_username(username, role=None, client=Client()):
+    def find_repositories_by_owner_and_role(
+            owner,
+            role=RepositoryRole.OWNER,
+            client=Client()):
         if role and role not in RepositoryRole.roles:
             raise NameError(
                 "role '%s' is not in [%s]" %
                 (role, '|'.join(str(x) for x in RepositoryRole.roles))
             )
-        return Bitbucket(client=client).repositoriesByUsernameAndRole(
-            username=username,
+        return Bitbucket(client=client).repositoriesByOwnerAndRole(
+            owner=owner,
             role=role)
 
+    """
+    A convenience method for finding current user's repositories.
+    The method is a generator Repository objects.
+    """
+    @staticmethod
+    def find_my_repositories_by_role(
+            role=RepositoryRole.OWNER,
+            client=Client()):
+        if role and role not in RepositoryRole.roles:
+            raise NameError(
+                "role '%s' is not in [%s]" %
+                (role, '|'.join(str(x) for x in RepositoryRole.roles))
+            )
+        return Bitbucket(client=client).repositoriesByOwnerAndRole(
+            owner=client.get_username(),
+            role=role)
 
 Client.bitbucket_types.add(Repository)

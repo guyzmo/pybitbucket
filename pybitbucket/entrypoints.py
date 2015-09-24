@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+entrypoints_json = """
 {
   "_links": {
     "self": {
@@ -116,3 +119,4 @@
     }
   }
 }
+"""

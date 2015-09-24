@@ -12,6 +12,13 @@ graft tests
 # Exclude any compile Python files (most likely grafted by tests/ directory).
 global-exclude *.pyc
 
+# Heroku-specific file
+exclude runtime.txt
+
+# Developer files
+exclude .editorconfig
+exclude .ppt-version
+
 # Setup-related things
 include pavement.py
 include requirements-dev.txt

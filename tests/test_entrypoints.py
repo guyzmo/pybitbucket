@@ -26,7 +26,7 @@ class TestEntrypoints(object):
             content_type='application/json',
             body=example,
             status=200)
-        user = Bitbucket(client=self.client).userForMyself().next()
+        user = next(Bitbucket(client=self.client).userForMyself())
         assert 'evzijst' == user.username
         assert 'Erik van Zijst' == user.display_name
 
@@ -42,7 +42,7 @@ class TestEntrypoints(object):
             content_type='application/json',
             body=example,
             status=200)
-        user = Bitbucket(client=self.client).userByUsername(
-            username='evzijst').next()
+        user = next(Bitbucket(client=self.client).userByUsername(
+            username='evzijst'))
         assert 'evzijst' == user.username
         assert 'Erik van Zijst' == user.display_name

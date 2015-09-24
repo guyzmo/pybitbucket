@@ -2,8 +2,6 @@
 """
 Utility functions for manipulating data.
 """
-# for name, url in links_from(data):
-#    setattr(self, name, partial(self.client.remote_relationship, url=url))
 
 
 def links_from(data):

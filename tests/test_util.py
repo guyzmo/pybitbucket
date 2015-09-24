@@ -18,11 +18,11 @@ class TestUtil(object):
             example = json.load(f)
         return example
 
-    def test_first_link(self):
+    def test_link_names(self):
         example = self.load_example_repository()
-        links = links_from(example)
-        actual_name, actual_url = next(links)
-        assert 'watchers' == actual_name
+        links = {name: url for (name, url) in links_from(example)}
+        assert links.get('self')
+        assert not links.get('clone')
 
     def test_counting_link(self):
         example = self.load_example_repository()

@@ -12,7 +12,6 @@ Classes:
 import json
 from future.utils import python_2_unicode_compatible
 from functools import partial
-from os import path
 from requests import codes, Session
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import HTTPError
@@ -20,6 +19,7 @@ from requests.utils import default_user_agent
 from uritemplate import expand
 
 from pybitbucket import metadata
+from pybitbucket.entrypoints import entrypoints_json
 from pybitbucket.util import links_from
 
 
@@ -144,10 +144,7 @@ class BitbucketBase(object):
 class Bitbucket(BitbucketBase):
     def __init__(self, client=Client()):
         self.client = client
-        current_dir, current_file = path.split(path.abspath(__file__))
-        entrypoints_path = path.join(current_dir, 'entrypoints.json')
-        with open(entrypoints_path) as f:
-            data = json.load(f)
+        data = json.loads(entrypoints_json)
         for name, url in links_from(data):
             setattr(self, name, partial(
                 self.client.remote_relationship,

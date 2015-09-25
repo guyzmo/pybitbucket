@@ -154,6 +154,12 @@ Project Setup
 3. :code:`pip install -r requirements-dev.txt` Loads required libraries into the virtual environment.
 5. :code:`paver test_all` Run all the unit tests and analyze the source code.
 
+Continuous Integration
+======================
+
+* `PyBitbucket on Bamboo <https://opensource.atlassian.net/builds/browse/PY-PYBB/>`_
+* `PyBitbucket with multiple Docker containers on Bamboo <https://opensource.atlassian.net/builds/browse/PY-PYBBN/>`_
+
 ----
 TODO
 ----

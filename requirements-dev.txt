@@ -7,6 +7,10 @@ py==1.4.30
 mock==1.3.0
 httpretty==0.8.10
 
+# Coverage
+pytest-cov==2.1.0
+coverage==4.0
+
 # Linting
 flake8==2.4.1
 mccabe==0.3.1

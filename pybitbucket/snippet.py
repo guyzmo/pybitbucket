@@ -108,6 +108,11 @@ class Snippet(BitbucketBase):
             owner=owner,
             snippet_id=id))
 
+    """
+    A convenience method for changing the current snippet.
+    The parameters make it easier to know what can be changed
+    and allow references with file names instead of File objects.
+    """
     def modify(
             self,
             files=open_files([]),
@@ -115,12 +120,7 @@ class Snippet(BitbucketBase):
             is_unlisted=None,
             title=None):
         payload = self.make_payload(is_private, is_unlisted, title)
-        response = self.client.session.put(
-            self.links['self']['href'],
-            data=payload,
-            files=files)
-        Client.expect_ok(response)
-        return Snippet(response.json(), client=self.client)
+        return self.put(payload, files=files)
 
     def content(self, filename):
         if not self.files.get(filename):

@@ -81,12 +81,10 @@ class BuildStatus(BitbucketBase):
 
     """
     A convenience method for changing the current build status.
-    The parameter makes it easier to know what can be changed.
     """
     def modify(self, state=None):
         payload = self.make_payload(
             state,
-            self.state,
             self.key,
             self.name,
             self.url,

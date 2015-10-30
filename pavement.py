@@ -100,6 +100,7 @@ def _doc_make(*make_args):
 
 @task
 def install_dependencies():
+    """Install or upgrade development dependencies."""
     try:
         import pip
     except ImportError:

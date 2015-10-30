@@ -108,7 +108,7 @@ def install_dependencies():
             "i.e., `sudo apt-get install python-pip'.")
         raise SystemExit(1)
 
-    pip.main(['install', '--upgrade', '-r', 'requirements.txt'])
+    pip.main(['install', '--upgrade', '-r', 'requirements-dev.txt'])
 
 
 @task

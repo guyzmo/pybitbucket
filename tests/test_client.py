@@ -21,7 +21,6 @@ class TestClient(object):
         # While it is helpful to pass through the information provided
         # by the requests default, we don't have to test the contents.
         assert user_agent_parts[0].startswith('pybitbucket')
-        assert 4 == len(user_agent_parts)
 
     @httpretty.activate
     def test_start_http_session(self):

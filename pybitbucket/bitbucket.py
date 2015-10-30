@@ -131,6 +131,14 @@ class BitbucketBase(object):
         Client.expect_ok(response)
         return self.client.convert_to_object(response.json())
 
+    def post(self, url, data, **kwargs):
+        response = self.client.session.post(
+            url,
+            data=data,
+            **kwargs)
+        Client.expect_ok(response)
+        return self.client.convert_to_object(response.json())
+
     def attributes(self):
         return list(self.data.keys())
 

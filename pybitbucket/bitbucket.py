@@ -119,7 +119,7 @@ class BitbucketBase(object):
 
     def delete(self):
         response = self.client.session.delete(self.links['self']['href'])
-        # Deletes the snippet and returns 204 (No Content).
+        # Deletes the resource and returns 204 (No Content).
         Client.expect_ok(response, 204)
         return
 

@@ -16,6 +16,8 @@ from setup import (
 
 from paver.easy import options, task, needs, consume_args
 from paver.setuputils import install_distutils_tasks
+from contextlib import contextmanager
+from io import BytesIO
 
 options(setup=setup_dict)
 
@@ -62,6 +64,16 @@ class cwd(object):
         os.chdir(self.oldcwd)
 
 
+@contextmanager
+def stdout_redirector(stream):
+    old_stdout = sys.stdout
+    sys.stdout = stream
+    try:
+        yield
+    finally:
+        sys.stdout = old_stdout
+
+
 # Task-related functions
 
 def _doc_make(*make_args):
@@ -85,6 +97,49 @@ def _doc_make(*make_args):
 
 
 # Tasks
+
+@task
+def install_dependencies():
+    try:
+        import pip
+    except ImportError:
+        print_failure_message(
+            'Install pip to use this task, '
+            "i.e., `sudo apt-get install python-pip'.")
+        raise SystemExit(1)
+
+    pip.main(['install', '--upgrade', '-r', 'requirements.txt'])
+
+
+@task
+@needs('install_dependencies')
+def prepare():
+    """ Prepare complete environment """
+    sh("python setup.py develop")
+
+
+@task
+def check_dependencies():
+    """Check if any installed dependencies have newer versions."""
+    try:
+        import pip
+    except ImportError:
+        print_failure_message(
+            'Install pip to use this task, '
+            "i.e., `sudo apt-get install python-pip'.")
+        raise SystemExit(1)
+
+    f = BytesIO()
+    with stdout_redirector(f):
+        pip.main(['list', '--outdated'])
+    if not f.getvalue():
+        print_passed()
+    else:
+        print('Outdated pip dependencies:')
+        print('{0}'.format(f.getvalue()))
+        print_failed()
+    raise SystemExit(len(f.getvalue()))
+
 
 @task
 @needs('doc_html', 'setuptools.command.sdist')

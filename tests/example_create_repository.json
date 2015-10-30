@@ -1,0 +1,10 @@
+{
+  "scm": "git",
+  "name": "your-repository-name-here",
+  "is_private": false,
+  "description": "",
+  "fork_policy": "allow_forks",
+  "language": "",
+  "has_issues": false,
+  "has_wiki": false
+}

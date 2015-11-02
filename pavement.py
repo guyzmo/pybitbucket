@@ -221,11 +221,11 @@ def bump_major():
 
 @task
 def bump_minor():
-    version_bump('major')
+    version_bump('minor')
 
 @task
 def bump_patch():
-    version_bump('major')
+    version_bump('patch')
 
 
 @task

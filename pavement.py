@@ -112,6 +112,38 @@ def version_bump(part):
 
     bumpversion.main([part, '--commit', '--tag'])
 
+def git_merge_latest_dev_tag():
+    dev_branch = 'dev'
+    master_branch = 'master'
+    # git pull to get latest commit on dev branch
+    # if git status --porcelain
+    #   stash changes?
+    # if log @{upstream}..
+    #   push changes?
+    subprocess.check_call(['git', 'fetch'])
+    subprocess.check_call(['git', 'checkout', dev_branch])
+    last_dev_tag = subprocess.check_call(
+        ['git', 'describe', '--abbrev=0', '--tags'])
+
+    subprocess.check_call(['git', 'checkout', master_branch])
+    last_master_tag = subprocess.check_call(
+        ['git', 'describe', '--abbrev=0', '--tags'])
+
+    if last_master_tag == last_dev_tag:
+        print_failure_message(
+            'Latest tag already available on {}. '
+            'Create a new version tag on {}. '
+            "i.e., `paver bump_minor'.".format(
+                    master_branch, dev_branch
+                ))
+        raise SystemExit(1)
+
+    # git merge dev branch to master
+    subprocess.check_call(['git', 'merge', dev_branch])
+
+    # git push merge commit on master to origin
+    subprocess.check_call(['git', 'push'])
+
 
 # Tasks
 
@@ -231,20 +263,10 @@ def bump_patch():
 @task
 def release():
     """Merge most recent tag on dev branch to master and push to PyPI"""
-    dev_branch = 'dev'
-    # git pull to get latest commit on dev branch
-    # if git status --porcelain
-    #   stash changes?
-    # if log @{upstream}..
-    #   push changes?
-    subprocess.check_call(['git', 'fetch'])
-    subprocess.check_call(['git', 'checkout', dev_branch])
-    subprocess.check_call(['git', 'merge'])
 
-    # git merge dev branch to master
     # paver sdist upload
-    # git push puts the bump commit on dev branch,
-    #  and latest release on master
+    sdist()
+    upload()
 
 
 @task

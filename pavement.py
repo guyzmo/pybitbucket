@@ -263,8 +263,7 @@ def bump_patch():
 @task
 def release():
     """Merge most recent tag on dev branch to master and push to PyPI"""
-
-    # paver sdist upload
+    git_merge_latest_dev_tag()
     sdist()
     upload()
 

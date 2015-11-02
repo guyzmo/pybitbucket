@@ -64,16 +64,6 @@ class cwd(object):
         os.chdir(self.oldcwd)
 
 
-@contextmanager
-def stdout_redirector(stream):
-    old_stdout = sys.stdout
-    sys.stdout = stream
-    try:
-        yield
-    finally:
-        sys.stdout = old_stdout
-
-
 # Task-related functions
 
 def _doc_make(*make_args):
@@ -94,6 +84,33 @@ def _doc_make(*make_args):
     with cwd(DOCS_DIRECTORY):
         retcode = subprocess.call(make_cmd)
     return retcode
+
+@contextmanager
+def stdout_redirector(stream):
+    old_stdout = sys.stdout
+    sys.stdout = stream
+    try:
+        yield
+    finally:
+        sys.stdout = old_stdout
+
+def version_bump(part):
+    try:
+        import bumpversion
+    except ImportError:
+        print_failure_message(
+            'Install bumpversion to use this task, '
+            "i.e., `pip install --upgrade bumpversion'.")
+        raise SystemExit(1)
+
+    # _test_all() returns the number of failed tests,
+    # so when _test_all() is true, there were failed tests.
+    if _test_all():
+        print_failure_message(
+            'Cannot release if tests do not pass.')
+        raise SystemExit(1)
+
+    bumpversion.main([part, '--commit', '--tag'])
 
 
 # Tasks
@@ -196,6 +213,38 @@ def commit():
         subprocess.check_call(['git', 'commit'])
     else:
         print_failure_message('\nTests failed, not committing.')
+
+
+@task
+def bump_major():
+    version_bump('major')
+
+@task
+def bump_minor():
+    version_bump('major')
+
+@task
+def bump_patch():
+    version_bump('major')
+
+
+@task
+def release():
+    """Merge most recent tag on dev branch to master and push to PyPI"""
+    dev_branch = 'dev'
+    # git pull to get latest commit on dev branch
+    # if git status --porcelain
+    #   stash changes?
+    # if log @{upstream}..
+    #   push changes?
+    subprocess.check_call(['git', 'fetch'])
+    subprocess.check_call(['git', 'checkout', dev_branch])
+    subprocess.check_call(['git', 'merge'])
+
+    # git merge dev branch to master
+    # paver sdist upload
+    # git push puts the bump commit on dev branch,
+    #  and latest release on master
 
 
 @task

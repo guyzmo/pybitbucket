@@ -31,4 +31,5 @@ Pygments==2.0.2
 
 # Miscellaneous
 Paver==1.2.4
+bumpversion==0.5.3
 colorama==0.3.3

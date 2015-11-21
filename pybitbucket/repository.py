@@ -54,8 +54,15 @@ class Repository(BitbucketBase):
     def __init__(self, data, client=Client()):
         super(Repository, self).__init__(data, client=client)
         if data.get('owner'):
-            self.owner = User(data['owner'], client=client)
-        if data.get('links').get('clone'):
+            owner = data['owner']
+            # In most cases owner is rich structure, but after repo creation
+            # it is plain text of username. And passing that down crashes.
+            if isinstance(owner, basestring):
+                owner = {
+                    'username': owner,
+                }
+            self.owner = User(owner, client=client)
+        if data.get('links', {}).get('clone'):
             self.clone = {
                 clone_method['name']: clone_method['href']
                 for clone_method

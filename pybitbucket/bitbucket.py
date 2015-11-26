@@ -100,15 +100,6 @@ class BitbucketBase(object):
     id_attribute = 'id'
 
     def __init__(self, data, client=Client()):
-        # Need some special handling for booleans.
-        # Might be workaround for bug in the response JSON?
-        data = {
-            key: (
-                (value in ('True', 'true'))
-                if key.startswith('is_')
-                else value)
-            for (key, value)
-            in data.items()}
         self.data = data
         self.client = client
         self.__dict__.update(data)

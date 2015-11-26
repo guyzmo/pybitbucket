@@ -167,23 +167,44 @@ class Bitbucket(BitbucketBase):
                 template=url))
 
 
-class BadRequestError(HTTPError):
-    def __init__(self, response):
-        super(BadRequestError, self).__init__(u'''\
-Attempted to request {url} but Bitbucket considered it a bad request.
-{code} - {text}\
+class BitbucketError(HTTPError):
+    interpretation = "The client encountered an error."
+
+    def formatMessage(self):
+        return u'''Attempted to request {url}. \
+{interpretation} {code} - {text}\
 '''.format(
-            url=response.url,
-            code=response.status_code,
-            text=response.text))
+            url=self.url,
+            interpretation=self.interpretation,
+            code=self.code,
+            text=self.text)
+
+    def __init__(self, response):
+        self.url = response.url
+        self.code = response.status_code
+        self.text = response.text
+        try:
+            # if the response is json,
+            # then make it part of the exception structure
+            json_data = response.json()
+            json_error_message = json_data.get('error').get('message')
+            self.error_message = json_error_message
+            self.__dict__.update(json_data)
+        except ValueError:
+            pass
+        super(BitbucketError, self).__init__(
+            self.formatMessage())
 
 
-class ServerError(HTTPError):
+class BadRequestError(BitbucketError):
+    interpretation = "Bitbucket considered it a bad request."
+
     def __init__(self, response):
-        super(ServerError, self).__init__(u'''\
-Attempted to request {url} but encountered a server error.
-{code} - {text}\
-'''.format(
-            url=response.url,
-            code=response.status_code,
-            text=response.text))
+        super(BadRequestError, self).__init__(response)
+
+
+class ServerError(BitbucketError):
+    interpretation = "The client encountered a server error."
+
+    def __init__(self, response):
+        super(ServerError, self).__init__(response)

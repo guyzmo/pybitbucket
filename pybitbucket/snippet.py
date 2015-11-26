@@ -122,6 +122,12 @@ class Snippet(BitbucketBase):
         payload = self.make_payload(is_private, is_unlisted, title)
         return self.put(payload, files=files)
 
+    """
+    A convenience method that compensates for a bug in the Bitbucket API.
+    """
+    def isPrivate(self):
+        return (self.data['is_private'] == 'True')
+
     def content(self, filename):
         if not self.files.get(filename):
             return

@@ -120,6 +120,8 @@ def git_merge_latest_dev_tag():
     #   stash changes?
     # if log @{upstream}..
     #   push changes?
+
+    # fetch assumes there is a remote repo.
     subprocess.check_call(['git', 'fetch'])
     subprocess.check_call(['git', 'checkout', dev_branch])
     last_dev_tag = subprocess.check_call(

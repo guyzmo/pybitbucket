@@ -152,7 +152,7 @@ Project Setup
 1. Clone the repository and set it as the current working directory.
 2. *(Optional, but good practice)* Create a `virtual environment <http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_: :code:`mkvirtualenv python-bitbucket` Once created, use :code:`workon python-bitbucket` to restore the virtual environment.
 3. :code:`pip install -r requirements-dev.txt` Loads required libraries into the virtual environment.
-5. :code:`paver test_all` Run all the unit tests and analyze the source code.
+4. :code:`paver test_all` Run all the unit tests and analyze the source code.
 
 Continuous Integration
 ======================

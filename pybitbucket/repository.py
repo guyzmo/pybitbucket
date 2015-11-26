@@ -57,7 +57,7 @@ class Repository(BitbucketBase):
             owner = data['owner']
             # In most cases owner is rich structure, but after repo creation
             # it is plain text of username. And passing that down crashes.
-            if isinstance(owner, basestring):
+            if isinstance(owner, str):
                 owner = {
                     'username': owner,
                 }

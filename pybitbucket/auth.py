@@ -85,7 +85,7 @@ class OAuth2Authenticator(Authenticator):
     def start_http_session(self):
         self.session = OAuth2Session(self.client_id)
         self.session.headers.update(self.headers())
-        if not self.redirect_response:
+        if not self.session.authorized:
             self.obtain_authorization()
         self.session.fetch_token(
             self.token_uri,

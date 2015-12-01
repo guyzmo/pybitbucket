@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from os import path
-from test_client import TestConfig
+from test_auth import TestAuth
 
 from pybitbucket.bitbucket import Client
 
@@ -9,9 +9,8 @@ from pybitbucket.bitbucket import Client
 class TestTypes(object):
 
     def setup_class(cls):
-        Client.configurator = TestConfig
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client()
+        cls.client = Client(TestAuth())
 
     def object_from_file(self, filename):
         example_path = path.join(
@@ -23,21 +22,26 @@ class TestTypes(object):
         return obj
 
     def test_commit(self):
+        import pybitbucket.commit  # noqa
         s = "%s" % self.object_from_file('example_single_commit.json')
         assert s.startswith('Commit hash:')
 
     def test_repository(self):
+        import pybitbucket.repository  # noqa
         s = "%s" % self.object_from_file('example_single_repository.json')
         assert s.startswith('Repository full_name:')
 
     def test_snippet(self):
+        import pybitbucket.snippet  # noqa
         s = "%s" % self.object_from_file('example_single_snippet.json')
         assert s.startswith('Snippet id:')
 
     def test_team(self):
+        import pybitbucket.team  # noqa
         s = "%s" % self.object_from_file('example_single_team.json')
         assert s.startswith('Team username:')
 
     def test_user(self):
+        import pybitbucket.user  # noqa
         s = "%s" % self.object_from_file('example_single_user.json')
         assert s.startswith('User username:')

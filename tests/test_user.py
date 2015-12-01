@@ -2,7 +2,7 @@
 import httpretty
 import json
 from os import path
-from test_client import TestConfig
+from test_auth import TestAuth
 
 from pybitbucket.user import User
 from pybitbucket.bitbucket import Client
@@ -11,9 +11,8 @@ from pybitbucket.bitbucket import Client
 class TestUser(object):
     @classmethod
     def setup_class(cls):
-        Client.configurator = TestConfig
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client()
+        cls.client = Client(TestAuth())
 
     def test_user_string_representation(self):
         example_path = path.join(self.test_dir, 'example_single_user.json')

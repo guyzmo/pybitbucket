@@ -11,7 +11,6 @@ from requests_oauthlib import OAuth2Session
 
 
 class Authenticator(object):
-    server_base_uri = 'https://api.bitbucket.org/'
 
     @staticmethod
     def user_agent_header():
@@ -33,11 +32,9 @@ class Authenticator(object):
         return headers
 
     def start_http_session(self):
-        self.session = Session()
-        self.session.headers.update(self.headers())
-
-    def get_bitbucket_url(self):
-        return self.server_base_uri
+        session = Session()
+        session.headers.update(self.headers())
+        return session
 
     def get_username(self):
         return ""
@@ -45,18 +42,20 @@ class Authenticator(object):
 
 class Anonymous(Authenticator):
 
-    def __init__(self):
-        self.start_http_session()
+    def __init__(self, server_base_uri=None):
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org/'
+        self.session = self.start_http_session()
 
 
 class BasicAuthenticator(Authenticator):
 
     def start_http_session(self):
-        self.session = Session()
-        self.session.headers.update(self.headers())
-        self.session.auth = HTTPBasicAuth(
+        session = Session()
+        session.headers.update(self.headers(email=self.client_email))
+        session.auth = HTTPBasicAuth(
             self.username,
             self.password)
+        return session
 
     def get_username(self):
         return self.username
@@ -71,7 +70,7 @@ class BasicAuthenticator(Authenticator):
         self.username = username
         self.password = password
         self.client_email = client_email
-        super(BasicAuthenticator, self).__init__()
+        self.session = self.start_http_session()
 
 
 class OAuth2Authenticator(Authenticator):
@@ -83,13 +82,14 @@ class OAuth2Authenticator(Authenticator):
             'Paste the full redirect URL here:')
 
     def start_http_session(self):
-        self.session = OAuth2Session(self.client_id)
-        self.session.headers.update(self.headers())
-        if not self.session.authorized:
+        session = OAuth2Session(self.client_id)
+        session.headers.update(self.headers())
+        if not session.authorized:
             self.obtain_authorization()
-        self.session.fetch_token(
+        session.fetch_token(
             self.token_uri,
             authorization_response=self.redirect_response)
+        return session
 
     def get_username(self):
         # TODO: Get user resource to find current username
@@ -122,4 +122,4 @@ class OAuth2Authenticator(Authenticator):
         self.client_name = client_name
         self.client_description = client_description
         self.redirect_response = redirect_response
-        super(OAuth2Authenticator, self).__init__()
+        self.session = self.start_http_session()

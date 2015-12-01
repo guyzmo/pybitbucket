@@ -1,53 +1,83 @@
 # -*- coding: utf-8 -*-
 import httpretty
-from requests.auth import HTTPBasicAuth
 
-from pybitbucket.bitbucket import Config
-from pybitbucket.bitbucket import Client
+from pybitbucket.bitbucket import Client, BadRequestError, ServerError
 
-
-class TestConfig(Config):
-    bitbucket_url = 'staging.bitbucket.org/api'
-    username = 'pybitbucket'
-    password = 'secret'
-    email = 'pybitbucket@mailinator.com'
+from test_auth import TestAuth
 
 
 class TestClient(object):
 
-    def test_user_agent_header_string(self):
-        user_agent_parts = Client.user_agent_header().split(' ')
-        # It is most important that PyBitbucket is identified as the client.
-        # While it is helpful to pass through the information provided
-        # by the requests default, we don't have to test the contents.
-        assert user_agent_parts[0].startswith('pybitbucket')
+    @httpretty.activate
+    def test_exceptions(self):
+        a = TestAuth()
+        session = a.start_http_session()
+
+        httpretty.register_uri(
+            httpretty.GET,
+            a.server_base_uri,
+            status=400)
+        response = session.get(a.server_base_uri)
+        try:
+            raise BadRequestError(response)
+        except BadRequestError as e:
+            assert e
+        else:
+            assert False
+
+        httpretty.register_uri(
+            httpretty.GET,
+            a.server_base_uri,
+            status=500)
+        response = session.get(a.server_base_uri)
+        try:
+            raise ServerError(response)
+        except ServerError as e:
+            assert e
+        else:
+            assert False
 
     @httpretty.activate
-    def test_start_http_session(self):
-        username = 'pybitbucket'
-        email = username + '@mailinator.com'
-        auth = HTTPBasicAuth(username, 'secret')
-        digest = 'Basic cHliaXRidWNrZXQ6c2VjcmV0'
-        url = 'http://example.com/'
-        httpretty.register_uri(httpretty.GET, url)
-        session = Client.start_http_session(auth, email)
-        session.get(url)
-        request = httpretty.last_request()
-        # For starting a session all that matters is setting up the right
-        # HTTP headers to authorize and track usage.
-        assert digest == request.headers['Authorization']
-        assert email == request.headers['From']
-        assert request.headers['User-Agent'].startswith('pybitbucket')
-        accept_params = request.headers['Accept'].split(';')
-        json = [p for p in accept_params if p == 'application/json']
-        assert any(json)
+    def test_expect_ok(self):
+        a = TestAuth()
+        httpretty.register_uri(httpretty.GET, a.server_base_uri)
+        session = a.start_http_session()
+        response = session.get(a.server_base_uri)
+        try:
+            Client.expect_ok(response)
+        except Exception:
+            assert False
+
+    @httpretty.activate
+    def test_structured_exception(self):
+        a = TestAuth()
+        client = Client(a)
+        http_error_code = 400
+        url = a.server_base_uri + '/1.0/user'
+        example = '''{"error": {"message": "Repository already exists."}}'''
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=http_error_code)
+        response = client.session.get(url)
+        try:
+            Client.expect_ok(response)
+        except BadRequestError as b:
+            assert b.url == url
+            assert b.code == http_error_code
+            assert b.error_message == "Repository already exists."
+            assert list(b.error)
+        else:
+            assert False
 
     @httpretty.activate
     def test_client_construction(self):
-        Client.configurator = TestConfig
-        client = Client()
-        assert 'staging.bitbucket.org/api' == client.config.bitbucket_url
-        url = 'https://' + client.get_bitbucket_url() + '/1.0/user'
+        client = Client(TestAuth())
+        assert 'https://staging.bitbucket.org/api' == \
+            client.get_bitbucket_url()
+        url = client.get_bitbucket_url() + '/1.0/user'
         httpretty.register_uri(httpretty.GET, url)
         response = client.session.get(url)
         assert 200 == response.status_code

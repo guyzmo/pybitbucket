@@ -123,7 +123,7 @@ class Repository(BitbucketBase):
             has_wiki=None,
             client=Client()):
         template = (
-            'https://{+bitbucket_url}' +
+            '{+bitbucket_url}' +
             '/2.0/repositories/{username}/{repository_name}')
         url = expand(
             template,

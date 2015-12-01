@@ -273,6 +273,8 @@ setup_dict = dict(
     install_requires=[
         'future >= 0.14, < 1',
         'requests >= 2.7, < 3',
+        'oauthlib >= 1, < 2',
+        'requests_oauthlib >= 0.5, < 1',
         'uritemplate >= 0.6, < 1'
         # your module dependencies
     ] + python_version_specific_requires,

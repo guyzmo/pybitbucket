@@ -161,8 +161,7 @@ def release(part):
         'and `git tag -d {}` to rollback the tag.'
         .format(last_tag))
     # Build the pip package, upload to PyPI, and push
-    sdist()
-    distutils.command.upload()
+    upload()
     subprocess.check_call(['git', 'push'])
 
 
@@ -217,6 +216,11 @@ def sdist():
     """Build the HTML docs and the tarball."""
     pass
 
+@task
+@needs('sdist', 'distutils.command.upload')
+def upload():
+    """Upload package to PyPI."""
+    pass
 
 @task
 def test():

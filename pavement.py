@@ -138,7 +138,6 @@ def version_bump(part):
             'Install bumpversion to use this task, '
             "i.e., `pip install --upgrade bumpversion`.")
         raise SystemExit(1)
-
     bumpversion.main([part, '--commit', '--tag'])
 
 
@@ -146,27 +145,27 @@ def release(part):
     # Perform any pre-flight checks
     git_check_master()
     git_check_remote()
-
     # _test_all() returns the number of failed tests,
     # so when _test_all() is true, there were failed tests.
     if _test_all():
         print_failure_message(
             'Cannot release if tests do not pass.')
         raise SystemExit(1)
-
     # Bump the version, create a bump commit, and tag
     version_bump(part)
-
+    print(
+        'Created new commit and tag for version bump. '
+        'Use `git reset --hard HEAD~1` to rollback. ')
     # Build the pip package, upload to PyPI, and push
     sdist()
-    upload()
+    distutils.command.upload()
     subprocess.check_call(['git', 'push'])
 
 
 # Tasks
 
 @task
-def install_dependencies():
+def dep_install():
     """Install or upgrade development dependencies."""
     try:
         import pip
@@ -180,23 +179,22 @@ def install_dependencies():
 
 
 @task
-@needs('install_dependencies')
+@needs('dep_install')
 def prepare():
     """ Prepare complete environment """
     sh("python setup.py develop")
 
 
 @task
-def check_dependencies():
+def dep_check():
     """Check if any installed dependencies have newer versions."""
     try:
         import pip
     except ImportError:
         print_failure_message(
             'Install pip to use this task, '
-            "i.e., `sudo apt-get install python-pip'.")
+            "i.e., `sudo apt-get install python-pip`.")
         raise SystemExit(1)
-
     f = BytesIO()
     with stdout_redirector(f):
         pip.main(['list', '--outdated'])

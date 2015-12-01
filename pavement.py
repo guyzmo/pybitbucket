@@ -120,15 +120,18 @@ def git_check_remote():
         print_failure_message(
             'The current branch is behind the remote. '
             'Use `git pull` to bring the local branch current. ')
+        raise SystemExit(1)
     elif remote == base:
         print_failure_message(
             'The current branch is ahead of the remote. '
             'Use `git push` to bring the remote branch current. ')
+        raise SystemExit(1)
     else:
         print_failure_message(
             'The current branch has diverged from remote. '
             'Use `git pull` to bring the remote branch current, '
             'then merge and use `git push` to synchronize branches.')
+        raise SystemExit(1)
 
 def version_bump(part):
     try:

@@ -142,9 +142,13 @@ def version_bump(part):
     f = BytesIO()
     with stdout_redirector(f):
         bumpversion.main([part, '--commit', '--tag', '--list'])
+        print(f.getvalue())
         for i in f.getvalue().split():
+            print(i)
             for j in i.split('='):
+                print(j)
                 head, tail = j[0], j[1]
+                print('{} {}'.format(head, tail))
                 if head == 'new_version':
                     version = tail
     return version

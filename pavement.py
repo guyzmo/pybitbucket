@@ -96,8 +96,7 @@ def stdout_redirector(stream):
 
 def git_check_master():
     current_branch = subprocess.check_output(
-        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
-        .strip()
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip()
     if current_branch != 'master':
         print_failure_message(
             'The current branch is {}. '

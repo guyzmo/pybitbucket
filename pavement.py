@@ -102,9 +102,7 @@ def git_check_master():
             'The current branch is {}. '
             'Release tasks can only be performed on master. '
             'Use `git checkout master` to switch. '
-            .format(
-                    current_branch
-                ))
+            .format(current_branch))
         raise SystemExit(1)
 
 def git_check_remote():
@@ -141,8 +139,15 @@ def version_bump(part):
             'Install bumpversion to use this task, '
             "i.e., `pip install --upgrade bumpversion`.")
         raise SystemExit(1)
-    bumpversion.main([part, '--commit', '--tag'])
-
+    f = BytesIO()
+    with stdout_redirector(f):
+        bumpversion.main([part, '--commit', '--tag', '--list'])
+        for i in f.getvalue().split():
+            for j in i.split('='):
+                head, tail = j[0], j[1]
+                if head == 'new_version':
+                    version = tail
+    return version
 
 def release(part):
     # Perform any pre-flight checks
@@ -155,10 +160,12 @@ def release(part):
             'Cannot release if tests do not pass.')
         raise SystemExit(1)
     # Bump the version, create a bump commit, and tag
-    version_bump(part)
+    version = version_bump(part)
     print(
         'Created new commit and tag for version bump. '
-        'Use `git reset --hard HEAD~1` to rollback. ')
+        'Use `git reset --hard HEAD~1` to rollback the commit, '
+        'and `git tag -d {}` to rollback the tag.'
+        .format(version))
     # Build the pip package, upload to PyPI, and push
     sdist()
     distutils.command.upload()
@@ -175,7 +182,7 @@ def dep_install():
     except ImportError:
         print_failure_message(
             'Install pip to use this task, '
-            "i.e., `sudo apt-get install python-pip'.")
+            "i.e., `sudo apt-get install python-pip`.")
         raise SystemExit(1)
 
     pip.main(['install', '--upgrade', '-r', 'requirements-dev.txt'])
@@ -309,8 +316,9 @@ def doc_watch():
         from watchdog.events import FileSystemEventHandler
         from watchdog.observers import Observer
     except ImportError:
-        print_failure_message('Install the watchdog package to use this task, '
-                              "i.e., `pip install watchdog'.")
+        print_failure_message(
+            'Install the watchdog package to use this task, '
+            "i.e., `pip install watchdog`.")
         raise SystemExit(1)
 
     class RebuildDocsEventHandler(FileSystemEventHandler):

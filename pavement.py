@@ -139,19 +139,7 @@ def version_bump(part):
             'Install bumpversion to use this task, '
             "i.e., `pip install --upgrade bumpversion`.")
         raise SystemExit(1)
-    f = BytesIO()
-    with stdout_redirector(f):
-        bumpversion.main([part, '--commit', '--tag', '--list'])
-        print(f.getvalue())
-        for i in f.getvalue().split():
-            print(i)
-            for j in i.split('='):
-                print(j)
-                head, tail = j[0], j[1]
-                print('{} {}'.format(head, tail))
-                if head == 'new_version':
-                    v = tail
-    return v
+    bumpversion.main([part, '--commit', '--tag', '--list'])
 
 def release(part):
     # Perform any pre-flight checks
@@ -164,12 +152,14 @@ def release(part):
             'Cannot release if tests do not pass.')
         raise SystemExit(1)
     # Bump the version, create a bump commit, and tag
-    new_version = version_bump(part)
+    version_bump(part)
+    last_tag = subprocess.check_output(
+        ['git', 'describe', '--abbrev=0', '--tags'])
     print(
         'Created new commit and tag for version bump. '
         'Use `git reset --hard HEAD~1` to rollback the commit, '
         'and `git tag -d {}` to rollback the tag.'
-        .format(new_version))
+        .format(last_tag))
     # Build the pip package, upload to PyPI, and push
     sdist()
     distutils.command.upload()

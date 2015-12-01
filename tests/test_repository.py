@@ -319,7 +319,7 @@ class TestRepository(object):
             username + '/' + repo_name)
         example = data_from_file(
             self.test_dir,
-            'example_single_repository.json')
+            'example_create_repository.json')
         httpretty.register_uri(
             httpretty.POST,
             url,

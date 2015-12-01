@@ -3,11 +3,14 @@
 Classes for abstracting over different forms of Bitbucket authentication.
 
 """
-from pybitbucket import metadata
+from six.moves import input
+
 from requests.utils import default_user_agent
 from requests import Session
 from requests.auth import HTTPBasicAuth
 from requests_oauthlib import OAuth2Session
+
+from pybitbucket import metadata
 
 
 class Authenticator(object):
@@ -78,8 +81,7 @@ class OAuth2Authenticator(Authenticator):
     def obtain_authorization(self):
         authorization_url = self.session.authorization_url(self.auth_uri)
         print('Please go here and authorize,', authorization_url)
-        self.redirect_response = raw_input(
-            'Paste the full redirect URL here:')
+        self.redirect_response = input('Paste the full redirect URL here:')
 
     def start_http_session(self):
         session = OAuth2Session(self.client_id)

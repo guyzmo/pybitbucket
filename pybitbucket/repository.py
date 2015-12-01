@@ -1,10 +1,14 @@
 """
 Provides a class for manipulating Repository resources on Bitbucket.
 """
+import sys
 from uritemplate import expand
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
 from pybitbucket.user import User
+
+
+USING_PY3 = (sys.version_info >= (3, 0))
 
 
 class RepositoryRole(object):
@@ -57,7 +61,11 @@ class Repository(BitbucketBase):
             owner = data['owner']
             # In most cases owner is rich structure, but after repo creation
             # it is plain text of username. And passing that down crashes.
-            if isinstance(owner, str):
+            if USING_PY3:
+                need_fix = isinstance(owner, str)
+            else:
+                need_fix = isinstance(owner, basestring)
+            if need_fix:
                 owner = {
                     'username': owner,
                 }

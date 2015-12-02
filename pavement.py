@@ -94,93 +94,110 @@ def stdout_redirector(stream):
     finally:
         sys.stdout = old_stdout
 
+def git_check_master():
+    current_branch = subprocess.check_output(
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip()
+    if current_branch != 'master':
+        print_failure_message(
+            'The current branch is {}. '
+            'Release tasks can only be performed on master. '
+            'Use `git checkout master` to switch. '
+            .format(current_branch))
+        raise SystemExit(1)
+
+def git_check_remote():
+    local = subprocess.check_output(
+        ['git', 'rev-parse', '@'])
+    remote = subprocess.check_output(
+        ['git', 'rev-parse', '@{u}'])
+    base = subprocess.check_output(
+        ['git', 'merge-base', '@', '@{u}'])
+    if local == remote:
+        print('Local and remote are the same.')
+    elif local == base:
+        print_failure_message(
+            'The current branch is behind the remote. '
+            'Use `git pull` to bring the local branch current. ')
+        raise SystemExit(1)
+    elif remote == base:
+        print_failure_message(
+            'The current branch is ahead of the remote. '
+            'Use `git push` to bring the remote branch current. ')
+        raise SystemExit(1)
+    else:
+        print_failure_message(
+            'The current branch has diverged from remote. '
+            'Use `git pull` to bring the remote branch current, '
+            'then merge and use `git push` to synchronize branches.')
+        raise SystemExit(1)
+
 def version_bump(part):
     try:
         import bumpversion
     except ImportError:
         print_failure_message(
             'Install bumpversion to use this task, '
-            "i.e., `pip install --upgrade bumpversion'.")
+            "i.e., `pip install --upgrade bumpversion`.")
         raise SystemExit(1)
+    bumpversion.main([part, '--commit', '--tag', '--list'])
 
+def release(part):
+    # Perform any pre-flight checks
+    git_check_master()
+    git_check_remote()
     # _test_all() returns the number of failed tests,
     # so when _test_all() is true, there were failed tests.
     if _test_all():
         print_failure_message(
             'Cannot release if tests do not pass.')
         raise SystemExit(1)
-
-    bumpversion.main([part, '--commit', '--tag'])
-
-def git_merge_latest_dev_tag():
-    dev_branch = 'dev'
-    master_branch = 'master'
-    # git pull to get latest commit on dev branch
-    # if git status --porcelain
-    #   stash changes?
-    # if log @{upstream}..
-    #   push changes?
-
-    # fetch assumes there is a remote repo.
-    subprocess.check_call(['git', 'fetch'])
-    subprocess.check_call(['git', 'checkout', dev_branch])
-    last_dev_tag = subprocess.check_call(
+    # Bump the version, create a bump commit, and tag
+    version_bump(part)
+    last_tag = subprocess.check_output(
         ['git', 'describe', '--abbrev=0', '--tags'])
-
-    subprocess.check_call(['git', 'checkout', master_branch])
-    last_master_tag = subprocess.check_call(
-        ['git', 'describe', '--abbrev=0', '--tags'])
-
-    if last_master_tag == last_dev_tag:
-        print_failure_message(
-            'Latest tag already available on {}. '
-            'Create a new version tag on {}. '
-            "i.e., `paver bump_minor'.".format(
-                    master_branch, dev_branch
-                ))
-        raise SystemExit(1)
-
-    # git merge dev branch to master
-    subprocess.check_call(['git', 'merge', dev_branch])
-
-    # git push merge commit on master to origin
+    print(
+        'Created new commit and tag for version bump. '
+        'Use `git reset --hard HEAD~1` to rollback the commit, '
+        'and `git tag -d {}` to rollback the tag.'
+        .format(last_tag))
+    # Build the pip package, upload to PyPI, and push
+    upload()
     subprocess.check_call(['git', 'push'])
 
 
 # Tasks
 
 @task
-def install_dependencies():
+def dep_install():
     """Install or upgrade development dependencies."""
     try:
         import pip
     except ImportError:
         print_failure_message(
             'Install pip to use this task, '
-            "i.e., `sudo apt-get install python-pip'.")
+            "i.e., `sudo apt-get install python-pip`.")
         raise SystemExit(1)
 
     pip.main(['install', '--upgrade', '-r', 'requirements-dev.txt'])
 
 
 @task
-@needs('install_dependencies')
+@needs('dep_install')
 def prepare():
     """ Prepare complete environment """
     sh("python setup.py develop")
 
 
 @task
-def check_dependencies():
+def dep_check():
     """Check if any installed dependencies have newer versions."""
     try:
         import pip
     except ImportError:
         print_failure_message(
             'Install pip to use this task, '
-            "i.e., `sudo apt-get install python-pip'.")
+            "i.e., `sudo apt-get install python-pip`.")
         raise SystemExit(1)
-
     f = BytesIO()
     with stdout_redirector(f):
         pip.main(['list', '--outdated'])
@@ -199,6 +216,11 @@ def sdist():
     """Build the HTML docs and the tarball."""
     pass
 
+@task
+@needs('sdist', 'distutils.command.upload')
+def upload():
+    """Upload package to PyPI."""
+    pass
 
 @task
 def test():
@@ -250,24 +272,21 @@ def commit():
 
 
 @task
-def bump_major():
-    version_bump('major')
-
-@task
-def bump_minor():
-    version_bump('minor')
-
-@task
-def bump_patch():
-    version_bump('patch')
+def release_major():
+    """Test, package, and release a major version change."""
+    release('major')
 
 
 @task
-def release():
-    """Merge most recent tag on dev branch to master and push to PyPI"""
-    git_merge_latest_dev_tag()
-    sdist()
-    upload()
+def release_minor():
+    """Test, package, and release a minor version change."""
+    release('minor')
+
+
+@task
+def release_patch():
+    """Test, package, and release a patch version change."""
+    release('patch')
 
 
 @task
@@ -295,8 +314,9 @@ def doc_watch():
         from watchdog.events import FileSystemEventHandler
         from watchdog.observers import Observer
     except ImportError:
-        print_failure_message('Install the watchdog package to use this task, '
-                              "i.e., `pip install watchdog'.")
+        print_failure_message(
+            'Install the watchdog package to use this task, '
+            "i.e., `pip install watchdog`.")
         raise SystemExit(1)
 
     class RebuildDocsEventHandler(FileSystemEventHandler):

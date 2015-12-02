@@ -42,7 +42,7 @@ class Commit(BitbucketBase):
             revision,
             client=Client()):
         template = (
-            'https://{+bitbucket_url}' +
+            '{+bitbucket_url}' +
             '/2.0/repositories/{username}/{repository_name}' +
             '/commit/{revision}')
         url = expand(
@@ -83,7 +83,7 @@ class Commit(BitbucketBase):
             exclude=[],
             client=Client()):
         template = (
-            'https://{+bitbucket_url}' +
+            '{+bitbucket_url}' +
             '/2.0/repositories/{username}/{repository_name}' +
             '/commits{/branch}{?include*,exclude*}')
         url = expand(

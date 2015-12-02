@@ -68,7 +68,7 @@ class Snippet(BitbucketBase):
             title=None,
             scm=None,
             client=Client()):
-        template = 'https://{+bitbucket_url}/2.0/snippets/{username}'
+        template = '{+bitbucket_url}/2.0/snippets/{username}'
         url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),
@@ -164,7 +164,7 @@ class Comment(BitbucketBase):
         if username is None:
             username = client.get_username()
         template = (
-            'https://{+bitbucket_url}' +
+            '{+bitbucket_url}' +
             '/2.0/snippets/{username}/{snippet_id}' +
             '/comments')
         url = expand(

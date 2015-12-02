@@ -2,7 +2,7 @@
 import httpretty
 import json
 from os import path
-from test_client import TestConfig
+from test_auth import TestAuth
 
 from util import data_from_file
 
@@ -15,9 +15,8 @@ from pybitbucket.bitbucket import Client
 class TestRepository(object):
     @classmethod
     def setup_class(cls):
-        Client.configurator = TestConfig
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client()
+        cls.client = Client(TestAuth())
 
     def load_example_repository(self):
         example_path = path.join(
@@ -313,7 +312,6 @@ class TestRepository(object):
         username = 'teamsinspace'
         repo_name = 'new-repository4'
         url = (
-            'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             username + '/' + repo_name)

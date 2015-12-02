@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import httpretty
 from os import path
-from test_client import TestConfig
+from test_auth import TestAuth
 
 from util import data_from_file
 from pybitbucket.bitbucket import Client
@@ -10,9 +10,8 @@ from pybitbucket.bitbucket import Client
 class TestRemoteRelationships(object):
 
     def setup_class(cls):
-        Client.configurator = TestConfig
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client()
+        cls.client = Client(TestAuth())
 
     @httpretty.activate
     def test_single_item(self):
@@ -58,7 +57,6 @@ class TestRemoteRelationships(object):
     @httpretty.activate
     def test_two_pages_of_items(self):
         url1 = (
-            'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/snippets' +
             '?role=owner')

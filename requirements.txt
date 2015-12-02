@@ -1,3 +1,6 @@
 future==0.15.2
+six==1.10.0
 requests==2.8.1
+oauthlib==1.0.3
+requests_oauthlib==0.5.0
 uritemplate==0.6

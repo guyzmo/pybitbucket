@@ -8,29 +8,32 @@ A Python wrapper for the Bitbucket API.
 Using
 -----
 
-Override Config
-===============
+Authenticate
+============
 
-The :code:`Config` class provides credentials.
-In the simple case for your own scripts, you can just hardcode credentials:
+The :code:`Authenticator` subclasses prepare API requests with credentials.
+The simplest case is :code:`Anonymous` which connects with no credentials.
+:code:`Anonymous` can be used with an publicly available resources.
+For private resources,
+:code:`BasicAuthenticator` uses email, username, and password as credentials.
+If your client application has it's own mechanisms for working with these values,
+you can subclass the :code:`BasicAuthenticator` to provide custom behavior.
 
-::
-
-    class MyConfig(Config):
-        username = 'your_username_here'
-        password = 'your_secret_password_here'
-        email = 'pybitbucket@mailinator.com'
-
-For a more sophisticated example, see the `implementation from Snippet <https://bitbucket.org/atlassian/snippet/src/master/snippet/config.py>`_.
-That implementation reads and writes credentials from a file so command-line users do not have to type them out everytime.
-Since your application may have it's own mechanism for configuration, this class lets you wrap whatever you use.
-
-To "plug in" your implementation, just do:
+To "plug in" your implementation or a standard one, just do:
 
 ::
 
-    Client.configurator = MyConfig
-    client = Client()
+    bitbucket = Client(
+        BasicAuthenticator(
+            'your_username_here',
+            'your_secret_password_here',
+            'pybitbucket@mailinator.com'))
+
+The :code:`OAuth2Authenticator` is intended as an example and superclass.
+It may work for some command-line clients.
+Other clients like web applications
+will need an appropriate implementation of :code:`obtain_authorization()`
+and perhaps may need to use a different grant types.
 
 Find Things
 ===========
@@ -39,7 +42,7 @@ For example, to find all your snippets:
 
 ::
 
-    for snip in Snippet.find_snippets_for_role(client=Client()):
+    for snip in Snippet.find_snippets_for_role(client=bitbucket):
         print(snip)
 
 The method says "for role" but, if not provided, it will use the default of owner.
@@ -66,9 +69,9 @@ For example, to create a new snippet:
     snip = Snippet.create_snippet(
         files=open_files(["README.rst"]),
         title="My New Snippet",
-        client=Client())
+        client=bitbucket)
 
-Only snippets can be created.
+All resoruces available for finding are available for creation.
 
 Examine Things
 ==============
@@ -77,7 +80,7 @@ For example, to examine attributes on a snippet:
 
 ::
 
-    snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+    snip = Snippet.find_snippet_by_id("Xqoz8", bitbucket)
     s = '\n'.join([
         "id          : {}".format(snip.id),
         "is_private  : {}".format(snip.is_private),
@@ -96,7 +99,7 @@ You can query the list via a convenience method:
 
 ::
 
-    snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+    snip = Snippet.find_snippet_by_id("Xqoz8", bitbucket)
     print(snip.attributes())
 
 Beware. The attributes for the same resource may change depending on how you got to it.
@@ -108,7 +111,7 @@ For example, to list the commits for a snippet:
 
 ::
 
-    snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+    snip = Snippet.find_snippet_by_id("Xqoz8", bitbucket)
     for commit in snip.commits():
         print(commit)
 
@@ -119,7 +122,7 @@ You can query the list via a convenience method:
 
 ::
 
-    snip = Snippet.find_snippet_by_id("Xqoz8", Client())
+    snip = Snippet.find_snippet_by_id("Xqoz8", bitbucket)
     print(snip.relationships())
 
 Just like attributes, the relationships for the same resource may change depending on how you got to it.
@@ -127,7 +130,7 @@ If you need the canonical resource with all attributes, use the :code:`self()` r
 
 ::
 
-    snips = Snippet.find_snippets_for_role(client=Client())
+    snips = Snippet.find_snippets_for_role(client=bitbucket)
     one_snip = next(snips)    # one_snip has no files relationship in this context.
     real_snip = next(one_snip.self())
     print(real_snip.files)
@@ -174,9 +177,4 @@ TODO
     - groups
     - group-privileges
     - invitations
-* Decide what to do with overlapping endpoints:
-    - repositories
-    - user
-    - users
-* Expand possible authentication mechanisms.
 * :code:`POST` for :code:`commit` from `REST Browser <http://restbrowser.bitbucket.org/>`_. What does this even mean?

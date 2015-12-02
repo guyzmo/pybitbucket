@@ -12,44 +12,17 @@ Classes:
 import json
 from future.utils import python_2_unicode_compatible
 from functools import partial
-from requests import codes, Session
-from requests.auth import HTTPBasicAuth
+from requests import codes
 from requests.exceptions import HTTPError
-from requests.utils import default_user_agent
 from uritemplate import expand
 
-from pybitbucket import metadata
+from pybitbucket.auth import Anonymous
 from pybitbucket.entrypoints import entrypoints_json
 from pybitbucket.util import links_from
 
 
-class Config(object):
-    bitbucket_url = 'api.bitbucket.org'
-    username = 'pybitbucket'
-    password = 'secret'
-    email = 'pybitbucket@mailinator.com'
-
-
 class Client(object):
-    configurator = Config
     bitbucket_types = set()
-
-    @staticmethod
-    def user_agent_header():
-        return u'%s/%s %s' % (
-            metadata.package,
-            metadata.version,
-            default_user_agent())
-
-    @staticmethod
-    def start_http_session(auth, email=''):
-        session = Session()
-        session.auth = auth
-        session.headers.update({
-            'User-Agent': Client.user_agent_header(),
-            'Accept': 'application/json',
-            'From': email})
-        return session
 
     @staticmethod
     def expect_ok(response, code=codes.ok):
@@ -82,17 +55,14 @@ class Client(object):
             url = json_data.get('next')
 
     def get_bitbucket_url(self):
-        return self.config.bitbucket_url
+        return self.config.server_base_uri
 
     def get_username(self):
         return self.config.username
 
     def __init__(self, config=None):
-        if not config:
-            config = self.configurator()
-        self.config = config
-        self.auth = HTTPBasicAuth(self.config.username, self.config.password)
-        self.session = Client.start_http_session(self.auth, self.config.email)
+        self.config = config or Anonymous()
+        self.session = self.config.session
 
 
 @python_2_unicode_compatible

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import httpretty
 from os import path
-from test_client import TestConfig
+from test_auth import TestAuth
 
 from pybitbucket.bitbucket import Bitbucket
 from pybitbucket.bitbucket import Client
@@ -10,9 +10,8 @@ from pybitbucket.bitbucket import Client
 class TestEntrypoints(object):
     @classmethod
     def setup_class(cls):
-        Client.configurator = TestConfig
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client()
+        cls.client = Client(TestAuth())
 
     @httpretty.activate
     def test_find_current_user(self):

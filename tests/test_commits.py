@@ -2,7 +2,7 @@
 import httpretty
 import json
 from os import path
-from test_client import TestConfig
+from test_auth import TestAuth
 
 
 from pybitbucket.commit import Commit
@@ -12,9 +12,8 @@ from pybitbucket.bitbucket import Client
 class TestCommit(object):
     @classmethod
     def setup_class(cls):
-        Client.configurator = TestConfig
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client()
+        cls.client = Client(TestAuth())
 
     def test_commit_string_representation(self):
         example_path = path.join(
@@ -35,7 +34,6 @@ class TestCommit(object):
     def test_find_commit_by_revision(self):
         commit_hash = 'c021208234c65439f57b8244517a2b850b3ecf44'
         url = (
-            'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +
@@ -64,7 +62,6 @@ class TestCommit(object):
     def test_commit_author(self):
         commit_hash = 'c021208234c65439f57b8244517a2b850b3ecf44'
         url = (
-            'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +
@@ -95,7 +92,6 @@ class TestCommit(object):
     def test_commit_repository(self):
         commit_hash = 'c021208234c65439f57b8244517a2b850b3ecf44'
         url = (
-            'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +
@@ -125,7 +121,6 @@ class TestCommit(object):
     def test_commit_comments(self):
         commit_hash = 'c021208234c65439f57b8244517a2b850b3ecf44'
         url = (
-            'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +
@@ -171,7 +166,6 @@ class TestCommit(object):
     def test_commit_approval(self):
         commit_hash = 'c021208234c65439f57b8244517a2b850b3ecf44'
         url = (
-            'https://' +
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             'teamsinspace/teamsinspace.bitbucket.org' +

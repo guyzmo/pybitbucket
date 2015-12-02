@@ -41,6 +41,20 @@ class User(BitbucketBase):
 
 class UserV1(BitbucketBase):
     id_attribute = 'username'
+    links_json = """
+{
+  "_links": {
+    "plan": {
+      "href": "https://api.bitbucket.org/1.0/users{/username}/plan"
+    },
+    "followers": {
+      "href": "https://api.bitbucket.org/1.0/users{/username}/followers"
+    },
+    "events": {
+      "href": "https://api.bitbucket.org/1.0/users{/username}/events"
+    }
+}
+"""
 
     @staticmethod
     def is_type(data):
@@ -69,6 +83,10 @@ class UserV1(BitbucketBase):
                 client.convert_to_object(r)
                 for r
                 in data['repositories']]
+        for name, url in links_from(links_json):
+            setattr(self, name, partial(
+                self.client.remote_relationship,
+                template=url))
 
 
 Client.bitbucket_types.add(User)

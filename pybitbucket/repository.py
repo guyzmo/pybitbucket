@@ -236,11 +236,11 @@ class RepositoryV1(BitbucketBase):
             # Categorize as repo, not snippet
             (data.get('slug') is not None))
 
-    def __init__(self, data, client=Client()):
+    def self(self):
         return Repository.find_repository_by_owner_and_name(
-            data.get('owner'),
-            data.get('slug'),
-            client=client)
+            self.owner,
+            self.slug,
+            client=self.client)
 
 
 Client.bitbucket_types.add(Repository)

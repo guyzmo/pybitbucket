@@ -6,9 +6,8 @@ from test_auth import TestAuth
 
 from util import data_from_file
 
-from pybitbucket.repository import Repository
-from pybitbucket.repository import RepositoryRole
-from pybitbucket.repository import RepositoryForkPolicy
+from pybitbucket.repository import (
+    Repository, RepositoryRole, RepositoryType, RepositoryForkPolicy)
 from pybitbucket.bitbucket import Client
 
 
@@ -309,27 +308,53 @@ class TestRepository(object):
 
     @httpretty.activate
     def test_create_repository(self):
-        username = 'teamsinspace'
-        repo_name = 'new-repository4'
-        url = (
+        username = 'ianbuchanan'
+        repo_name = 'try-create-repository'
+        create_url = (
             self.client.get_bitbucket_url() +
             '/2.0/repositories/' +
             username + '/' + repo_name)
-        example = data_from_file(
+        create_example = data_from_file(
             self.test_dir,
             'example_create_repository.json')
         httpretty.register_uri(
             httpretty.POST,
-            url,
+            create_url,
             content_type='application/json',
-            body=example,
+            body=create_example,
             status=200)
-        new_repo = Repository.create_repository(
+        repo1 = Repository.create_repository(
             username,
             repo_name,
             RepositoryForkPolicy.ALLOW_FORKS,
             bool(0),
             client=self.client)
-        # Make what came back is a public repo.
-        assert new_repo.data['is_private'] is False
-        assert new_repo.is_private is False
+        # Check for 1.0 structure
+        assert repo1.resource_uri
+        # Check that it has a repo type
+        assert repo1.scm == RepositoryType.GIT
+        # Check that we have a repo, not a snippet
+        assert repo1.slug
+        assert repo1.data.get('id') is None
+
+        find_url = (
+            'https://api.bitbucket.org' +
+            '/2.0/repositories/' +
+            username + '/' + repo_name)
+        find_example = data_from_file(
+            self.test_dir,
+            'example_single_repository.json')
+        httpretty.register_uri(
+            httpretty.GET,
+            find_url,
+            content_type='application/json',
+            body=find_example,
+            status=200)
+        repo2 = repo1.self()
+        # Check for 2.0 structure with links
+        assert repo2.data.get('links')
+        # Check that it has a repo type
+        assert repo2.scm == RepositoryType.GIT
+        # Check that we have a repo, not a snippet
+        assert repo2._type == 'repository'
+        assert repo2.data.get('id') is None

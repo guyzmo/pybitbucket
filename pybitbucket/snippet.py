@@ -29,8 +29,10 @@ class Snippet(BitbucketBase):
         return (
             # Categorize as 2.0 structure
             (data.get('links') is not None) and
-            # Categorize as repo-like (repo or snippet)
-            (data.get('scm') is not None) and
+            # It would be nice to categorize as repo-like (repo or snippet).
+            # Unfortunately, only the cannonical URL yields the scm attribute.
+            # In paged results, the attribute is missing.
+            #    (data.get('scm') is not None) and
             # Categorize as snippet, not repo
             (data.get('id') is not None) and
             (data.get('_type') is None))

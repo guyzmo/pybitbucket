@@ -26,7 +26,14 @@ class Snippet(BitbucketBase):
 
     @staticmethod
     def is_type(data):
-        return data.get('id') and not data.get('destination')
+        return (
+            # Categorize as 2.0 structure
+            (data.get('links') is not None) and
+            # Categorize as repo-like (repo or snippet)
+            (data.get('scm') is not None) and
+            # Categorize as snippet, not repo
+            (data.get('id') is not None) and
+            (data.get('_type') is None))
 
     def __init__(self, data, client=Client()):
         super(Snippet, self).__init__(data, client=client)

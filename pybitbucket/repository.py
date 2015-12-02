@@ -1,14 +1,9 @@
 """
 Provides a class for manipulating Repository resources on Bitbucket.
 """
-import sys
 from uritemplate import expand
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
-from pybitbucket.user import User
-
-
-USING_PY3 = (sys.version_info >= (3, 0))
 
 
 class RepositoryRole(object):
@@ -53,23 +48,19 @@ class Repository(BitbucketBase):
 
     @staticmethod
     def is_type(data):
-        return data.get('_type') == 'repository'
+        return (
+            # Categorize as 2.0 structure
+            (data.get('links') is not None) and
+            # Categorize as repo-like (repo or snippet)
+            (data.get('scm') is not None) and
+            # Categorize as repo, not snippet
+            (data.get('id') is None) and
+            (data.get('_type') == 'repository'))
 
     def __init__(self, data, client=Client()):
         super(Repository, self).__init__(data, client=client)
         if data.get('owner'):
-            owner = data['owner']
-            # In most cases owner is rich structure, but after repo creation
-            # it is plain text of username. And passing that down crashes.
-            if USING_PY3:
-                need_fix = isinstance(owner, str)
-            else:
-                need_fix = isinstance(owner, basestring)
-            if need_fix:
-                owner = {
-                    'username': owner,
-                }
-            self.owner = User(owner, client=client)
+            self.owner = client.convert_to_object(data['owner'])
         if data.get('links', {}).get('clone'):
             self.clone = {
                 clone_method['name']: clone_method['href']
@@ -151,7 +142,7 @@ class Repository(BitbucketBase):
             has_wiki)
         response = client.session.post(url, data=payload)
         Client.expect_ok(response)
-        return Repository(response.json(), client=client)
+        return client.convert_to_object(response.json())
 
     """
     A convenience method for finding a specific repository.
@@ -231,4 +222,26 @@ class Repository(BitbucketBase):
             owner=client.get_username(),
             role=role)
 
+
+class RepositoryV1(BitbucketBase):
+    id_attribute = 'name'
+
+    @staticmethod
+    def is_type(data):
+        return (
+            # Categorize as 1.0 structure
+            (data.get('resource_uri') is not None) and
+            # Categorize as repo-like (repo or snippet)
+            (data.get('scm') is not None) and
+            # Categorize as repo, not snippet
+            (data.get('slug') is not None))
+
+    def __init__(self, data, client=Client()):
+        return Repository.find_repository_by_owner_and_name(
+            data.get('owner'),
+            data.get('slug'),
+            client=client)
+
+
 Client.bitbucket_types.add(Repository)
+Client.bitbucket_types.add(RepositoryV1)

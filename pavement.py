@@ -161,6 +161,11 @@ def release(part):
         'and `git tag -d {}` to rollback the tag.'
         .format(version))
     # Build the pip package, upload to PyPI, and push
+    try:
+        from pybitbucket import metadata
+    except ImportError:
+        print_failure_message('Could not import metadata.')
+        raise SystemExit(1)
     metadata.version = version
     print(
         'Begin packaging and uploading for {}'.

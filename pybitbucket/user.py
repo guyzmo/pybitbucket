@@ -1,10 +1,9 @@
 """
 Provides a class for manipulating User resources on Bitbucket.
 """
-from functools import partial
+import json
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
-from pybitbucket.util import links_from
 
 
 class User(BitbucketBase):
@@ -94,10 +93,8 @@ class UserV1(BitbucketBase):
                 client.convert_to_object(r)
                 for r
                 in data['repositories']]
-        for name, url in links_from(UserV1.links_json):
-            setattr(self, name, partial(
-                self.client.remote_relationship,
-                template=url))
+        self.add_remote_relationship_methods(
+            json.loads(UserV1.links_json))
 
 
 Client.bitbucket_types.add(User)

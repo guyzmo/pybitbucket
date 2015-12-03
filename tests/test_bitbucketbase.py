@@ -2,10 +2,10 @@
 import json
 from os import path
 
-from pybitbucket.util import links_from
+from pybitbucket.bitbucket import BitbucketBase
 
 
-class TestUtil(object):
+class TestBitbucketBase(object):
     @classmethod
     def setup_class(cls):
         cls.test_dir, current_file = path.split(path.abspath(__file__))
@@ -20,13 +20,16 @@ class TestUtil(object):
 
     def test_link_names(self):
         example = self.load_example_repository()
-        links = {name: url for (name, url) in links_from(example)}
+        links = {
+            name: url
+            for (name, url)
+            in BitbucketBase.links_from(example)}
         assert links.get('self')
         assert not links.get('clone')
 
     def test_counting_link(self):
         example = self.load_example_repository()
-        links = links_from(example)
+        links = BitbucketBase.links_from(example)
         links_list = list(links)
         # Count of the links in the example,
         # not including the clone links.

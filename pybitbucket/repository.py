@@ -1,6 +1,7 @@
 """
 Provides a class for manipulating Repository resources on Bitbucket.
 """
+import json
 from uritemplate import expand
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
@@ -225,6 +226,42 @@ class Repository(BitbucketBase):
 
 class RepositoryV1(BitbucketBase):
     id_attribute = 'name'
+    links_json = """
+{
+  "_links": {
+    "changesets": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/changesets{?limit,start}"
+    },
+    "deploy_keys": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/deploy-keys"
+    },
+    "events": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/events"
+    },
+    "followers": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/followers"
+    },
+    "issues": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/issues"
+    },
+    "integration_links": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/links"
+    },
+    "pullrequests": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/pullrequests"
+    },
+    "services": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/services"
+    },
+    "src": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/src{revision,path}"
+    },
+    "wiki": {
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/wiki{/page}"
+    }
+  }
+}
+"""  # noqa
 
     @staticmethod
     def is_type(data):
@@ -241,6 +278,11 @@ class RepositoryV1(BitbucketBase):
             self.owner,
             self.slug,
             client=self.client)
+
+    def __init__(self, data, client=Client()):
+        super(RepositoryV1, self).__init__(data, client)
+        self.add_remote_relationship_methods(
+            json.loads(RepositoryV1.links_json))
 
 
 Client.bitbucket_types.add(Repository)

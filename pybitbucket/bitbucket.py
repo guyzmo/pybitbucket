@@ -69,14 +69,32 @@ class Client(object):
 class BitbucketBase(object):
     id_attribute = 'id'
 
+    @staticmethod
+    def links_from(data):
+        links = {}
+        # Bitbucket doesn't currently use underscore.
+        # HAL JSON does use underscore.
+        for link_name in ('links', '_links'):
+            if data.get(link_name):
+                links.update(data.get(link_name))
+        for name, body in links.items():
+            # Ignore quirky Bitbucket clone link
+            if isinstance(body, dict):
+                for href, url in body.items():
+                    if href == 'href':
+                        yield (name, url)
+
+    def add_remote_relationship_methods(self, data):
+        for name, url in BitbucketBase.links_from(data):
+            setattr(self, name, partial(
+                self.client.remote_relationship,
+                template=url))
+
     def __init__(self, data, client=Client()):
         self.data = data
         self.client = client
         self.__dict__.update(data)
-        for name, url in links_from(data):
-            setattr(self, name, partial(
-                self.client.remote_relationship,
-                template=url))
+        self.add_remote_relationship_methods(data)
 
     def delete(self):
         response = self.client.session.delete(self.links['self']['href'])

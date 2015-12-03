@@ -153,16 +153,21 @@ def release(part):
         raise SystemExit(1)
     # Bump the version, create a bump commit, and tag
     version_bump(part)
-    last_tag = subprocess.check_output(
-        ['git', 'describe', '--abbrev=0', '--tags'])
+    version = subprocess.check_output(
+        ['git', 'describe', '--abbrev=0', '--tags']).strip()
     print(
         'Created new commit and tag for version bump. '
         'Use `git reset --hard HEAD~1` to rollback the commit, '
         'and `git tag -d {}` to rollback the tag.'
-        .format(last_tag))
+        .format(version))
     # Build the pip package, upload to PyPI, and push
+    metadata.version = version
+    print(
+        'Begin packaging and uploading for {}'.
+        format(metadata.version))
     upload()
     subprocess.check_call(['git', 'push'])
+    subprocess.check_call(['git', 'push', '--tags'])
 
 
 # Tasks

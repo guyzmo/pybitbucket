@@ -18,7 +18,6 @@ from uritemplate import expand
 
 from pybitbucket.auth import Anonymous
 from pybitbucket.entrypoints import entrypoints_json
-from pybitbucket.util import links_from
 
 
 class Client(object):
@@ -139,11 +138,8 @@ class BitbucketBase(object):
 class Bitbucket(BitbucketBase):
     def __init__(self, client=Client()):
         self.client = client
-        data = json.loads(entrypoints_json)
-        for name, url in links_from(data):
-            setattr(self, name, partial(
-                self.client.remote_relationship,
-                template=url))
+        self.add_remote_relationship_methods(
+            json.loads(entrypoints_json))
 
 
 class BitbucketError(HTTPError):

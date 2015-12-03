@@ -74,8 +74,12 @@ class TestRepository(object):
             'teamsinspace/teamsinspace.bitbucket.org',
             client=self.client)
         user = repo.owner
-        assert 'teamsinspace' == user.username
-        assert 'Teams In Space' == user.display_name
+        # Check the 2.0 shape
+        assert user.data.get('links') is not None
+        # Check user-like (user or team)
+        assert user.username
+        # Check type is not a team
+        assert user.data.get('type') != 'team'
 
     @httpretty.activate
     def test_repository_clone(self):

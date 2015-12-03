@@ -1,7 +1,10 @@
 """
 Provides a class for manipulating User resources on Bitbucket.
 """
+from functools import partial
+
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
+from pybitbucket.util import links_from
 
 
 class User(BitbucketBase):
@@ -14,8 +17,14 @@ class User(BitbucketBase):
             (data.get('links') is not None) and
             # Categorize as user-like (user or team)
             (data.get('username') is not None) and
-            # Categorize as user, not team
-            (data.get('type') == 'user'))
+            # It would be nice to categorize as user with simpler logic.
+            # Unfortunately, only the cannonical URL yields the type attribute.
+            # In paged results, the attribute is missing.
+            #    (data.get('type') == 'user') and
+            (
+                (data.get('type') is None) or
+                (data.get('type') == 'user')
+            ))
 
     """
     A convenience method for finding the current user.
@@ -59,12 +68,14 @@ class UserV1(BitbucketBase):
     @staticmethod
     def is_type(data):
         return (
+            # Make sure there is a user structure
+            (data.get('user') is not None) and
             # Categorize as 1.0 structure
-            (data.get('user').get('resource_uri') is not None) and
+            (data['user'].get('resource_uri') is not None) and
             # Categorize as user-like (user or team)
-            (data.get('user').get('username') is not None) and
+            (data['user'].get('username') is not None) and
             # Categorize as user, not team
-            (data.get('user').get('is_team') is False))
+            (data['user'].get('is_team') is False))
 
     def self(self):
         return User.find_user_by_username(
@@ -77,13 +88,13 @@ class UserV1(BitbucketBase):
         self.data = data
         self.client = client
         if data.get('user'):
-            self.__dict__.update(data['user']))
+            self.__dict__.update(data['user'])
         if data.get('repositories'):
             self.repositories = [
                 client.convert_to_object(r)
                 for r
                 in data['repositories']]
-        for name, url in links_from(links_json):
+        for name, url in links_from(UserV1.links_json):
             setattr(self, name, partial(
                 self.client.remote_relationship,
                 template=url))

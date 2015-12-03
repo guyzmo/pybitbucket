@@ -2,7 +2,9 @@
  PyBitbucket
 =============
 
-A Python wrapper for the Bitbucket API.
+A Python wrapper for the Bitbucket Cloud REST API.
+This is not known to work with Bitbucket Server,
+previously known as Stash.
 
 -----
 Using
@@ -170,7 +172,6 @@ TODO
 * :code:`PUT` and :code:`DELETE` for :code:`snippet.watch` from `snippets Endpoint <https://confluence.atlassian.com/display/BITBUCKET/snippets+endpoint>`_.
 * More version 2 endpoints:
     - branch-restrictions
-    - pullrequests
     - pullrequest changesets
 * Wrap the `version 1 endpoints <https://confluence.atlassian.com/display/BITBUCKET/Version+1>`_ for:
     - privileges

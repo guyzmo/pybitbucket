@@ -9,6 +9,8 @@ class Hook(BitbucketBase):
 
     def __init__(self, data, client=Client()):
         super(Hook, self).__init__(data, client=client)
+        if data.get('uuid'):
+            self.uuid = data['uuid']
         if data.get('url'):
             self.url = data['url']
         if data.get('description'):

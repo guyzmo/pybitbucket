@@ -39,6 +39,10 @@ class Snippet(BitbucketBase):
 
     def __init__(self, data, client=Client()):
         super(Snippet, self).__init__(data, client=client)
+        if data.get('creator'):
+            self.creator = client.convert_to_object(data['creator'])
+        if data.get('owner'):
+            self.owner = client.convert_to_object(data['owner'])
         if data.get('files'):
             self.filenames = [str(f) for f in data['files']]
 

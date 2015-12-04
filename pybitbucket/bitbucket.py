@@ -92,6 +92,9 @@ class BitbucketBase(object):
     def __init__(self, data, client=Client()):
         self.data = data
         self.client = client
+        # TODO: Instead of just assuming the whole structure
+        # is just a simple dictionary, perhaps subdictionaries
+        # could be recursively sent through `convert_to_object`.
         self.__dict__.update(data)
         self.add_remote_relationship_methods(data)
 

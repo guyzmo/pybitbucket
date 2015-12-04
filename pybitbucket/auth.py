@@ -28,6 +28,7 @@ class Authenticator(object):
         headers = {
             'Accept': 'application/json',
             'User-Agent': user_agent,
+            'Content-type': 'application/json',
         }
         if email:
             headers.update({

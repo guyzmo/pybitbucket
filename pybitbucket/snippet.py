@@ -158,7 +158,16 @@ class Comment(BitbucketBase):
 
     @staticmethod
     def is_type(data):
-        return data.get('id') and data.get('content') and data.get('snippet')
+        return (
+            # Categorize as 2.0 structure
+            (data.get('links') is not None) and
+            # Categorize as not a repo-like structure (repo or snippet)
+            (data.get('scm') is None) and
+            # Categorize as comment with id and content
+            (data.get('id') is not None) and
+            (data.get('content') is not None) and
+            # Categorize as a Comment on a Snippet
+            (data.get('snippet') is not None))
 
     @staticmethod
     def make_payload(content):

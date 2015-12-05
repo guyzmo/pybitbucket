@@ -1,1 +1,53 @@
-{"pagelen": 10, "values": [], "page": 1}
+{
+  "pagelen": 10,
+  "values": [
+    {
+      "snippet": {
+        "id": "R8XBo",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/R8XBo"
+          },
+          "html": {
+            "href": "https://bitbucket.org/snippets/ianbuchanan/R8XBo"
+          }
+        }
+      },
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/R8XBo/comments/7428"
+        },
+        "html": {
+          "href": "https://bitbucket.org/snippets/ianbuchanan/R8XBo#comment-7428"
+        }
+      },
+      "content": {
+        "raw": "That looks like a great snippet!",
+        "markup": "markdown",
+        "html": "<p>That looks like a great snippet!</p>"
+      },
+      "created_on": "2015-12-05T02:56:49.188956+00:00",
+      "user": {
+        "username": "ian_buchanan",
+        "display_name": "Ian Buchanan [Atlassian]",
+        "type": "user",
+        "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+          },
+          "html": {
+            "href": "https://bitbucket.org/ian_buchanan/"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+          }
+        }
+      },
+      "updated_on": "2015-12-05T02:56:49.311542+00:00",
+      "id": 7428
+    }
+  ],
+  "page": 1,
+  "size": 1
+}

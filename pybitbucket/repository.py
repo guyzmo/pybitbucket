@@ -52,11 +52,15 @@ class Repository(BitbucketBase):
         return (
             # Categorize as 2.0 structure
             (data.get('links') is not None) and
-            # Categorize as repo-like (repo or snippet)
-            (data.get('scm') is not None) and
+            # It would be nice to categorize as repo-like (repo or snippet).
+            # Unfortunately, only the cannonical URL yields the scm attribute.
+            # In paged results, the attribute is sometimes missing.
+            #    (data.get('scm') is not None) and
             # Categorize as repo, not snippet
+            (data.get('full_name') is not None) and
             (data.get('id') is None) and
-            (data.get('_type') == 'repository'))
+            # Categorize with _type, if it is provided
+            ((data['_type'] == 'repository') if data.get('_type') else True))
 
     def __init__(self, data, client=Client()):
         super(Repository, self).__init__(data, client=client)

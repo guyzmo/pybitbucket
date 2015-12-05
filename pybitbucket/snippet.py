@@ -35,6 +35,9 @@ class Snippet(BitbucketBase):
             #    (data.get('scm') is not None) and
             # Categorize as snippet, not repo
             (data.get('id') is not None) and
+            (data.get('full_name') is None) and
+            # Categorize with _type if it is provided.
+            # Snippets don't have _type
             (data.get('_type') is None))
 
     def __init__(self, data, client=Client()):

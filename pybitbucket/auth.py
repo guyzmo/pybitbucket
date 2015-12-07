@@ -47,7 +47,7 @@ class Authenticator(object):
 class Anonymous(Authenticator):
 
     def __init__(self, server_base_uri=None):
-        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org/'
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
         self.session = self.start_http_session()
 
 
@@ -70,7 +70,7 @@ class BasicAuthenticator(Authenticator):
             password,
             client_email,
             server_base_uri=None):
-        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org/'
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
         self.username = username
         self.password = password
         self.client_email = client_email
@@ -110,7 +110,7 @@ class OAuth2Authenticator(Authenticator):
             client_description=None,
             auth_uri=None,
             token_uri=None):
-        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org/'
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
         # TODO: construct URIs by appending to server_base_uri
         self.auth_uri = (
             auth_uri or

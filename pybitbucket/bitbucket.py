@@ -10,6 +10,7 @@ Classes:
 - ServerError: exception wrapping server errors
 """
 import json
+import urllib
 from future.utils import python_2_unicode_compatible
 from functools import partial
 from requests import codes
@@ -102,8 +103,13 @@ class BitbucketBase(object):
         return
 
     def put(self, data, **kwargs):
+        # stupid hack to get around the fact that bitbucket is including the `{}`
+        # around the uuid in the url for the webhook.
+        url = self.links['self']['href']
+        url = urllib.unquote(url).decode('utf8')
+        url = url.replace("{", "").replace("}", "")
         response = self.client.session.put(
-            self.links['self']['href'],
+            url,
             data=data,
             **kwargs)
         Client.expect_ok(response)

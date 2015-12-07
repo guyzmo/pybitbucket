@@ -7,21 +7,6 @@ from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
 class Hook(BitbucketBase):
     id_attribute = 'uuid'
 
-    def __init__(self, data, client=Client()):
-        super(Hook, self).__init__(data, client=client)
-        if data.get('uuid'):
-            self.uuid = data['uuid']
-        if data.get('url'):
-            self.url = data['url']
-        if data.get('description'):
-            self.description = data['description']
-        if data.get('events'):
-            self.events = data['events']
-        if data.get('active'):
-            self.active = data['active']
-        if data.get('created_at'):
-            self.created_at = data['created_at']
-
     @staticmethod
     def is_type(data):
         return(
@@ -29,26 +14,25 @@ class Hook(BitbucketBase):
             (data.get('events') is not None) and
             (data.get('active') is not None)
         )
-        return data.get('uuid') and data.get('events') and data.get('links')
+        return data.get('uuid') and data.get('events')
 
     @staticmethod
     def make_payload(
-            description=None,
-            url=None,
-            active=None,
-            events=None):
-        # Since server defaults may change, method defaults are None.
-        # If the parameters are not provided, then don't send them
-        # so the server can decide what defaults to use.
-        payload = {}
-        if description is not None:
-            payload.update({'description': description})
-        if url is not None:
-            payload.update({'url': url})
-        if active is not None:
-            payload.update({'active': active})
-        if events is not None:
-            payload.update({'events': events})
+            description,
+            url,
+            active=True,
+            events=('repo:push',)
+    ):
+        payload = {
+            'description': description,
+            'url': url,
+        }
+        assert isinstance(active, bool), '`{}` is not a boolean'.format(active)
+        payload.update({'active': active})
+
+        assert isinstance(events, (list, tuple)), 'events: `{}` is not a list'
+        assert not isinstance(events, basestring), 'events: `{}` can not be a string'
+        payload.update({'events': events})
         return payload
 
     @staticmethod
@@ -59,7 +43,7 @@ class Hook(BitbucketBase):
             active=None,
             events=None,
             client=Client()):
-        template = '{+bitbucket_url}2.0/repositories/{username}/{repository_name}/hooks'
+        template = '{+bitbucket_url}/2.0/repositories/{username}/{repository_name}/hooks'
         url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),

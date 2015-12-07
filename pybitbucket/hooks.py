@@ -76,8 +76,6 @@ class Hook(BitbucketBase):
         A convenience method for changing the current hook.
         The parameters make it easier to know what can be changed.
         """
-        # Note: This is broken due to a bug in the API.
-        # How do I report bugs with the API?
         payload = self.make_payload(description, url, active, events)
         return self.put(json.dumps(payload))
 

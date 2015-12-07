@@ -19,13 +19,13 @@ class Hook(BitbucketBase):
     @staticmethod
     def make_payload(
             description,
-            url,
+            callback_url,
             active=True,
             events=('repo:push',)
     ):
         payload = {
             'description': description,
-            'url': url,
+            'url': callback_url,
         }
         assert isinstance(active, bool), '`{}` is not a boolean'.format(active)
         payload.update({'active': active})
@@ -38,8 +38,8 @@ class Hook(BitbucketBase):
     @staticmethod
     def create_hook(
             repository_name,
-            description=None,
-            url=None,
+            description,
+            callback_url,
             active=None,
             events=None,
             client=Client()):
@@ -50,7 +50,7 @@ class Hook(BitbucketBase):
                 'username': client.get_username(),
                 'repository_name': repository_name
             })
-        payload = Hook.make_payload(description, url, active, events)
+        payload = Hook.make_payload(description, callback_url, active, events)
         response = client.session.post(url, data=json.dumps(payload))
         Client.expect_ok(response)
         return Hook(response.json(), client=client)
@@ -84,7 +84,7 @@ class Hook(BitbucketBase):
         """
         A convenience method for deleting the current hook.
         """
-        return self.delete()
+        return super(Hook, self).delete()
 
 
 Client.bitbucket_types.add(Hook)

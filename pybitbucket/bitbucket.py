@@ -97,7 +97,12 @@ class BitbucketBase(object):
         self.add_remote_relationship_methods(data)
 
     def delete(self):
-        response = self.client.session.delete(self.links['self']['href'])
+        # stupid hack to get around the fact that bitbucket is including the `{}`
+        # around the uuid in the url for the webhook.
+        url = self.links['self']['href']
+        url = urllib.unquote(url).decode('utf8')
+        url = url.replace("{", "").replace("}", "")
+        response = self.client.session.delete(url)
         # Deletes the resource and returns 204 (No Content).
         Client.expect_ok(response, 204)
         return

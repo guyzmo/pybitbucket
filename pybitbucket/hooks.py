@@ -71,13 +71,20 @@ class Hook(BitbucketBase):
         """
         return Bitbucket(client=client).repositoryWebHooks(repository_name=repository_name)
 
-    def modify(self, description=None, url=None, active=None, events=None):
+    def modify(self, description, url, active, events):
         """
         A convenience method for changing the current hook.
         The parameters make it easier to know what can be changed.
+        All parameters are required.
         """
         payload = self.make_payload(description, url, active, events)
         return self.put(json.dumps(payload))
+
+    def delete(self):
+        """
+        A convenience method for deleting the current hook.
+        """
+        return self.delete()
 
 
 Client.bitbucket_types.add(Hook)

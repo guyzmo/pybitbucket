@@ -79,7 +79,7 @@ class Hook(BitbucketBase):
         # Note: This is broken due to a bug in the API.
         # How do I report bugs with the API?
         payload = self.make_payload(description, url, active, events)
-        return self.put(payload)
+        return self.put(json.dumps(payload))
 
 
 Client.bitbucket_types.add(Hook)

@@ -30,8 +30,8 @@ class Hook(BitbucketBase):
         assert isinstance(active, bool), '`{}` is not a boolean'.format(active)
         payload.update({'active': active})
 
-        assert isinstance(events, (list, tuple)), 'events: `{}` is not a list'
-        assert not isinstance(events, basestring), 'events: `{}` can not be a string'
+        assert isinstance(events, (list, tuple)), 'events: `{}` is not a list'.format(events)
+        assert not isinstance(events, basestring), 'events: `{}` can not be a string'.format(events)
         payload.update({'events': events})
         return payload
 

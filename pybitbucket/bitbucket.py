@@ -10,7 +10,6 @@ Classes:
 - ServerError: exception wrapping server errors
 """
 import json
-import urllib
 from future.utils import python_2_unicode_compatible
 from functools import partial
 from requests import codes

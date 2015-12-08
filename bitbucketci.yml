@@ -2,6 +2,5 @@ image: python:2.7
 pipeline:
     - job:
         script:
-            - pip install paver
-            - paver prepare
-            - paver test_all
+            - pip install tox
+            - tox -e py27

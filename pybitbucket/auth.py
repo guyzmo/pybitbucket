@@ -8,7 +8,7 @@ from six.moves import input
 from requests.utils import default_user_agent
 from requests import Session
 from requests.auth import HTTPBasicAuth
-from requests_oauthlib import OAuth2Session
+from requests_oauthlib import OAuth2Session, OAuth1Session
 
 from pybitbucket import metadata
 
@@ -75,6 +75,39 @@ class BasicAuthenticator(Authenticator):
         self.password = password
         self.client_email = client_email
         self.session = self.start_http_session()
+
+
+class OAuth1Authenticator(Authenticator):
+    def __init__(self, client_key, client_secret,
+                 access_token=None,
+                 access_token_secret=None,
+                 server_base_uri=None):
+
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
+        self.client_key = client_key
+        self.client_secret = client_secret
+        self.access_token = access_token
+        self.access_token_secret = access_token_secret
+        self.username = None
+        self.session = self.start_http_session()
+
+    def get_username(self):
+        if not self.username:
+            self.username = self._fetch_username()
+        return self.username
+
+    def _fetch_username(self):
+        response = self.session.get('https://api.bitbucket.org/2.0/user')
+        response.raise_for_status()
+        return response.json()['username']
+
+    def start_http_session(self):
+        return OAuth1Session(
+            self.client_key,
+            client_secret=self.client_secret,
+            resource_owner_key=self.access_token,
+            resource_owner_secret=self.access_token_secret)
+
 
 
 class OAuth2Authenticator(Authenticator):

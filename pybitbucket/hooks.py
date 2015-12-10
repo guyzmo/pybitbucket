@@ -42,12 +42,15 @@ class Hook(BitbucketBase):
             callback_url,
             active=None,
             events=None,
+            username=None,
             client=Client()):
         template = '{+bitbucket_url}/2.0/repositories/{username}/{repository_name}/hooks'
+        if username is None:
+            username = client.get_username()
         url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'username': client.get_username(),
+                'username': username,
                 'repository_name': repository_name
             })
         payload = Hook.make_payload(description, callback_url, active, events)

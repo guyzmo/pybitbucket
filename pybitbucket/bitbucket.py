@@ -142,6 +142,28 @@ class Bitbucket(BitbucketBase):
             json.loads(entrypoints_json))
 
 
+@python_2_unicode_compatible
+class Enumeration(object):
+    @classmethod
+    def values(cls):
+        return [
+            v
+            for (k, v)
+            in vars(cls).items()
+            if not k.startswith('__')]
+
+    @classmethod
+    def expect_valid_value(cls, value):
+        if value not in cls.values():
+            raise NameError(
+                "Value '{}' is not in expected set [{}]."
+                .format(value, '|'.join(str(x) for x in cls.values())))
+
+
+def enum(type_name, **named_values):
+    return type(type_name, (Enumeration,), named_values)
+
+
 class BitbucketError(HTTPError):
     interpretation = "The client encountered an error."
 

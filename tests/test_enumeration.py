@@ -11,7 +11,9 @@ class TestEnumeration(object):
 
     def test_values(self):
         Idea = enum('Idea', KNOWN='known', UNKNOWN='unknown')
-        assert ['known', 'unknown'] == Idea.values()
+        assert 2 == len(Idea.values())
+        assert 'known' in Idea.values()
+        assert 'unknown' in Idea.values()
 
     def test_expect_valid_value(self):
         Idea = enum('Idea', KNOWN='known', UNKNOWN='unknown')

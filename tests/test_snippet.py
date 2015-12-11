@@ -210,7 +210,7 @@ class TestSnippet(object):
             content_type='application/json',
             body=example,
             status=200)
-        assert not list(snip.comments())
+        assert list(snip.comments())
 
     @httpretty.activate
     def test_snippet_commits(self):

@@ -5,14 +5,14 @@ on Bitbucket commits.
 """
 from uritemplate import expand
 
-from pybitbucket.bitbucket import BitbucketBase, Client
+from pybitbucket.bitbucket import BitbucketBase, Client, enum
 
 
-class BuildStatusStates(object):
-    INPROGRESS = 'INPROGRESS'
-    SUCCESSFUL = 'SUCCESSFUL'
-    FAILED = 'FAILED'
-    states = [INPROGRESS, SUCCESSFUL, FAILED]
+BuildStatusStates = enum(
+    'BuildStatusStates',
+    INPROGRESS='INPROGRESS',
+    SUCCESSFUL='SUCCESSFUL',
+    FAILED='FAILED')
 
 
 class BuildStatus(BitbucketBase):
@@ -34,11 +34,7 @@ class BuildStatus(BitbucketBase):
         # so the server can decide what defaults to use.
         payload = {}
         if state is not None:
-            if state not in BuildStatusStates.states:
-                raise NameError(
-                    "state '%s' is not in [%s]" %
-                    (state, '|'.join(
-                        str(x) for x in BuildStatusStates.states)))
+            BuildStatusStates.expect_value_value(state)
             payload.update({'state': state})
         if key is not None:
             payload.update({'key': key})
@@ -62,7 +58,7 @@ class BuildStatus(BitbucketBase):
             description=None,
             client=Client()):
         template = (
-            'https://{+bitbucket_url}' +
+            '{+bitbucket_url}' +
             '/2.0/repositories{/owner,repository_name}' +
             '/commit{/revision}/statuses/build')
         # owner, repository_name, and revision are required

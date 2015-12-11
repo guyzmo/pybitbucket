@@ -4,7 +4,7 @@ and their Comments on Bitbucket.
 """
 from uritemplate import expand
 
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 
 def open_files(filelist):
@@ -14,11 +14,11 @@ def open_files(filelist):
     return files
 
 
-class SnippetRole(object):
-    OWNER = 'owner'
-    CONTRIBUTOR = 'contributor'
-    MEMBER = 'member'
-    roles = [OWNER, CONTRIBUTOR, MEMBER]
+SnippetRole = enum(
+    'SnippetRole',
+    OWNER='owner',
+    CONTRIBUTOR='contributor',
+    MEMBER='member')
 
 
 class Snippet(BitbucketBase):
@@ -87,10 +87,7 @@ class Snippet(BitbucketBase):
     """
     @staticmethod
     def find_snippets_for_role(role=SnippetRole.OWNER, client=Client()):
-        if role not in SnippetRole.roles:
-            raise NameError(
-                "role '%s' is not in [%s]" %
-                (role, '|'.join(str(x) for x in SnippetRole.roles)))
+        SnippetRole.expect_valid_value(role)
         return Bitbucket(client=client).snippetsForRole(role=role)
 
     """

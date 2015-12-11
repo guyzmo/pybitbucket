@@ -64,7 +64,16 @@ class TestSnippet(object):
             'https://example.com/bitbucket',
         )
 
-        assert json.dumps(payload) == '{"url": "https://example.com/bitbucket", "active": true, "description": "WebHook Description", "events": ["repo:push"]}'
+        assert json.dumps(payload) == '''\
+{\
+"url": "https://example.com/bitbucket", \
+"active": true, \
+"description": "WebHook Description", \
+"events": [\
+"repo:push"\
+]\
+}\
+'''
 
     @httpretty.activate
     def test_modify_webhook(self):
@@ -91,7 +100,11 @@ class TestSnippet(object):
             "events": ["repo:push"],
             "description": "WebHook Description",
         })
-        updated_hook = hook.modify(hook.description, hook.url, False, hook.events)
+        updated_hook = hook.modify(
+            hook.description,
+            hook.url,
+            False,
+            hook.events)
 
         assert updated_hook.description == 'WebHook Description'
         assert updated_hook.url == 'https://example.com/bitbucket/'

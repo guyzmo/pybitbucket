@@ -31,8 +31,7 @@ class Authenticator(object):
             'Content-type': 'application/json',
         }
         if email:
-            headers.update({
-                'From': email})
+            headers.update({'From': email})
         return headers
 
     def start_http_session(self):
@@ -78,10 +77,13 @@ class BasicAuthenticator(Authenticator):
 
 
 class OAuth1Authenticator(Authenticator):
-    def __init__(self, client_key, client_secret,
-                 access_token=None,
-                 access_token_secret=None,
-                 server_base_uri=None):
+    def __init__(
+            self,
+            client_key,
+            client_secret,
+            access_token=None,
+            access_token_secret=None,
+            server_base_uri=None):
 
         self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
         self.client_key = client_key
@@ -107,7 +109,6 @@ class OAuth1Authenticator(Authenticator):
             client_secret=self.client_secret,
             resource_owner_key=self.access_token,
             resource_owner_secret=self.access_token_secret)
-
 
 
 class OAuth2Authenticator(Authenticator):

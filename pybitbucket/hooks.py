@@ -27,11 +27,14 @@ class Hook(BitbucketBase):
             'description': description,
             'url': callback_url,
         }
-        assert isinstance(active, bool), '`{}` is not a boolean'.format(active)
+        assert isinstance(active, bool), \
+            '`{}` is not a boolean'.format(active)
         payload.update({'active': active})
 
-        assert isinstance(events, (list, tuple)), 'events: `{}` is not a list'.format(events)
-        assert not isinstance(events, basestring), 'events: `{}` can not be a string'.format(events)
+        assert isinstance(events, (list, tuple)), \
+            'events: `{}` is not a list'.format(events)
+        assert not isinstance(events, basestring), \
+            'events: `{}` can not be a string'.format(events)
         payload.update({'events': events})
         return payload
 
@@ -44,7 +47,9 @@ class Hook(BitbucketBase):
             events=None,
             username=None,
             client=Client()):
-        template = '{+bitbucket_url}/2.0/repositories/{username}/{repository_name}/hooks'
+        template = (
+            '{+bitbucket_url}' +
+            '/2.0/repositories/{username}/{repository_name}/hooks')
         if username is None:
             username = client.get_username()
         url = expand(
@@ -59,20 +64,29 @@ class Hook(BitbucketBase):
         return Hook(response.json(), client=client)
 
     @staticmethod
-    def find_webhook_by_uuid_and_repo(owner, repository_name, uuid, client=Client()):
+    def find_webhook_by_uuid_and_repo(
+            owner,
+            repository_name,
+            uuid,
+            client=Client()):
         """
         A convenience method for finding a webhook by uuid and repo name.
         The method returns a Hook object.
         """
-        return next(Bitbucket(client=client).repositoryWebHookById(owner=owner, repository_name=repository_name, uuid=uuid))
+        return next(Bitbucket(client=client).repositoryWebHookById(
+            owner=owner, repository_name=repository_name, uuid=uuid))
 
     @staticmethod
-    def find_webhooks_by_repo(owner, repository_name, client=Client()):
+    def find_webhooks_by_repo(
+            owner,
+            repository_name,
+            client=Client()):
         """
         A convenience method for finding webhooks by repo name.
         The method is a generator for Hook objects
         """
-        return Bitbucket(client=client).repositoryWebHooks(owner=owner, repository_name=repository_name)
+        return Bitbucket(client=client).repositoryWebHooks(
+            owner=owner, repository_name=repository_name)
 
     def modify(self, description, url, active, events):
         """

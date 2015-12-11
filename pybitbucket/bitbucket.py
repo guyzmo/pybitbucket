@@ -71,8 +71,14 @@ class BitbucketBase(object):
     @staticmethod
     def expect_bool(name, value):
         if not isinstance(value, bool):
-            raise NameError(
+            raise TypeError(
                 "{} is {} instead of bool".format(name, type(value)))
+
+    @staticmethod
+    def expect_list(name, value):
+        if not isinstance(value, (list, tuple)):
+            raise TypeError(
+                "{} is {} instead of list".format(name, type(value)))
 
     @staticmethod
     def links_from(data):

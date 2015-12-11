@@ -69,6 +69,12 @@ class BitbucketBase(object):
     id_attribute = 'id'
 
     @staticmethod
+    def expect_bool(name, value):
+        if not isinstance(value, bool):
+            raise NameError(
+                "{} is {} instead of bool".format(name, type(value)))
+
+    @staticmethod
     def links_from(data):
         links = {}
         # Bitbucket doesn't currently use underscore.

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import httpretty
-import json
 from os import path
 from test_auth import TestAuth
 
@@ -64,10 +63,10 @@ class TestSnippet(object):
             'https://example.com/bitbucket',
         )
 
-        assert 'https://example.com/bitbucket' == payload.url
-        assert payload.active
-        assert 'WebHook Description' == payload.description
-        assert 'repo:push' == payload.events[0]
+        assert 'https://example.com/bitbucket' == payload.get('url')
+        assert payload.get('active')
+        assert 'WebHook Description' == payload.get('description')
+        assert 'repo:push' == payload.get('events')[0]
 
     @httpretty.activate
     def test_modify_webhook(self):

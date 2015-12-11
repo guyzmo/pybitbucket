@@ -96,14 +96,16 @@ class BitbucketBase(object):
         self.add_remote_relationship_methods(data)
 
     def delete(self):
-        response = self.client.session.delete(self.links['self']['href'])
+        url = self.links['self']['href']
+        response = self.client.session.delete(url)
         # Deletes the resource and returns 204 (No Content).
         Client.expect_ok(response, 204)
         return
 
     def put(self, data, **kwargs):
+        url = self.links['self']['href']
         response = self.client.session.put(
-            self.links['self']['href'],
+            url,
             data=data,
             **kwargs)
         Client.expect_ok(response)

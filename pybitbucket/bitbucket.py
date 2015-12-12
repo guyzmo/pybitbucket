@@ -69,6 +69,18 @@ class BitbucketBase(object):
     id_attribute = 'id'
 
     @staticmethod
+    def expect_bool(name, value):
+        if not isinstance(value, bool):
+            raise TypeError(
+                "{} is {} instead of bool".format(name, type(value)))
+
+    @staticmethod
+    def expect_list(name, value):
+        if not isinstance(value, (list, tuple)):
+            raise TypeError(
+                "{} is {} instead of list".format(name, type(value)))
+
+    @staticmethod
     def links_from(data):
         links = {}
         # Bitbucket doesn't currently use underscore.
@@ -99,14 +111,16 @@ class BitbucketBase(object):
         self.add_remote_relationship_methods(data)
 
     def delete(self):
-        response = self.client.session.delete(self.links['self']['href'])
+        url = self.links['self']['href']
+        response = self.client.session.delete(url)
         # Deletes the resource and returns 204 (No Content).
         Client.expect_ok(response, 204)
         return
 
     def put(self, data, **kwargs):
+        url = self.links['self']['href']
         response = self.client.session.put(
-            self.links['self']['href'],
+            url,
             data=data,
             **kwargs)
         Client.expect_ok(response)
@@ -143,6 +157,28 @@ class Bitbucket(BitbucketBase):
         self.client = client
         self.add_remote_relationship_methods(
             json.loads(entrypoints_json))
+
+
+@python_2_unicode_compatible
+class Enumeration(object):
+    @classmethod
+    def values(cls):
+        return [
+            v
+            for (k, v)
+            in vars(cls).items()
+            if not k.startswith('__')]
+
+    @classmethod
+    def expect_valid_value(cls, value):
+        if value not in cls.values():
+            raise NameError(
+                "Value '{}' is not in expected set [{}]."
+                .format(value, '|'.join(str(x) for x in cls.values())))
+
+
+def enum(type_name, **named_values):
+    return type(type_name, (Enumeration,), named_values)
 
 
 class BitbucketError(HTTPError):

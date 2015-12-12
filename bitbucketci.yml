@@ -1,0 +1,6 @@
+image: python:2.7
+pipeline:
+    - job:
+        script:
+            - pip install tox
+            - tox -e py27

@@ -4,44 +4,28 @@ Provides a class for manipulating Repository resources on Bitbucket.
 import json
 from uritemplate import expand
 
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 
-class RepositoryRole(object):
-    OWNER = 'owner'
-    ADMIN = 'admin'
-    CONTRIBUTOR = 'contributor'
-    MEMBER = 'member'
-    roles = [OWNER, ADMIN, CONTRIBUTOR, MEMBER]
+RepositoryRole = enum(
+    'RepositoryRole',
+    OWNER='owner',
+    ADMIN='admin',
+    CONTRIBUTOR='contributor',
+    MEMBER='member')
 
 
-class RepositoryForkPolicy(object):
-    ALLOW_FORKS = 'allow_forks'
-    NO_PUBLIC_FORKS = 'no_public_forks'
-    NO_FORKS = 'no_forks'
-    policies = [ALLOW_FORKS, NO_PUBLIC_FORKS, NO_FORKS]
-
-    @staticmethod
-    def expect_policy(p):
-        if p not in RepositoryForkPolicy.policies:
-            raise NameError(
-                "fork_policy '{}' is not in [{}]".format(
-                    p,
-                    '|'.join(str(x) for x in RepositoryForkPolicy.policies)))
+RepositoryForkPolicy = enum(
+    'RepositoryForkPolicy',
+    ALLOW_FORKS='allow_forks',
+    NO_PUBLIC_FORKS='no_public_forks',
+    NO_FORKS='no_forks')
 
 
-class RepositoryType(object):
-    GIT = 'git'
-    HG = 'hg'
-    types = [GIT, HG]
-
-    @staticmethod
-    def expect_scm(s):
-        if s not in RepositoryType.types:
-            raise NameError(
-                "scm '{}' is not in [{}]".format(
-                    s,
-                    '|'.join(str(x) for x in RepositoryType.types)))
+RepositoryType = enum(
+    'RepositoryType',
+    GIT='git',
+    HG='hg')
 
 
 class Repository(BitbucketBase):
@@ -73,12 +57,6 @@ class Repository(BitbucketBase):
                 in data['links']['clone']}
 
     @staticmethod
-    def expect_bool(name, value):
-        if not isinstance(value, bool):
-            raise NameError(
-                "{} is {} instead of bool".format(name, type(value)))
-
-    @staticmethod
     def make_new_repository_payload(
             fork_policy,
             is_private,
@@ -92,12 +70,12 @@ class Repository(BitbucketBase):
         # If the parameters are not provided, then don't send them
         # so the server can decide what defaults to use.
         payload = {}
-        RepositoryForkPolicy.expect_policy(fork_policy)
+        RepositoryForkPolicy.expect_valid_value(fork_policy)
         payload.update({'fork_policy': fork_policy})
         Repository.expect_bool('is_private', is_private)
         payload.update({'is_private': is_private})
         if scm is not None:
-            RepositoryType.expect_scm(scm)
+            RepositoryType.expect_valid_value(scm)
             payload.update({'scm': scm})
         if name is not None:
             payload.update({'name': name})
@@ -201,11 +179,7 @@ class Repository(BitbucketBase):
             owner,
             role=RepositoryRole.OWNER,
             client=Client()):
-        if role and role not in RepositoryRole.roles:
-            raise NameError(
-                "role '%s' is not in [%s]" %
-                (role, '|'.join(str(x) for x in RepositoryRole.roles))
-            )
+        RepositoryRole.expect_valid_value(role)
         return Bitbucket(client=client).repositoriesByOwnerAndRole(
             owner=owner,
             role=role)
@@ -218,11 +192,7 @@ class Repository(BitbucketBase):
     def find_my_repositories_by_role(
             role=RepositoryRole.OWNER,
             client=Client()):
-        if role and role not in RepositoryRole.roles:
-            raise NameError(
-                "role '%s' is not in [%s]" %
-                (role, '|'.join(str(x) for x in RepositoryRole.roles))
-            )
+        RepositoryRole.expect_valid_value(role)
         return Bitbucket(client=client).repositoriesByOwnerAndRole(
             owner=client.get_username(),
             role=role)

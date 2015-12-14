@@ -101,14 +101,17 @@ class BitbucketBase(object):
                 self.client.remote_relationship,
                 template=url))
 
+    def add_inline_resources(self, data):
+        for name, body in data.items():
+            if isinstance(body, dict):
+                setattr(self, name, self.client.convert_to_object(body))
+
     def __init__(self, data, client=Client()):
         self.data = data
         self.client = client
-        # TODO: Instead of just assuming the whole structure
-        # is just a simple dictionary, perhaps subdictionaries
-        # could be recursively sent through `convert_to_object`.
         self.__dict__.update(data)
         self.add_remote_relationship_methods(data)
+        self.add_inline_resources(data)
 
     def delete(self):
         url = self.links['self']['href']

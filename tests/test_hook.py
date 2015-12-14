@@ -5,7 +5,7 @@ from test_auth import TestAuth
 
 from util import data_from_file
 
-from pybitbucket.hooks import Hook
+from pybitbucket.hook import Hook
 from pybitbucket.bitbucket import Client
 
 

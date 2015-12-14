@@ -78,10 +78,10 @@ entrypoints_json = """
     "repositoryPullRequestCommentsByCommentId": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/pullrequests{/pullrequest_id}/comments{/comment_id}"
     },
-    "repositoryWebHooks": {
+    "repositoryHooks": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/hooks"
     },
-    "repositoryWebHookById": {
+    "repositoryHookById": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/hooks{/uuid}"
     },
     "snippetByOwnerAndSnippetId": {

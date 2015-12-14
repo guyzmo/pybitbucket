@@ -59,28 +59,28 @@ class Hook(BitbucketBase):
         return Hook(response.json(), client=client)
 
     @staticmethod
-    def find_webhook_by_uuid_and_repo(
+    def find_hook_in_repository_by_uuid(
             owner,
             repository_name,
             uuid,
             client=Client()):
         """
-        A convenience method for finding a webhook by uuid and repo name.
+        A convenience method for finding a hook by uuid and repo name.
         The method returns a Hook object.
         """
-        return next(Bitbucket(client=client).repositoryWebHookById(
+        return next(Bitbucket(client=client).repositoryHookById(
             owner=owner, repository_name=repository_name, uuid=uuid))
 
     @staticmethod
-    def find_webhooks_by_repo(
+    def find_hooks_in_repository(
             owner,
             repository_name,
             client=Client()):
         """
-        A convenience method for finding webhooks by repo name.
+        A convenience method for finding hooks by repo name.
         The method is a generator for Hook objects
         """
-        return Bitbucket(client=client).repositoryWebHooks(
+        return Bitbucket(client=client).repositoryHooks(
             owner=owner, repository_name=repository_name)
 
     def modify(self, description, url, active, events):

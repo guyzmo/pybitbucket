@@ -95,6 +95,33 @@ class BitbucketBase(object):
                     if href == 'href':
                         yield (name, url)
 
+    @staticmethod
+    def _has_v2_self_url(data, resource_type, id_attribute):
+        if (
+                (data.get('links') is None) or
+                (data['links'].get('self') is None) or
+                (data['links']['self'].get('href') is None) or
+                (data.get(id_attribute) is None)):
+            return False
+        # Since the structure is right, assume it is v2.
+        is_v2 = True
+        url_path = data['links']['self']['href'].split('/')
+        # Start looking from the end of the path.
+        position = -1
+        # Since repos have a slash in the full_name,
+        # we have to match as many parts as we find (1 or 2).
+        for id_part in data[id_attribute].split('/')[::-1]:
+            is_v2 = is_v2 and (id_part == url_path[position])
+            position -= 1
+        # After matching the id_attribute,
+        # the resource_type should be the preceding part of the path.
+        is_v2 = (resource_type == url_path[position])
+        return is_v2
+
+    @classmethod
+    def has_v2_self_url(cls, data):
+        return cls._has_v2_self_url(data, cls.resource_type, cls.id_attribute)
+
     def add_remote_relationship_methods(self, data):
         for name, url in BitbucketBase.links_from(data):
             setattr(self, name, partial(

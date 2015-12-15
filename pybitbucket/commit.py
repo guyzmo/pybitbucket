@@ -7,16 +7,11 @@ from pybitbucket.bitbucket import BitbucketBase, Client
 
 class Commit(BitbucketBase):
     id_attribute = 'hash'
+    resource_type = 'commit'
 
     @staticmethod
     def is_type(data):
-        return (
-            # Categorize as 2.0 structure
-            (data.get('links') is not None) and
-            # Categorize as not repo-like (repo or snippet)
-            (data.get('scm') is None) and
-            # Categorize as commit
-            (data.get('hash') is not None))
+        return (Commit.has_v2_self_url(data))
 
     # Must override base constructor to account for approve and unapprove
     def __init__(self, data, client=Client()):

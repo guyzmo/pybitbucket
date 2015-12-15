@@ -17,10 +17,11 @@ BuildStatusStates = enum(
 
 class BuildStatus(BitbucketBase):
     id_attribute = 'name'
+    resource_type = 'build'
 
     @staticmethod
     def is_type(data):
-        return bool(data.get('state'))
+        return (BuildStatus.has_v2_self_url(data))
 
     @staticmethod
     def make_payload(
@@ -34,7 +35,7 @@ class BuildStatus(BitbucketBase):
         # so the server can decide what defaults to use.
         payload = {}
         if state is not None:
-            BuildStatusStates.expect_value_value(state)
+            BuildStatusStates.expect_valid_value(state)
             payload.update({'state': state})
         if key is not None:
             payload.update({'key': key})

@@ -6,15 +6,11 @@ from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
 
 class Hook(BitbucketBase):
     id_attribute = 'uuid'
+    resource_type = 'hooks'
 
     @staticmethod
     def is_type(data):
-        return(
-            (data.get('uuid') is not None) and
-            (data.get('events') is not None) and
-            (data.get('active') is not None)
-        )
-        return data.get('uuid') and data.get('events')
+        return (Hook.has_v2_self_url(data))
 
     @staticmethod
     def make_payload(

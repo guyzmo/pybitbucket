@@ -26,6 +26,11 @@ class Snippet(BitbucketBase):
 
     @staticmethod
     def is_type(data):
+        # Snippet URLs look like this:
+        # https://api.bitbucket.org/2.0/snippets/pybitbucket/Xqoz8
+        # Which doesn't follow the pattern of:
+        # resource_type/id_attribute
+        # So we can't use `has_v2_self_url` to categorize.
         return (
             # Categorize as 2.0 structure
             (data.get('links') is not None) and

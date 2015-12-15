@@ -9,6 +9,7 @@ from pybitbucket.commit import Commit
 from pybitbucket.hook import Hook
 from pybitbucket.repository import Repository
 from pybitbucket.snippet import Snippet
+from pybitbucket.team import Team
 from pybitbucket.user import User
 
 
@@ -45,14 +46,14 @@ class TestEmbeddedResources(object):
         assert isinstance(self.commit, Commit)
         assert isinstance(self.commit.parents[0], Commit)
 
-    def test_repository_owner_is_a_user(self):
+    def test_repository_owner_is_a_team(self):
         example = json.loads(
                 data_from_file(
                     self.test_dir,
                     'example_single_repository.json'))
         my_repo = self.client.convert_to_object(example)
         assert isinstance(my_repo, Repository)
-        assert isinstance(my_repo.owner, User)
+        assert isinstance(my_repo.owner, Team)
 
     def test_snippet_creator_and_owner_are_users(self):
         example = json.loads(

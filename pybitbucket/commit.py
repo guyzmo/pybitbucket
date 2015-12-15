@@ -35,13 +35,16 @@ class Commit(BitbucketBase):
                         'unapprove',
                         partial(self.delete_commit_approval, template=url))
         # sugar for some embedded resources
+
+        # Author is not a typical embedded resource.
+        # It has a raw part, that is just a string, and
+        # a user part that is an embedded User.
         if self.data.get('author'):
             self.raw_author = self.data['author'].get('raw')
             self.author = self.client.convert_to_object(
                 self.data['author'].get('user'))
-        if self.data.get('repository'):
-            self.repository = self.client.convert_to_object(
-                self.data['repository'])
+        # Parents are not a typical embedded resource.
+        # It is an array of Commits.
         if self.data.get('parents'):
             self.parents = [
                 self.client.convert_to_object(c)

@@ -48,8 +48,6 @@ class Repository(BitbucketBase):
 
     def __init__(self, data, client=Client()):
         super(Repository, self).__init__(data, client=client)
-        if data.get('owner'):
-            self.owner = client.convert_to_object(data['owner'])
         if data.get('links', {}).get('clone'):
             self.clone = {
                 clone_method['name']: clone_method['href']

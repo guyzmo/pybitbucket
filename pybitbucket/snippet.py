@@ -1,6 +1,5 @@
 """
-Provides classes for manipulating Snippet resources
-and their Comments on Bitbucket.
+Provides classes for manipulating Snippet resources.
 """
 from uritemplate import expand
 
@@ -151,68 +150,4 @@ class Snippet(BitbucketBase):
         return response.content
 
 
-class Comment(BitbucketBase):
-    id_attribute = 'id'
-
-    @staticmethod
-    def is_type(data):
-        return (
-            # Categorize as 2.0 structure
-            (data.get('links') is not None) and
-            # Categorize as not a repo-like structure (repo or snippet)
-            (data.get('scm') is None) and
-            # Categorize as comment with id and content
-            (data.get('id') is not None) and
-            (data.get('content') is not None) and
-            # Categorize as a Comment on a Snippet
-            (data.get('snippet') is not None))
-
-    @staticmethod
-    def make_payload(content):
-        return {'content': {'raw': content}}
-
-    @staticmethod
-    def create_comment(
-            content,
-            snippet_id,
-            username=None,
-            client=Client()):
-        if username is None:
-            username = client.get_username()
-        template = (
-            '{+bitbucket_url}' +
-            '/2.0/snippets/{username}/{snippet_id}' +
-            '/comments')
-        url = expand(
-            template, {
-                'bitbucket_url': client.get_bitbucket_url(),
-                'username': username,
-                'snippet_id': snippet_id,
-            })
-        payload = Comment.make_payload(content)
-        response = client.session.post(url, data=payload)
-        Client.expect_ok(response)
-        return Comment(response.json(), client=client)
-
-    """
-    A convenience method for finding a specific comment on a snippet.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Comment object, instead of the
-    generator.
-    """
-    @staticmethod
-    def find_comment_for_snippet_by_id(
-            snippet_id,
-            comment_id,
-            username=None,
-            client=Client()):
-        if username is None:
-            username = client.get_username()
-        return next(Bitbucket(client=client).snippetCommentByCommentId(
-            username=username,
-            snippet_id=snippet_id,
-            comment_id=comment_id))
-
-
 Client.bitbucket_types.add(Snippet)
-Client.bitbucket_types.add(Comment)

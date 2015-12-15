@@ -1,18 +1,23 @@
 """
 Provides a class for manipulating Team resources on Bitbucket.
 """
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 
-class TeamRole(object):
-    ADMIN = 'admin'
-    CONTRIBUTOR = 'contributor'
-    MEMBER = 'member'
-    roles = [ADMIN, CONTRIBUTOR, MEMBER]
+TeamRole = enum(
+    'TeamRole',
+    ADMIN='admin',
+    CONTRIBUTOR='contributor',
+    MEMBER='member')
 
 
 class Team(BitbucketBase):
     id_attribute = 'username'
+    resource_type = 'teams'
+
+    @staticmethod
+    def is_type(data):
+        return (Team.has_v2_self_url(data))
 
     """
     A convenience method for finding teams by the user's role.
@@ -20,10 +25,7 @@ class Team(BitbucketBase):
     """
     @staticmethod
     def find_teams_for_role(role=TeamRole.ADMIN, client=Client()):
-        if role not in TeamRole.roles:
-            raise NameError(
-                "role '%s' is not in [%s]" %
-                (role, '|'.join(str(x) for x in TeamRole.roles)))
+        TeamRole.expect_valid_value(role)
         return Bitbucket(client=client).teamsForRole(role=role)
 
     """
@@ -36,10 +38,6 @@ class Team(BitbucketBase):
     def find_team_by_username(username, client=Client()):
         return next(Bitbucket(client=client).teamByUsername(
             username=username))
-
-    @staticmethod
-    def is_type(data):
-        return data.get('type') == 'team'
 
 
 Client.bitbucket_types.add(Team)

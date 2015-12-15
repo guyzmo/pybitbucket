@@ -1,10 +1,9 @@
 """
-Provides classes for manipulating Snippet resources
-and their Comments on Bitbucket.
+Provides classes for manipulating Snippet resources.
 """
 from uritemplate import expand
 
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 
 def open_files(filelist):
@@ -14,11 +13,11 @@ def open_files(filelist):
     return files
 
 
-class SnippetRole(object):
-    OWNER = 'owner'
-    CONTRIBUTOR = 'contributor'
-    MEMBER = 'member'
-    roles = [OWNER, CONTRIBUTOR, MEMBER]
+SnippetRole = enum(
+    'SnippetRole',
+    OWNER='owner',
+    CONTRIBUTOR='contributor',
+    MEMBER='member')
 
 
 class Snippet(BitbucketBase):
@@ -26,6 +25,11 @@ class Snippet(BitbucketBase):
 
     @staticmethod
     def is_type(data):
+        # Snippet URLs look like this:
+        # https://api.bitbucket.org/2.0/snippets/pybitbucket/Xqoz8
+        # Which doesn't follow the pattern of:
+        # resource_type/id_attribute
+        # So we can't use `has_v2_self_url` to categorize.
         return (
             # Categorize as 2.0 structure
             (data.get('links') is not None) and
@@ -35,6 +39,9 @@ class Snippet(BitbucketBase):
             #    (data.get('scm') is not None) and
             # Categorize as snippet, not repo
             (data.get('id') is not None) and
+            (data.get('full_name') is None) and
+            # Categorize with _type if it is provided.
+            # Snippets don't have _type
             (data.get('_type') is None))
 
     def __init__(self, data, client=Client()):
@@ -87,10 +94,7 @@ class Snippet(BitbucketBase):
     """
     @staticmethod
     def find_snippets_for_role(role=SnippetRole.OWNER, client=Client()):
-        if role not in SnippetRole.roles:
-            raise NameError(
-                "role '%s' is not in [%s]" %
-                (role, '|'.join(str(x) for x in SnippetRole.roles)))
+        SnippetRole.expect_valid_value(role)
         return Bitbucket(client=client).snippetsForRole(role=role)
 
     """
@@ -146,59 +150,4 @@ class Snippet(BitbucketBase):
         return response.content
 
 
-class Comment(BitbucketBase):
-    id_attribute = 'id'
-
-    @staticmethod
-    def is_type(data):
-        return data.get('id') and data.get('content') and data.get('snippet')
-
-    @staticmethod
-    def make_payload(content):
-        return {'content': {'raw': content}}
-
-    @staticmethod
-    def create_comment(
-            content,
-            snippet_id,
-            username=None,
-            client=Client()):
-        if username is None:
-            username = client.get_username()
-        template = (
-            '{+bitbucket_url}' +
-            '/2.0/snippets/{username}/{snippet_id}' +
-            '/comments')
-        url = expand(
-            template, {
-                'bitbucket_url': client.get_bitbucket_url(),
-                'username': username,
-                'snippet_id': snippet_id,
-            })
-        payload = Comment.make_payload(content)
-        response = client.session.post(url, data=payload)
-        Client.expect_ok(response)
-        return Comment(response.json(), client=client)
-
-    """
-    A convenience method for finding a specific comment on a snippet.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Comment object, instead of the
-    generator.
-    """
-    @staticmethod
-    def find_comment_for_snippet_by_id(
-            snippet_id,
-            comment_id,
-            username=None,
-            client=Client()):
-        if username is None:
-            username = client.get_username()
-        return next(Bitbucket(client=client).snippetCommentByCommentId(
-            username=username,
-            snippet_id=snippet_id,
-            comment_id=comment_id))
-
-
 Client.bitbucket_types.add(Snippet)
-Client.bitbucket_types.add(Comment)

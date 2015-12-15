@@ -8,7 +8,7 @@ from six.moves import input
 from requests.utils import default_user_agent
 from requests import Session
 from requests.auth import HTTPBasicAuth
-from requests_oauthlib import OAuth2Session
+from requests_oauthlib import OAuth2Session, OAuth1Session
 
 from pybitbucket import metadata
 
@@ -28,10 +28,10 @@ class Authenticator(object):
         headers = {
             'Accept': 'application/json',
             'User-Agent': user_agent,
+            'Content-type': 'application/json',
         }
         if email:
-            headers.update({
-                'From': email})
+            headers.update({'From': email})
         return headers
 
     def start_http_session(self):
@@ -46,7 +46,7 @@ class Authenticator(object):
 class Anonymous(Authenticator):
 
     def __init__(self, server_base_uri=None):
-        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org/'
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
         self.session = self.start_http_session()
 
 
@@ -69,11 +69,46 @@ class BasicAuthenticator(Authenticator):
             password,
             client_email,
             server_base_uri=None):
-        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org/'
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
         self.username = username
         self.password = password
         self.client_email = client_email
         self.session = self.start_http_session()
+
+
+class OAuth1Authenticator(Authenticator):
+    def __init__(
+            self,
+            client_key,
+            client_secret,
+            access_token=None,
+            access_token_secret=None,
+            server_base_uri=None):
+
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
+        self.client_key = client_key
+        self.client_secret = client_secret
+        self.access_token = access_token
+        self.access_token_secret = access_token_secret
+        self.username = None
+        self.session = self.start_http_session()
+
+    def get_username(self):
+        if not self.username:
+            self.username = self._fetch_username()
+        return self.username
+
+    def _fetch_username(self):
+        response = self.session.get('https://api.bitbucket.org/2.0/user')
+        response.raise_for_status()
+        return response.json()['username']
+
+    def start_http_session(self):
+        return OAuth1Session(
+            self.client_key,
+            client_secret=self.client_secret,
+            resource_owner_key=self.access_token,
+            resource_owner_secret=self.access_token_secret)
 
 
 class OAuth2Authenticator(Authenticator):
@@ -109,7 +144,7 @@ class OAuth2Authenticator(Authenticator):
             client_description=None,
             auth_uri=None,
             token_uri=None):
-        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org/'
+        self.server_base_uri = server_base_uri or 'https://api.bitbucket.org'
         # TODO: construct URIs by appending to server_base_uri
         self.auth_uri = (
             auth_uri or

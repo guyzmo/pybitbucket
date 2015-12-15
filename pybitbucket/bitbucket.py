@@ -69,6 +69,18 @@ class BitbucketBase(object):
     id_attribute = 'id'
 
     @staticmethod
+    def expect_bool(name, value):
+        if not isinstance(value, bool):
+            raise TypeError(
+                "{} is {} instead of bool".format(name, type(value)))
+
+    @staticmethod
+    def expect_list(name, value):
+        if not isinstance(value, (list, tuple)):
+            raise TypeError(
+                "{} is {} instead of list".format(name, type(value)))
+
+    @staticmethod
     def links_from(data):
         links = {}
         # Bitbucket doesn't currently use underscore.
@@ -83,27 +95,62 @@ class BitbucketBase(object):
                     if href == 'href':
                         yield (name, url)
 
+    @staticmethod
+    def _has_v2_self_url(data, resource_type, id_attribute):
+        if (
+                (data.get('links') is None) or
+                (data['links'].get('self') is None) or
+                (data['links']['self'].get('href') is None) or
+                (data.get(id_attribute) is None)):
+            return False
+        # Since the structure is right, assume it is v2.
+        is_v2 = True
+        url_path = data['links']['self']['href'].split('/')
+        # Start looking from the end of the path.
+        position = -1
+        # Since repos have a slash in the full_name,
+        # we have to match as many parts as we find (1 or 2).
+        for id_part in data[id_attribute].split('/')[::-1]:
+            is_v2 = is_v2 and (id_part == url_path[position])
+            position -= 1
+        # After matching the id_attribute,
+        # the resource_type should be the preceding part of the path.
+        is_v2 = (resource_type == url_path[position])
+        return is_v2
+
+    @classmethod
+    def has_v2_self_url(cls, data):
+        return cls._has_v2_self_url(data, cls.resource_type, cls.id_attribute)
+
     def add_remote_relationship_methods(self, data):
         for name, url in BitbucketBase.links_from(data):
             setattr(self, name, partial(
                 self.client.remote_relationship,
                 template=url))
 
+    def add_inline_resources(self, data):
+        for name, body in data.items():
+            if isinstance(body, dict):
+                setattr(self, name, self.client.convert_to_object(body))
+
     def __init__(self, data, client=Client()):
         self.data = data
         self.client = client
         self.__dict__.update(data)
         self.add_remote_relationship_methods(data)
+        self.add_inline_resources(data)
 
     def delete(self):
-        response = self.client.session.delete(self.links['self']['href'])
+        url = self.links['self']['href']
+        response = self.client.session.delete(url)
         # Deletes the resource and returns 204 (No Content).
         Client.expect_ok(response, 204)
         return
 
     def put(self, data, **kwargs):
+        url = self.links['self']['href']
         response = self.client.session.put(
-            self.links['self']['href'],
+            url,
             data=data,
             **kwargs)
         Client.expect_ok(response)
@@ -140,6 +187,28 @@ class Bitbucket(BitbucketBase):
         self.client = client
         self.add_remote_relationship_methods(
             json.loads(entrypoints_json))
+
+
+@python_2_unicode_compatible
+class Enumeration(object):
+    @classmethod
+    def values(cls):
+        return [
+            v
+            for (k, v)
+            in vars(cls).items()
+            if not k.startswith('__')]
+
+    @classmethod
+    def expect_valid_value(cls, value):
+        if value not in cls.values():
+            raise NameError(
+                "Value '{}' is not in expected set [{}]."
+                .format(value, '|'.join(str(x) for x in cls.values())))
+
+
+def enum(type_name, **named_values):
+    return type(type_name, (Enumeration,), named_values)
 
 
 class BitbucketError(HTTPError):

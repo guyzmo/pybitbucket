@@ -8,22 +8,11 @@ from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
 
 class User(BitbucketBase):
     id_attribute = 'username'
+    resource_type = 'users'
 
     @staticmethod
     def is_type(data):
-        return (
-            # Categorize as 2.0 structure
-            (data.get('links') is not None) and
-            # Categorize as user-like (user or team)
-            (data.get('username') is not None) and
-            # It would be nice to categorize as user with simpler logic.
-            # Unfortunately, only the cannonical URL yields the type attribute.
-            # In paged results, the attribute is missing.
-            #    (data.get('type') == 'user') and
-            (
-                (data.get('type') is None) or
-                (data.get('type') == 'user')
-            ))
+        return (User.has_v2_self_url(data))
 
     """
     A convenience method for finding the current user.

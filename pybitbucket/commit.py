@@ -3,37 +3,48 @@ from functools import partial
 from uritemplate import expand
 
 from pybitbucket.bitbucket import BitbucketBase, Client
-from pybitbucket.user import User
-from pybitbucket.repository import Repository
 
 
 class Commit(BitbucketBase):
     id_attribute = 'hash'
+    resource_type = 'commit'
+
+    @staticmethod
+    def is_type(data):
+        return (Commit.has_v2_self_url(data))
 
     # Must override base constructor to account for approve and unapprove
     def __init__(self, data, client=Client()):
         super(Commit, self).__init__(data, client=client)
         # approve and unapprove are just different verbs for same url
-        if self.data.get('links').get('approve').get('href'):
-            url = data['links']['approve']['href']
-            setattr(
-                self,
-                'approve',
-                partial(self.post_commit_approval, template=url))
-            setattr(
-                self,
-                'unapprove',
-                partial(self.delete_commit_approval, template=url))
+        if self.data.get('links'):
+            if self.data['links'].get('approve'):
+                if self.data['links']['approve'].get('href'):
+                    url = data['links']['approve']['href']
+                    setattr(
+                        self,
+                        'approve',
+                        partial(self.post_commit_approval, template=url))
+                    setattr(
+                        self,
+                        'unapprove',
+                        partial(self.delete_commit_approval, template=url))
         # sugar for some embedded resources
+
+        # Author is not a typical embedded resource.
+        # It has a raw part, that is just a string, and
+        # a user part that is an embedded User.
         if self.data.get('author'):
-            self.raw_author = self.data['author']['raw']
-            self.author = User(
-                self.data['author']['user'],
-                client=client)
-        if self.data.get('repository'):
-            self.repository = Repository(
-                self.data['repository'],
-                client=client)
+            self.raw_author = self.data['author'].get('raw')
+            self.author = self.client.convert_to_object(
+                self.data['author'].get('user'))
+        # Parents are not a typical embedded resource.
+        # It is an array of Commits.
+        if self.data.get('parents'):
+            self.parents = [
+                self.client.convert_to_object(c)
+                for c
+                in data['parents']]
 
     @staticmethod
     def find_commit_in_repository_by_revision(
@@ -129,10 +140,6 @@ class Commit(BitbucketBase):
         # Deletes the approval and returns 204 (No Content).
         Client.expect_ok(response, 204)
         return True
-
-    @staticmethod
-    def is_type(data):
-        return data.get('hash')
 
 
 Client.bitbucket_types.add(Commit)

@@ -1,50 +1,28 @@
 """
 Provides a class for manipulating PullRequest resources on Bitbucket.
 """
-import json
 from uritemplate import expand
 
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 
-class PullRequestState(object):
-    OPEN = 'open'
-    MERGED = 'merged'
-    DECLINED = 'declined'
-    states = [OPEN, MERGED, DECLINED]
-
-    @staticmethod
-    def expect_state(s):
-        if s not in PullRequestState.states:
-            raise NameError(
-                "state '{}' is not in [{}]".format(
-                    s,
-                    '|'.join(str(x) for x in PullRequestState.states)))
+PullRequestState = enum(
+    'PullRequestState',
+    OPEN='open',
+    MERGED='merged',
+    DECLINED='declined')
 
 
 class PullRequest(BitbucketBase):
     id_attribute = 'id'
+    resource_type = 'pullrequests'
 
     @staticmethod
     def is_type(data):
-        return (
-            # Categorize as 2.0 structure
-            (data.get('links') is not None) and
-            # Categorize as not repo-like (repo or snippet)
-            (data.get('scm') is None) and
-            # Categorize as pullrequest with source and destination
-            (data.get('source') is not None) and
-            (data.get('destination') is not None))
+        return (PullRequest.has_v2_self_url(data))
 
     def __init__(self, data, client=Client()):
         super(PullRequest, self).__init__(data, client=client)
-        if data.get('author'):
-            self.author = client.convert_to_object(data['author'])
-        if data.get('reviewers'):
-            self.reviewers = [
-                client.convert_to_object(x)
-                for x
-                in data['reviewers']]
         if data.get('source'):
             if data['source'].get('commit'):
                 self.source_commit = client.convert_to_object(
@@ -59,13 +37,6 @@ class PullRequest(BitbucketBase):
             if data['destination'].get('repository'):
                 self.destination_repository = client.convert_to_object(
                     data['destination']['repository'])
-
-    # TODO: Push up to BitbucketBase, refactor Repository
-    @staticmethod
-    def expect_bool(name, value):
-        if not isinstance(value, bool):
-            raise NameError(
-                "{} is {} instead of bool".format(name, type(value)))
 
     @staticmethod
     def make_new_pullrequest_payload(

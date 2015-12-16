@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import httpretty
 import json
+from past.builtins import basestring
 from os import path
 from test_auth import TestAuth
 
@@ -208,4 +209,4 @@ class TestPullRequest(object):
             content_type='text/plain',
             body=example,
             status=200)
-        assert isinstance(pr.diff(), str)
+        assert isinstance(pr.diff(), basestring)

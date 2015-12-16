@@ -1,32 +1,78 @@
 {
-  "pagelen": 10,
   "values": [
     {
-      "snippet": {
-        "id": "R8XBo",
-        "links": {
-          "self": {
-            "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/R8XBo"
-          },
-          "html": {
-            "href": "https://bitbucket.org/snippets/ianbuchanan/R8XBo"
-          }
-        }
-      },
       "links": {
         "self": {
-          "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/R8XBo/comments/7428"
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/commit/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554/comments/2626788"
         },
         "html": {
-          "href": "https://bitbucket.org/snippets/ianbuchanan/R8XBo#comment-7428"
+          "href": "https://bitbucket.org/ianbuchanan/example/commits/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554#comment-2626788"
         }
       },
       "content": {
-        "raw": "That looks like a great snippet!",
+        "raw": "This commit has a lot of code!",
         "markup": "markdown",
-        "html": "<p>That looks like a great snippet!</p>"
+        "html": "<p>This commit has a lot of code!</p>"
       },
-      "created_on": "2015-12-05T02:56:49.188956+00:00",
+      "created_on": "2015-12-15T23:15:24.808018+00:00",
+      "user": {
+        "username": "ianbuchanan",
+        "display_name": "Ian Buchanan",
+        "type": "user",
+        "uuid": "{8317ffb8-8e21-4641-8f05-8ce1d074ea6e}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/ianbuchanan"
+          },
+          "html": {
+            "href": "https://bitbucket.org/ianbuchanan/"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/ianbuchanan/avatar/32/"
+          }
+        }
+      },
+      "commit": {
+        "hash": "3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554",
+        "type": "commit",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/commit/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554"
+          },
+          "html": {
+            "href": "https://bitbucket.org/ianbuchanan/example/commits/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554"
+          }
+        }
+      },
+      "updated_on": "2015-12-15T23:15:24.810266+00:00",
+      "id": 2626788
+    },
+    {
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/commit/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554/comments/2626793"
+        },
+        "html": {
+          "href": "https://bitbucket.org/ianbuchanan/example/commits/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554#comment-2626793"
+        }
+      },
+      "parent": {
+        "id": 2626788,
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/commit/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554/comments/2626788"
+          },
+          "html": {
+            "href": "https://bitbucket.org/ianbuchanan/example/commits/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554#comment-2626788"
+          }
+        }
+      },
+      "content": {
+        "raw": "Yes, it sure does!",
+        "markup": "markdown",
+        "html": "<p>Yes, it sure does!</p>"
+      },
+      "created_on": "2015-12-15T23:16:23.418508+00:00",
       "user": {
         "username": "ian_buchanan",
         "display_name": "Ian Buchanan [Atlassian]",
@@ -44,10 +90,20 @@
           }
         }
       },
-      "updated_on": "2015-12-05T02:56:49.311542+00:00",
-      "id": 7428
+      "commit": {
+        "hash": "3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554",
+        "type": "commit",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/commit/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554"
+          },
+          "html": {
+            "href": "https://bitbucket.org/ianbuchanan/example/commits/3dbbc91a3a9246ee0c5287a5ea74c5f16da9b554"
+          }
+        }
+      },
+      "updated_on": "2015-12-15T23:16:23.466128+00:00",
+      "id": 2626793
     }
-  ],
-  "page": 1,
-  "size": 1
+  ]
 }

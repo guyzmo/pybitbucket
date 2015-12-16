@@ -22,6 +22,7 @@ SnippetRole = enum(
 
 class Snippet(BitbucketBase):
     id_attribute = 'id'
+    resource_type = 'snippets'
 
     @staticmethod
     def is_type(data):
@@ -30,19 +31,24 @@ class Snippet(BitbucketBase):
         # Which doesn't follow the pattern of:
         # resource_type/id_attribute
         # So we can't use `has_v2_self_url` to categorize.
-        return (
-            # Categorize as 2.0 structure
-            (data.get('links') is not None) and
-            # It would be nice to categorize as repo-like (repo or snippet).
-            # Unfortunately, only the cannonical URL yields the scm attribute.
-            # In paged results, the attribute is missing.
-            #    (data.get('scm') is not None) and
-            # Categorize as snippet, not repo
-            (data.get('id') is not None) and
-            (data.get('full_name') is None) and
-            # Categorize with _type if it is provided.
-            # Snippets don't have _type
-            (data.get('_type') is None))
+        if (
+                (data.get('links') is None) or
+                (data['links'].get('self') is None) or
+                (data['links']['self'].get('href') is None) or
+                (data.get(Snippet.id_attribute) is None)):
+            return False
+        # Since the structure is right, assume it is v2.
+        is_v2 = True
+        url_path = data['links']['self']['href'].split('/')
+        # Start looking from the end of the path.
+        position = -1
+        is_v2 = is_v2 and (data[Snippet.id_attribute] == url_path[position])
+        # After matching the id_attribute,
+        # skip a position for the account name.
+        # The resource_type should be the preceding part of the path.
+        position -= 2
+        is_v2 = (Snippet.resource_type == url_path[position])
+        return is_v2
 
     def __init__(self, data, client=Client()):
         super(Snippet, self).__init__(data, client=client)

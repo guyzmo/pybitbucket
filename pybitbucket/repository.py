@@ -209,14 +209,11 @@ class RepositoryV1(BitbucketBase):
     "integration_links": {
       "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/links"
     },
-    "pullrequests": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/pullrequests"
-    },
     "services": {
       "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/services"
     },
     "src": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/src{revision,path}"
+      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/src{/revision,path}"
     },
     "wiki": {
       "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/wiki{/page}"

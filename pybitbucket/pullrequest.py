@@ -175,43 +175,4 @@ class PullRequest(BitbucketBase):
             state=state)
 
 
-class PullRequestV1(BitbucketBase):
-    id_attribute = 'name'
-    links_json = """
-{
-  "_links": {
-    "changesets": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/comments"
-    }
-  }
-}
-"""  # noqa
-
-    @staticmethod
-    def is_type(data):
-        return (
-            # TODO: look at a 1.0 shape to see what attributes can be used.
-
-            # Categorize as 1.0 structure
-            (data.get('resource_uri') is not None) and
-            # Categorize as not repo-like (repo or snippet)
-            (data.get('scm') is None) and
-            # Categorize as pull request
-            (data.get('pull_request_id') is not None))
-
-    def self(self):
-        return PullRequest.find_pullrequest_in_repository_by_id(
-            # TODO: look at a 1.0 shape to see what attributes can be used.
-            self.owner,
-            self.slug,
-            self.pull_request_id,
-            client=self.client)
-
-    def __init__(self, data, client=Client()):
-        super(PullRequestV1, self).__init__(data, client)
-        self.add_remote_relationship_methods(
-            json.loads(PullRequestV1.links_json))
-
-
 Client.bitbucket_types.add(PullRequest)
-Client.bitbucket_types.add(PullRequestV1)

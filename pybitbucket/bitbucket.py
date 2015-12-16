@@ -46,8 +46,8 @@ class Client(object):
             response = self.session.get(url)
             self.expect_ok(response)
             json_data = response.json()
-            if json_data.get('page'):
-                for item in json_data.get('values'):
+            if json_data.get('values'):
+                for item in json_data['values']:
                     yield self.convert_to_object(item)
             else:
                 yield self.convert_to_object(json_data)

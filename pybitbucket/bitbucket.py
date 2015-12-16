@@ -110,7 +110,8 @@ class BitbucketBase(object):
         position = -1
         # Since repos have a slash in the full_name,
         # we have to match as many parts as we find (1 or 2).
-        for id_part in data[id_attribute].split('/')[::-1]:
+        # And sometimes the id is an integer.
+        for id_part in str(data[id_attribute]).split('/')[::-1]:
             is_v2 = is_v2 and (id_part == url_path[position])
             position -= 1
         # After matching the id_attribute,

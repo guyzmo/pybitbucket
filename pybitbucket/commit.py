@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+Defines the Commit resource and registers the type with the Client.
+
+Classes:
+- Commit: represents a Git or Hg commit
+"""
+from functools import partial
 from uritemplate import expand
 
 from pybitbucket.bitbucket import BitbucketBase, Client
@@ -10,6 +18,17 @@ class Commit(BitbucketBase):
     @staticmethod
     def is_type(data):
         return (Commit.has_v2_self_url(data))
+
+    # Must override base constructor to account for approve and unapprove
+    def __init__(self, data, client=Client()):
+        super(Commit, self).__init__(data, client=client)
+        # approve and unapprove are just different verbs for same url
+        if data.get('links', {}).get('approve', {}).get('href', {}):
+            url = data['links']['approve']['href']
+            setattr(self, 'approve', partial(
+                self.post_commit_approval, template=url))
+            setattr(self, 'unapprove', partial(
+                self.delete_commit_approval, template=url))
 
     @staticmethod
     def find_commit_in_repository_by_revision(

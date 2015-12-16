@@ -125,14 +125,47 @@ class BitbucketBase(object):
 
     def add_remote_relationship_methods(self, data):
         for name, url in BitbucketBase.links_from(data):
-            setattr(self, name, partial(
-                self.client.remote_relationship,
-                template=url))
+            # Some resources (PullRequests and Commits)
+            # can be approved or unapproved.
+            # These are just different verbs for same url.
+            if name == 'approve':
+                setattr(self, 'approve', partial(
+                    self.post_approval,
+                    template=url))
+                setattr(self, 'unapprove', partial(
+                    self.delete_approval,
+                    template=url))
+            else:
+                setattr(self, name, partial(
+                    self.client.remote_relationship,
+                    template=url))
 
     def add_inline_resources(self, data):
         for name, body in data.items():
-            if isinstance(body, dict):
+            # author is not treated the same on all resources
+            if name == 'author':
+                # For Commits, author has a raw part and
+                # a full User resource.
+                if (body.get('raw') and body.get('user')):
+                    setattr(self, 'raw_author', body['raw'])
+                    setattr(self, 'author', self.client.convert_to_object(
+                        body['user']))
+                # For PullRequests, author is just a User resource.
+                else:
+                    setattr(self, name, self.client.convert_to_object(body))
+            # If an attribute has a dictionary for a body,
+            # then descend to check for embedded resources.
+            elif isinstance(body, dict):
                 setattr(self, name, self.client.convert_to_object(body))
+            # If an attribute has a list for a body,
+            # then descend into the array to check for embedded resources.
+            elif isinstance(body, list):
+                if (body and isinstance(body[0], dict)):
+                    setattr(self, name, [
+                        self.client.convert_to_object(i)
+                        for i in body])
+                else:
+                    setattr(self, name, body)
 
     def __init__(self, data, client=Client()):
         self.data = data
@@ -164,6 +197,18 @@ class BitbucketBase(object):
             **kwargs)
         Client.expect_ok(response)
         return self.client.convert_to_object(response.json())
+
+    def post_approval(self, template):
+        response = self.client.session.post(template)
+        Client.expect_ok(response)
+        json_data = response.json()
+        return json_data.get('approved')
+
+    def delete_approval(self, template):
+        response = self.client.session.delete(template)
+        # Deletes the approval and returns 204 (No Content).
+        Client.expect_ok(response, 204)
+        return True
 
     def attributes(self):
         return list(self.data.keys())

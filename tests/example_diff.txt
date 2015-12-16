@@ -1,0 +1,23 @@
+diff --git a/setup.py b/setup.py
+index 038baac..b18193a 100644
+--- a/setup.py
++++ b/setup.py
+@@ -260,7 +260,7 @@ setup_dict = dict(
+         'docopt==0.6.2',
+         'requests==2.5.3',
+         'uritemplate==0.6',
+-        'pybitbucket==0.1.1',
++        'pybitbucket==0.3.0',
+     ] + python_version_specific_requires,
+     # Allow tests to be run with `python setup.py test'.
+     tests_require=[
+diff --git a/snippet/__init__.py b/snippet/__init__.py
+index d83f693..cc1417f 100644
+--- a/snippet/__init__.py
++++ b/snippet/__init__.py
+@@ -11,3 +11,5 @@ __version__ = metadata.version
+ __author__ = metadata.authors[0]
+ __license__ = metadata.license
+ __copyright__ = metadata.copyright
++
++from main import entry_point as main

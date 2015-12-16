@@ -3,9 +3,11 @@
 Core classes for communicating with the Bitbucket API.
 
 Classes:
-- Config: prototype for HTTP connection information
+- Enumeration: abstraction for a set of enumerated values
 - Client: abstraction over HTTP requests to Bitbucket API
+- BitbucketSpecialAction: an enum of special actions to be handled by children
 - BitbucketBase: parent class for Bitbucket resources
+- Bitbucket: root resource for the whole Bitbucket instance
 - BadRequestError: exception wrapping bad HTTP requests
 - ServerError: exception wrapping server errors
 """
@@ -18,6 +20,27 @@ from uritemplate import expand
 
 from pybitbucket.auth import Anonymous
 from pybitbucket.entrypoints import entrypoints_json
+
+
+class Enumeration(object):
+    @classmethod
+    def values(cls):
+        return [
+            v
+            for (k, v)
+            in vars(cls).items()
+            if not k.startswith('__')]
+
+    @classmethod
+    def expect_valid_value(cls, value):
+        if value not in cls.values():
+            raise NameError(
+                "Value '{}' is not in expected set [{}]."
+                .format(value, '|'.join(str(x) for x in cls.values())))
+
+
+def enum(type_name, **named_values):
+    return type(type_name, (Enumeration,), named_values)
 
 
 class Client(object):
@@ -62,6 +85,14 @@ class Client(object):
     def __init__(self, config=None):
         self.config = config or Anonymous()
         self.session = self.config.session
+
+
+BitbucketSpecialAction = enum(
+    'BitbucketSpecialAction',
+    APPROVE='approve',
+    DECLINE='decline',
+    MERGE='merge',
+    DIFF='diff')
 
 
 @python_2_unicode_compatible
@@ -125,17 +156,7 @@ class BitbucketBase(object):
 
     def add_remote_relationship_methods(self, data):
         for name, url in BitbucketBase.links_from(data):
-            # Some resources (PullRequests and Commits)
-            # can be approved or unapproved.
-            # These are just different verbs for same url.
-            if name == 'approve':
-                setattr(self, 'approve', partial(
-                    self.post_approval,
-                    template=url))
-                setattr(self, 'unapprove', partial(
-                    self.delete_approval,
-                    template=url))
-            else:
+            if (name not in BitbucketSpecialAction.values()):
                 setattr(self, name, partial(
                     self.client.remote_relationship,
                     template=url))
@@ -233,28 +254,6 @@ class Bitbucket(BitbucketBase):
         self.client = client
         self.add_remote_relationship_methods(
             json.loads(entrypoints_json))
-
-
-@python_2_unicode_compatible
-class Enumeration(object):
-    @classmethod
-    def values(cls):
-        return [
-            v
-            for (k, v)
-            in vars(cls).items()
-            if not k.startswith('__')]
-
-    @classmethod
-    def expect_valid_value(cls, value):
-        if value not in cls.values():
-            raise NameError(
-                "Value '{}' is not in expected set [{}]."
-                .format(value, '|'.join(str(x) for x in cls.values())))
-
-
-def enum(type_name, **named_values):
-    return type(type_name, (Enumeration,), named_values)
 
 
 class BitbucketError(HTTPError):

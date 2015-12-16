@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
 """
-Provides a class for manipulating PullRequest resources on Bitbucket.
+Defines the PullRequest resource and registers the type with the Client.
+
+Classes:
+- PullRequest: represents a pull request for code review
 """
+from functools import partial
 from uritemplate import expand
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
@@ -23,20 +28,47 @@ class PullRequest(BitbucketBase):
 
     def __init__(self, data, client=Client()):
         super(PullRequest, self).__init__(data, client=client)
-        if data.get('source'):
-            if data['source'].get('commit'):
-                self.source_commit = client.convert_to_object(
-                    data['source']['commit'])
-            if data['source'].get('repository'):
-                self.source_repository = client.convert_to_object(
-                    data['source']['repository'])
-        if data.get('destination'):
-            if data['destination'].get('commit'):
-                self.destination_commit = client.convert_to_object(
-                    data['destination']['commit'])
-            if data['destination'].get('repository'):
-                self.destination_repository = client.convert_to_object(
-                    data['destination']['repository'])
+        if data.get('source', {}).get('commit', {}):
+            self.source_commit = client.convert_to_object(
+                data['source']['commit'])
+        if data.get('source', {}).get('repository', {}):
+            self.source_repository = client.convert_to_object(
+                data['source']['repository'])
+        if data.get('destination', {}).get('commit', {}):
+            self.destination_commit = client.convert_to_object(
+                data['destination']['commit'])
+        if data.get('destination', {}).get('repository', {}):
+            self.destination_repository = client.convert_to_object(
+                data['destination']['repository'])
+        # Special treatment for approve, decline, merge, and diff
+        if data.get('links', {}).get('approve', {}).get('href', {}):
+            url = data['links']['approve']['href']
+            # Approve is a POST on the approve link
+            setattr(self, 'approve', partial(
+                self.post_approval, template=url))
+            # Unapprove is a DELETE on the approve link
+            setattr(self, 'unapprove', partial(
+                self.delete_approval, template=url))
+        if data.get('links', {}).get('decline', {}).get('href', {}):
+            url = data['links']['decline']['href']
+            # Decline is a POST
+            setattr(self, 'decline', partial(
+                self.post, url=url, data=None))
+        if data.get('links', {}).get('merge', {}).get('href', {}):
+            url = data['links']['merge']['href']
+            # Merge is a POST
+            setattr(self, 'merge', partial(
+                self.post, url=url, data=None))
+        if data.get('links', {}).get('diff', {}).get('href', {}):
+            url = data['links']['diff']['href']
+            # Diff returns plain text
+            setattr(self, 'diff', partial(
+                self.content, url=url))
+
+    def content(self, url):
+        response = self.client.session.get(url)
+        Client.expect_ok(response)
+        return response.content
 
     @staticmethod
     def make_new_pullrequest_payload(

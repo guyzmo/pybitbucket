@@ -26,9 +26,9 @@ class Commit(BitbucketBase):
         if data.get('links', {}).get('approve', {}).get('href', {}):
             url = data['links']['approve']['href']
             setattr(self, 'approve', partial(
-                self.post_commit_approval, template=url))
+                self.post_approval, template=url))
             setattr(self, 'unapprove', partial(
-                self.delete_commit_approval, template=url))
+                self.delete_approval, template=url))
 
     @staticmethod
     def find_commit_in_repository_by_revision(
@@ -112,18 +112,6 @@ class Commit(BitbucketBase):
             include=include,
             exclude=exclude,
             client=client)
-
-    def post_commit_approval(self, template):
-        response = self.client.session.post(template)
-        Client.expect_ok(response)
-        json_data = response.json()
-        return json_data.get('approved')
-
-    def delete_commit_approval(self, template):
-        response = self.client.session.delete(template)
-        # Deletes the approval and returns 204 (No Content).
-        Client.expect_ok(response, 204)
-        return True
 
 
 Client.bitbucket_types.add(Commit)

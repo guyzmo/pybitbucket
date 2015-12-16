@@ -62,7 +62,6 @@ class TestCommit(object):
         assert commit_hash == commit.hash
         assert 'Testing with some copied html' == commit.message
 
-    @httpretty.activate
     def test_commit_author(self):
         commit = self.load_example_commit()
         assert 'Daniel  Stevens <dstevens@atlassian.com>' == commit.raw_author

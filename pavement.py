@@ -161,7 +161,7 @@ def release(part):
         'and `git tag -d {}` to rollback the tag.'
         .format(version))
     # Reload setup_dict to pickup new metadata.version
-    reload(setup_dict)
+    reload(setup)
     # Build the pip package, upload to PyPI, and push
     print(
         'Begin packaging and uploading for {}'.

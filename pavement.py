@@ -160,13 +160,9 @@ def release(part):
         'Use `git reset --hard HEAD~1` to rollback the commit, '
         'and `git tag -d {}` to rollback the tag.'
         .format(version))
+    # Reload setup_dict to pickup new metadata.version
+    reload(setup_dict)
     # Build the pip package, upload to PyPI, and push
-    try:
-        from pybitbucket import metadata
-    except ImportError:
-        print_failure_message('Could not import metadata.')
-        raise SystemExit(1)
-    metadata.version = version
     print(
         'Begin packaging and uploading for {}'.
         format(metadata.version))

@@ -71,14 +71,10 @@ class TestSnippet(object):
             'example_upload_1.txt')
         files = open_files([example_upload])
         new_snip = Snippet.create_snippet(files, client=self.client)
-        # I did not create a pullrequest
-        assert not new_snip.data.get('destination')
+        content_type = httpretty.last_request().headers.get('Content-Type')
+        assert content_type.startswith('multipart/form-data')
+        assert isinstance(new_snip, Snippet)
         assert snip_id == new_snip.id
-        # I got the right title.
-        assert 'Test Snippet' == new_snip.title
-        # I got a public snippet.
-        assert 'False' == new_snip.data['is_private']
-        assert new_snip.isPrivate() is False
 
     @httpretty.activate
     def test_create_snippet_with_two_files(self):
@@ -165,8 +161,7 @@ class TestSnippet(object):
             body=example,
             status=200)
         found_snip = Snippet.find_my_snippet_by_id(snip_id, client=self.client)
-        # I did not get a pullrequest
-        assert not found_snip.data.get('destination')
+        assert isinstance(found_snip, Snippet)
         assert snip_id == found_snip.id
         # I got the right title.
         assert 'Test Snippet' == found_snip.title

@@ -39,6 +39,9 @@ class TestSnippet(object):
             events=['repo:push'],
             client=self.client,
         )
+        assert 'application/json' == \
+            httpretty.last_request().headers.get('Content-Type')
+        assert isinstance(new_hook, Hook)
         assert new_hook.description == 'WebHook Description'
         assert new_hook.url == 'https://example.com/bitbucket/'
         assert new_hook.events == ['repo:push']

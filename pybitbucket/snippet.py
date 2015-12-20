@@ -58,7 +58,6 @@ class Snippet(BitbucketBase):
     @staticmethod
     def make_payload(
             is_private=None,
-            is_unlisted=None,
             title=None,
             scm=None):
         # Since server defaults may change, method defaults are None.
@@ -67,8 +66,6 @@ class Snippet(BitbucketBase):
         payload = {}
         if is_private is not None:
             payload.update({'is_private': is_private})
-        if is_unlisted is not None:
-            payload.update({'is_unlisted': is_unlisted})
         if title is not None:
             payload.update({'title': title})
         if scm is not None:
@@ -79,17 +76,16 @@ class Snippet(BitbucketBase):
     def create_snippet(
             files,
             is_private=None,
-            is_unlisted=None,
             title=None,
             scm=None,
             client=Client()):
-        template = '{+bitbucket_url}/2.0/snippets/{username}'
+        template = '{+bitbucket_url}/2.0/snippets{/username}'
         url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'username': client.get_username()
             })
-        payload = Snippet.make_payload(is_private, is_unlisted, title, scm)
+        payload = Snippet.make_payload(is_private, title, scm)
         response = client.session.post(url, data=payload, files=files)
         Client.expect_ok(response)
         return Snippet(response.json(), client=client)

@@ -50,9 +50,7 @@ class Hook(BitbucketBase):
                 'repository_name': repository_name
             })
         payload = Hook.make_payload(description, callback_url, active, events)
-        response = client.session.post(url, data=json.dumps(payload))
-        Client.expect_ok(response)
-        return Hook(response.json(), client=client)
+        return Hook.post(client, url, json=payload)
 
     @staticmethod
     def find_hook_in_repository_by_uuid(

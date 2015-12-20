@@ -62,7 +62,8 @@ class TestPullRequest(object):
     @httpretty.activate
     def test_create_pullrequest(self):
         url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
+            self.client.get_bitbucket_url() +
+            '/2.0/repositories/' +
             'atlassian/snippet' +
             '/pullrequests')
         example = data_from_file(
@@ -83,8 +84,6 @@ class TestPullRequest(object):
             client=self.client)
         assert 'application/json' == \
             httpretty.last_request().headers.get('Content-Type')
-        print(httpretty.last_request().headers)
-        assert not httpretty.last_request()
         assert isinstance(pr, PullRequest)
 
     def test_pullrequest_merge_commit(self):

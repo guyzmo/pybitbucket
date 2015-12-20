@@ -73,7 +73,6 @@ class TestSnippet(object):
         new_snip = Snippet.create_snippet(files, client=self.client)
         content_type = httpretty.last_request().headers.get('Content-Type')
         assert content_type.startswith('multipart/form-data')
-        assert not httpretty.last_request().headers
         assert isinstance(new_snip, Snippet)
         assert snip_id == new_snip.id
 

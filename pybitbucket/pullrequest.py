@@ -136,7 +136,9 @@ class PullRequest(BitbucketBase):
             close_source_branch,
             description,
             reviewers)
-        return PullRequest.post(url, data=payload)
+        response = client.session.post(url, json=payload)
+        Client.expect_ok(response)
+        return client.convert_to_object(response.json())
 
     """
     A convenience method for finding a specific pull request.

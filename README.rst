@@ -55,11 +55,10 @@ If the resource is plural, like "snippets" above, then the find method is a gene
 You can use it with iterators or comprehensions.
 The resources you can find are:
 
-* commit
-* repository
-* snippet
-* team
-* user
+* user and team
+* repository and snippet
+* commit, pull request, and comment
+* hook
 
 Create Things
 =============
@@ -73,7 +72,11 @@ For example, to create a new snippet:
         title="My New Snippet",
         client=bitbucket)
 
-All resoruces available for finding are available for creation.
+The resources you can create are:
+
+* repository and snippet
+* pull request and comment
+* hook
 
 Examine Things
 ==============

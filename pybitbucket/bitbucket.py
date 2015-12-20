@@ -211,13 +211,11 @@ class BitbucketBase(object):
         Client.expect_ok(response)
         return self.client.convert_to_object(response.json())
 
-    def post(self, url, data, **kwargs):
-        response = self.client.session.post(
-            url,
-            data=data,
-            **kwargs)
+    @staticmethod
+    def post(client, url, json, **kwargs):
+        response = client.session.post(url, json=json, **kwargs)
         Client.expect_ok(response)
-        return self.client.convert_to_object(response.json())
+        return client.convert_to_object(response.json())
 
     def post_approval(self, template):
         response = self.client.session.post(template)

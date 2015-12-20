@@ -53,12 +53,12 @@ class PullRequest(BitbucketBase):
             url = data['links']['decline']['href']
             # Decline is a POST
             setattr(self, 'decline', partial(
-                self.post, url=url, data=None))
+                self.post, client=client, url=url, json=None))
         if data.get('links', {}).get('merge', {}).get('href', {}):
             url = data['links']['merge']['href']
             # Merge is a POST
             setattr(self, 'merge', partial(
-                self.post, url=url, data=None))
+                self.post, client=client, url=url, json=None))
         if data.get('links', {}).get('diff', {}).get('href', {}):
             url = data['links']['diff']['href']
             # Diff returns plain text
@@ -136,9 +136,7 @@ class PullRequest(BitbucketBase):
             close_source_branch,
             description,
             reviewers)
-        response = client.session.post(url, json=payload)
-        Client.expect_ok(response)
-        return client.convert_to_object(response.json())
+        return PullRequest.post(client, url, json=payload)
 
     """
     A convenience method for finding a specific pull request.

@@ -59,6 +59,23 @@ class TestPullRequest(object):
             client=self.client)
         assert isinstance(pr, PullRequest)
 
+    def test_create_payload(self):
+        payload = PullRequest.make_new_pullrequest_payload(
+            title='REQUIRED title',
+            source_branch_name='REQUIRED name',
+            source_repository_full_name='owner/repo_slug',
+            destination_branch_name='name',
+            destination_commit='name',
+            close_source_branch=True,
+            description='description',
+            reviewers=['accountname'])
+        example_path = path.join(
+            self.test_dir,
+            'example_pullrequest_create_payload.json')
+        with open(example_path) as f:
+            example = json.load(f)
+        assert payload == example
+
     @httpretty.activate
     def test_create_pullrequest(self):
         url = (

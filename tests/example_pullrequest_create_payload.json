@@ -1,0 +1,26 @@
+{
+  "title": "REQUIRED title",
+  "description": "description",
+  "source": {
+    "branch": {
+      "name": "REQUIRED name"
+    },
+    "repository": {
+      "full_name": "owner/repo_slug"
+    }
+  },
+  "destination": {
+    "branch": {
+      "name": "name"
+    },
+    "commit": {
+      "hash": "name"
+    }
+  },
+  "reviewers": [
+    {
+      "username": "accountname"
+    }
+  ],
+  "close_source_branch": true
+}

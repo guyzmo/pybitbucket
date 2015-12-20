@@ -78,7 +78,9 @@ class PullRequest(BitbucketBase):
             destination_branch_name,
             close_source_branch=None,
             description=None,
-            reviewers=None):
+            reviewers=None,
+            source_commit=None,
+            destination_commit=None):
         payload = {
             'title': title,
             'source': {
@@ -104,7 +106,15 @@ class PullRequest(BitbucketBase):
         if description is not None:
             payload.update({'description': description})
         if reviewers is not None:
-            [payload.update({'username': u}) for u in reviewers]
+            PullRequest.expect_list('reviewers', reviewers)
+            payload.update(
+                {'reviewers': [{'username': u} for u in reviewers]})
+        if source_commit is not None:
+            payload.get('source', {}).update(
+                {'commit': {'hash': source_commit}})
+        if destination_commit is not None:
+            payload.get('destination', {}).update(
+                {'commit': {'hash': destination_commit}})
         return payload
 
     @staticmethod

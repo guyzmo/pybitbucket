@@ -147,7 +147,7 @@ class PullRequest(BitbucketBase):
             close_source_branch,
             description,
             reviewers)
-        return PullRequest.post(client, url, json=payload)
+        return PullRequest.post(url, json=payload, client=client)
 
     """
     A convenience method for finding a specific pull request.

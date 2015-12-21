@@ -56,7 +56,7 @@ class Hook(BitbucketBase):
                 'repository_name': repository_name
             })
         payload = Hook.make_payload(description, callback_url, active, events)
-        return Hook.post(client, url, json=payload)
+        return Hook.post(url, json=payload, client=client)
 
     @staticmethod
     def find_hook_in_repository_by_uuid(
@@ -83,14 +83,30 @@ class Hook(BitbucketBase):
         return Bitbucket(client=client).repositoryHooks(
             owner=owner, repository_name=repository_name)
 
-    def modify(self, description, url, active, events):
+    def modify(
+            self,
+            description=None,
+            callback_url=None,
+            active=None,
+            events=None):
         """
         A convenience method for changing the current hook.
         The parameters make it easier to know what can be changed.
-        All parameters are required.
         """
-        payload = self.make_payload(description, url, active, events)
-        return self.put(json.dumps(payload))
+        if (description is None):
+            description = self.description
+        if (callback_url is None):
+            callback_url = self.callback_url
+        if (active is None):
+            active = self.active
+        if (events is None):
+            events = self.events
+        payload = self.make_payload(
+            description=description,
+            callback_url=callback_url,
+            active=active,
+            events=events)
+        return self.put(json=payload)
 
     def delete(self):
         """

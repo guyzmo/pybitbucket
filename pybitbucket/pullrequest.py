@@ -3,6 +3,7 @@
 Defines the PullRequest resource and registers the type with the Client.
 
 Classes:
+- PullRequestState: enumerates the possible states of a pull request
 - PullRequest: represents a pull request for code review
 """
 from functools import partial

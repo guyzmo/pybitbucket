@@ -1,4 +1,10 @@
-import json
+# -*- coding: utf-8 -*-
+"""
+Defines the Hook resource and registers the type with the Client.
+
+Classes:
+- Hook: represents a web hook for a repository
+"""
 from uritemplate import expand
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client

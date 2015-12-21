@@ -11,7 +11,7 @@ Classes:
 - BadRequestError: exception wrapping bad HTTP requests
 - ServerError: exception wrapping server errors
 """
-import json
+from json import loads
 from future.utils import python_2_unicode_compatible
 from functools import partial
 from requests import codes
@@ -202,17 +202,14 @@ class BitbucketBase(object):
         Client.expect_ok(response, 204)
         return
 
-    def put(self, data, **kwargs):
+    def put(self, json=None, **kwargs):
         url = self.links['self']['href']
-        response = self.client.session.put(
-            url,
-            data=data,
-            **kwargs)
+        response = self.client.session.put(url, json=json, **kwargs)
         Client.expect_ok(response)
         return self.client.convert_to_object(response.json())
 
     @staticmethod
-    def post(client, url, json, **kwargs):
+    def post(url, json=None, client=Client(), **kwargs):
         response = client.session.post(url, json=json, **kwargs)
         Client.expect_ok(response)
         return client.convert_to_object(response.json())
@@ -249,9 +246,9 @@ class BitbucketBase(object):
 
 class Bitbucket(BitbucketBase):
     def __init__(self, client=Client()):
+        self.data = loads(entrypoints_json)
         self.client = client
-        self.add_remote_relationship_methods(
-            json.loads(entrypoints_json))
+        self.add_remote_relationship_methods(self.data)
 
 
 class BitbucketError(HTTPError):

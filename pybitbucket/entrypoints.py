@@ -51,8 +51,11 @@ entrypoints_json = """
     "repositoryCommitCommentByCommentId": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/commit{/revision}/comments{/comment_id}"
     },
-    "repositoryCommitBuildStatus": {
+    "repositoryCommitBuildStatuses": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/commit{/revision}/statuses/build"
+    },
+    "repositoryCommitBuildStatusByKey": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/commit{/revision}/statuses/build{/key}"
     },
     "repositoryPullRequestsInState": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/pullrequests{?state}"

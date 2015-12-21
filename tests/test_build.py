@@ -8,6 +8,7 @@ from util import data_from_file
 
 from pybitbucket.build import BuildStatus, BuildStatusStates
 from pybitbucket.bitbucket import Client
+from pybitbucket.commit import Commit
 
 
 class TestBuildStatus(object):
@@ -138,3 +139,25 @@ class TestBuildStatus(object):
                 key=key,
                 client=self.client)
         assert isinstance(build_status, BuildStatus)
+
+    @httpretty.activate
+    def test_buildstatus_commit(self):
+        build_status = self.load_example_buildstatus()
+        owner = 'emmap1'
+        repository_name = 'MyRepo'
+        sha = '61d9e64348f9da407e62f64726337fd3bb24b466'
+        url = (
+            'https://api.bitbucket.org' +
+            '/2.0/repositories/' +
+            owner + '/' + repository_name +
+            '/commit/' + sha)
+        example = data_from_file(
+            self.test_dir,
+            'example_single_commit.json')
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        assert isinstance(next(build_status.commit()), Commit)

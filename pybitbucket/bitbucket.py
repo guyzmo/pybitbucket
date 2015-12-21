@@ -255,9 +255,9 @@ class BitbucketBase(object):
 
 class Bitbucket(BitbucketBase):
     def __init__(self, client=Client()):
+        self.data = loads(entrypoints_json)
         self.client = client
-        self.add_remote_relationship_methods(
-            json.loads(entrypoints_json))
+        self.add_remote_relationship_methods(self.data)
 
 
 class BitbucketError(HTTPError):

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Provides classes for manipulating Build status resources
-on Bitbucket commits.
+Defines the BuildStatus resource and registers the type with the Client.
+
+Classes:
+- BuildStatusStates: enumerates the possible states of a build status
+- BuildStatus: represents the result of a build
 """
 from uritemplate import expand
 
-from pybitbucket.bitbucket import BitbucketBase, Client, enum
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 
 BuildStatusStates = enum(
@@ -16,7 +19,7 @@ BuildStatusStates = enum(
 
 
 class BuildStatus(BitbucketBase):
-    id_attribute = 'name'
+    id_attribute = 'key'
     resource_type = 'build'
 
     @staticmethod
@@ -25,37 +28,35 @@ class BuildStatus(BitbucketBase):
 
     @staticmethod
     def make_payload(
-            state=None,
-            key=None,
+            key,
+            state,
+            url,
             name=None,
-            url=None,
             description=None):
+        BuildStatusStates.expect_valid_value(state)
+        payload = {
+            'key': key,
+            'state': state,
+            'url': url,
+        }
         # Since server defaults may change, method defaults are None.
         # If the parameters are not provided, then don't send them
         # so the server can decide what defaults to use.
-        payload = {}
-        if state is not None:
-            BuildStatusStates.expect_valid_value(state)
-            payload.update({'state': state})
-        if key is not None:
-            payload.update({'key': key})
         if name is not None:
             payload.update({'name': name})
-        if url is not None:
-            payload.update({'url': url})
         if description is not None:
             payload.update({'description': description})
         return payload
 
     @staticmethod
     def create_buildstatus(
-            owner=None,
-            repository_name=None,
-            revision=None,
-            state=None,
-            key=None,
+            owner,
+            repository_name,
+            revision,
+            key,
+            state,
+            url,
             name=None,
-            url=None,
             description=None,
             client=Client()):
         template = (
@@ -66,24 +67,85 @@ class BuildStatus(BitbucketBase):
         url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'owner': client.get_username(),
+                'owner': owner,
                 'repository_name': repository_name,
                 'revision': revision
             })
         payload = BuildStatus.make_payload(
-            state, key, name, url, description)
-        response = client.session.post(url, data=payload)
-        Client.expect_ok(response)
-        return BuildStatus(response.json(), client=client)
+            key=key,
+            state=state,
+            url=url,
+            name=name,
+            description=description)
+        return BuildStatus.post(url, json=payload, client=client)
 
     """
     A convenience method for changing the current build status.
     """
-    def modify(self, state=None):
+    def modify(
+            self,
+            key=None,
+            state=None,
+            url=None,
+            name=None,
+            description=None):
+        if (state is None):
+            state = self.state
+        if (key is None):
+            key = self.key
+        if (url is None):
+            url = self.url
+        if (name is None):
+            name = self.name
+        if (description is None):
+            description = self.description
         payload = self.make_payload(
-            state,
-            self.key,
-            self.name,
-            self.url,
-            self.description)
-        return self.put(payload)
+            state=state,
+            key=key,
+            name=name,
+            url=url,
+            description=description)
+        return self.put(json=payload)
+
+    """
+    A convenience method for finding a specific build status.
+    In contrast to the pure hypermedia driven method on the Bitbucket
+    class, this method returns a BuildStatus object, instead of the
+    generator.
+    """
+    @staticmethod
+    def find_buildstatus_for_repository_commit_by_key(
+            repository_name,
+            revision,
+            key,
+            owner=None,
+            client=Client()):
+        if (owner is None):
+            owner = client.get_username()
+        return next(
+            Bitbucket(client=client).repositoryCommitBuildStatusByKey(
+                owner=owner,
+                repository_name=repository_name,
+                revision=revision,
+                key=key))
+
+    """
+    A convenience method for finding build statuses
+    for a repository's commit.
+    The method is a generator BuildStatus objects.
+    """
+    @staticmethod
+    def find_buildstatuses_for_repository_commit(
+            repository_name,
+            revision,
+            owner=None,
+            client=Client()):
+        if (owner is None):
+            owner = client.get_username()
+        return Bitbucket(client=client).repositoryCommitBuildStatuses(
+            owner=owner,
+            repository_name=repository_name,
+            revision=revision)
+
+
+Client.bitbucket_types.add(BuildStatus)

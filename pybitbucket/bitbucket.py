@@ -11,7 +11,7 @@ Classes:
 - BadRequestError: exception wrapping bad HTTP requests
 - ServerError: exception wrapping server errors
 """
-from json import dumps, loads
+from json import loads
 from future.utils import python_2_unicode_compatible
 from functools import partial
 from requests import codes
@@ -204,16 +204,7 @@ class BitbucketBase(object):
 
     def put(self, json=None, **kwargs):
         url = self.links['self']['href']
-        # Temporary work-around until requests gets json for put
-        # https://github.com/kennethreitz/requests/issues/2943
-        headers = {'Content-Type': 'application/json'}
-        headers.update(self.client.session.headers)
-        response = self.client.session.put(
-            url,
-            headers=headers,
-            data=dumps(json),
-            **kwargs)
-        # response = self.client.session.put(url, json=json, **kwargs)
+        response = self.client.session.put(url, json=json, **kwargs)
         Client.expect_ok(response)
         return self.client.convert_to_object(response.json())
 

@@ -59,7 +59,7 @@ The resources you can find are:
 * repository and snippet
 * pull request and comment
 * commit and build status
-* hook
+* hook and branch restriction
 
 Create Things
 =============
@@ -78,7 +78,7 @@ The resources you can create are:
 * repository and snippet
 * pull request and comment
 * build status
-* hook
+* hook and branch restriction
 
 Examine Things
 ==============
@@ -175,8 +175,6 @@ TODO
 ----
 
 * :code:`PUT` and :code:`DELETE` for :code:`snippet.watch` from `snippets Endpoint <https://confluence.atlassian.com/display/BITBUCKET/snippets+endpoint>`_.
-* More version 2 endpoints:
-    - branch-restrictions
 * Wrap the `version 1 endpoints <https://confluence.atlassian.com/display/BITBUCKET/Version+1>`_ for:
     - privileges
     - groups

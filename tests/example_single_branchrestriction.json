@@ -1,0 +1,15 @@
+{
+  "kind": "force",
+  "users": [],
+  "links": {
+    "self": {
+      "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions/913351"
+    },
+    "parent": {
+      "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions"
+    }
+  },
+  "pattern": "bug/*",
+  "groups": [],
+  "id": 913351
+}

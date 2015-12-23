@@ -1,0 +1,85 @@
+{
+  "pagelen": 10,
+  "values": [
+    {
+      "kind": "force",
+      "users": [],
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions/913351"
+        },
+        "parent": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions"
+        }
+      },
+      "pattern": "bug/*",
+      "groups": [],
+      "id": 913351
+    },
+    {
+      "kind": "force",
+      "users": [],
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions/913350"
+        },
+        "parent": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions"
+        }
+      },
+      "pattern": "feature/*",
+      "groups": [],
+      "id": 913350
+    },
+    {
+      "kind": "delete",
+      "users": [],
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions/913348"
+        },
+        "parent": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions"
+        }
+      },
+      "pattern": "feature*",
+      "groups": [],
+      "id": 913348
+    },
+    {
+      "kind": "push",
+      "users": [
+        {
+          "username": "ianbuchanan",
+          "display_name": "Ian Buchanan",
+          "type": "user",
+          "uuid": "{8317ffb8-8e21-4641-8f05-8ce1d074ea6e}",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/users/ianbuchanan"
+            },
+            "html": {
+              "href": "https://bitbucket.org/ianbuchanan/"
+            },
+            "avatar": {
+              "href": "https://bitbucket.org/account/ianbuchanan/avatar/32/"
+            }
+          }
+        }
+      ],
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions/913347"
+        },
+        "parent": {
+          "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/branch-restrictions"
+        }
+      },
+      "pattern": "master",
+      "groups": [],
+      "id": 913347
+    }
+  ],
+  "page": 1,
+  "size": 4
+}

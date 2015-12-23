@@ -87,11 +87,17 @@ entrypoints_json = """
     "repositoryHookById": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/hooks{/uuid}"
     },
-    "snippetByOwnerAndSnippetId": {
-      "href": "https://api.bitbucket.org/2.0/snippets{/owner,snippet_id}"
+    "snippetsThatArePublic": {
+      "href": "https://api.bitbucket.org/2.0/snippets"
     },
     "snippetsForRole": {
       "href": "https://api.bitbucket.org/2.0/snippets{?role}"
+    },
+    "snippetByOwner": {
+      "href": "https://api.bitbucket.org/2.0/snippets{/owner}"
+    },
+    "snippetByOwnerAndSnippetId": {
+      "href": "https://api.bitbucket.org/2.0/snippets{/owner,snippet_id}"
     },
     "snippetCommentByCommentId": {
       "href": "https://api.bitbucket.org/2.0/snippets{/owner,snippet_id}/comments{/comment_id}"

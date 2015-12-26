@@ -230,7 +230,9 @@ class BitbucketBase(object):
         return list(self.data.keys())
 
     def relationships(self):
-        return list(self.data['links'].keys())
+        return (
+            list(self.data.get('_links', {}).keys()) +
+            list(self.data.get('links', {}).keys()))
 
     def __repr__(self):
         return u'{name}({data})'.format(

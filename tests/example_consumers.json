@@ -1,0 +1,38 @@
+[
+  {
+    "name": "self-registered-client-2",
+    "url": "http://domainarchetypes.com/",
+    "secret": "96ztLLDzvrT5zmchsdZZLKCkTMkUkb4W",
+    "key": "6qErCQRtk2nmVHuemM",
+    "callback_url": "http://localhost",
+    "id": 302126,
+    "description": "I added this consumer via the REST API."
+  },
+  {
+    "name": "another-client",
+    "url": "",
+    "secret": "YyCz6TCMCsMC9d4wLWKy6LuCfUXLXY4Y",
+    "key": "KUPYkaxW2q42UjC867",
+    "callback_url": "",
+    "id": 286720,
+    "description": ""
+  },
+  {
+    "name": "self-registered-client",
+    "url": "http://domainarchetypes.com/",
+    "secret": "BtC69hgWkNymYH9H7BLHpxjTfpvsLmFz",
+    "key": "XB7hhHgpC5jgcTZ4Ln",
+    "callback_url": "http://localhost",
+    "id": 302125,
+    "description": "I added this consumer via the REST API."
+  },
+  {
+    "name": "some-client",
+    "url": "",
+    "secret": "nwxtGEhsrPTkFTW3L6SUhV7QrpQgNPH6",
+    "key": "QvrEA2QXGLnEPBpz3U",
+    "callback_url": "https://localhost/",
+    "id": 286717,
+    "description": ""
+  }
+]

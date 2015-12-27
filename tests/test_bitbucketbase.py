@@ -8,6 +8,9 @@ from pybitbucket.bitbucket import BitbucketBase
 
 
 class BitbucketFixture(object):
+    # GIVEN: a class under test
+    class_under_test = 'Bitbucket'
+
     # GIVEN: a utility for deciding where test data lives
     @classmethod
     def test_dir(cls):
@@ -26,6 +29,24 @@ class BitbucketFixture(object):
 
     # GIVEN: A test Bitbucket client with test credentials
     test_client = Client(TestAuth())
+
+    # GIVEN: Example data for a resource
+    @classmethod
+    def resource_data(cls):
+        file_name = '{}.json'.format(cls.class_under_test)
+        return cls.data_from_file(file_name)
+
+    # GIVEN: Example data for a set of resources
+    @classmethod
+    def resource_list_data(cls):
+        file_name = '{}_list.json'.format(cls.class_under_test)
+        return cls.data_from_file(file_name)
+
+    # GIVEN: The URL for the example resource
+    @classmethod
+    def resource_url(cls):
+        o = cls.example_object()
+        return o.links['self']['href']
 
 
 class BitbucketBaseFixture(BitbucketFixture):

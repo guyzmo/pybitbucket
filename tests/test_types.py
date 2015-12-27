@@ -43,5 +43,5 @@ class TestTypes(object):
 
     def test_user(self):
         import pybitbucket.user  # noqa
-        s = "%s" % self.object_from_file('example_single_user.json')
+        s = "%s" % self.object_from_file('User.json')
         assert s.startswith('User username:')

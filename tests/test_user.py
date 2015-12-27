@@ -1,85 +1,98 @@
 # -*- coding: utf-8 -*-
-import httpretty
+from test_bitbucketbase import BitbucketFixture
+
 import json
-from os import path
-from test_auth import TestAuth
-
-from util import data_from_file
-
 from pybitbucket.user import User
-from pybitbucket.bitbucket import Client
+from pybitbucket.bitbucket import Bitbucket
+
+import httpretty
 
 
-class TestUser(object):
+class UserFixture(BitbucketFixture):
+    # GIVEN: a class under test
+    class_under_test = 'User'
+
+    # GIVEN: An example object created from example data
+    @classmethod
+    def example_object(cls):
+        return User(
+            json.loads(cls.resource_data()),
+            client=cls.test_client)
+
+    # GIVEN: Example data attributes a user
+    username = 'evzijst'
+
+
+class TestGettingTheStringRepresentation(UserFixture):
     @classmethod
     def setup_class(cls):
-        cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client(TestAuth())
+        cls.branchrestriction_str = str(cls.example_object())
 
-    def load_example_user(self):
-        example_path = path.join(
-            self.test_dir,
-            'example_single_user.json')
-        with open(example_path) as f:
-            example = json.load(f)
-        return User(example, client=self.client)
+    def test_string_is_not_the_default_format(self):
+        assert not self.branchrestriction_str.startswith('<')
+        assert not self.branchrestriction_str.endswith('>')
 
-    def test_user_string_representation(self):
-        # Just tests that the __str__ method works and
-        # that it does not use the default representation
-        user_str = "%s" % self.load_example_user()
-        assert not user_str.startswith('<')
-        assert not user_str.endswith('>')
-        assert user_str.startswith('User username:')
+    def test_string_has_the_class_name_and_id_attribute(self):
+        assert self.branchrestriction_str.startswith('User username:')
 
+
+class TestCheckingTheExampleData(UserFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.data = json.loads(cls.resource_data())
+
+    def test_passes_the_type_check(self):
+        assert User.is_type(self.data)
+
+
+class TestFindingUserByUsername(UserFixture):
     @httpretty.activate
-    def test_find_user_by_username(self):
-        url = ('https://api.bitbucket.org/2.0/users/evzijst')
-        example = data_from_file(
-            self.test_dir,
-            'example_single_user.json')
+    def test_response_is_a_user(self):
         httpretty.register_uri(
             httpretty.GET,
-            url,
+            self.resource_url(),
             content_type='application/json',
-            body=example,
+            body=self.resource_data(),
             status=200)
-        user = User.find_user_by_username('evzijst', client=self.client)
-        assert isinstance(user, User)
-        assert 'evzijst' == user.username
-        assert 'Erik van Zijst' == user.display_name
+        response = User.find_user_by_username(
+            username=self.username,
+            client=self.test_client)
+        assert isinstance(response, User)
+        assert 'evzijst' == response.username
+        assert 'Erik van Zijst' == response.display_name
 
-    @httpretty.activate
-    def test_find_current_user(self):
-        url = ('https://api.bitbucket.org/2.0/user')
-        example = data_from_file(
-            self.test_dir,
-            'example_single_user.json')
-        httpretty.register_uri(
-            httpretty.GET,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        user = User.find_current_user(client=self.client)
-        assert isinstance(user, User)
-        assert 'evzijst' == user.username
-        assert 'Erik van Zijst' == user.display_name
 
+class TestFindingCurrentUser(UserFixture):
     @httpretty.activate
-    def test_followers(self):
-        user = self.load_example_user()
+    def test_response_is_a_user(self):
         url = (
-            'https://api.bitbucket.org/2.0/users/' +
-            'evzijst/followers')
-        example = data_from_file(
-            self.test_dir,
-            'example_followers.json')
+            Bitbucket(client=self.test_client)
+            .data
+            .get('_links', {})
+            .get('userForMyself', {})
+            .get('href'))
         httpretty.register_uri(
             httpretty.GET,
             url,
             content_type='application/json',
-            body=example,
+            body=self.resource_data(),
+            status=200)
+        response = User.find_current_user(client=self.test_client)
+        assert isinstance(response, User)
+        assert 'evzijst' == response.username
+        assert 'Erik van Zijst' == response.display_name
+
+
+class TestCallingFollowersLink(UserFixture):
+    @httpretty.activate
+    def test_response_is_a_list_of_users(self):
+        user = self.example_object()
+        url = (user.links.get('followers', {}).get('href'))
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=self.resource_list_data(),
             status=200)
         assert list(user.followers())
         assert isinstance(next(user.followers()), User)

@@ -1,26 +1,13 @@
 # -*- coding: utf-8 -*-
-from os import path
-from test_auth import TestAuth
-from pybitbucket.bitbucket import Client
+from test_bitbucketbase import BitbucketFixture
 
 import json
 from uritemplate import expand
-from util import data_from_file
 from pybitbucket.bitbucket import Bitbucket
 from pybitbucket.branchrestriction import (
     BranchRestriction, BranchRestrictionKind)
 
 import httpretty
-
-
-class BitbucketFixture(object):
-    # GIVEN: A test Bitbucket client with test credentials
-    test_client = Client(TestAuth())
-
-    @classmethod
-    def test_dir(cls):
-        this_dir, this_file = path.split(path.abspath(__file__))
-        return this_dir
 
 
 class BranchRestrictionFixture(BitbucketFixture):
@@ -34,16 +21,12 @@ class BranchRestrictionFixture(BitbucketFixture):
     # GIVEN: Example data for a branch-restriction resource
     @classmethod
     def resource_data(cls):
-        return data_from_file(
-            cls.test_dir(),
-            'example_single_branchrestriction.json')
+        return cls.data_from_file('example_single_branchrestriction.json')
 
     # GIVEN: Example data for a set of branch-restriction resources
     @classmethod
     def resources_data(cls):
-        return data_from_file(
-            cls.test_dir(),
-            'example_branchrestrictions.json')
+        return cls.data_from_file('example_branchrestrictions.json')
 
     # GIVEN: An example BranchRestriction object created from example data
     @classmethod

@@ -14,6 +14,12 @@ class User(BitbucketBase):
     def is_type(data):
         return (User.has_v2_self_url(data))
 
+    def __init__(self, data, client=Client()):
+        super(User, self).__init__(data, client=client)
+        # Some relationships are only available via the 1.0 API.
+        # Create a "mock" UserV1 for those links.
+        self.v1 = UserV1(data, client)
+
     """
     A convenience method for finding the current user.
     In contrast to the pure hypermedia driven method on the Bitbucket
@@ -49,7 +55,23 @@ class UserV1(BitbucketBase):
     },
     "events": {
       "href": "https://api.bitbucket.org/1.0/users{/username}/events"
+    },
+    "consumers": {
+      "href": "https://api.bitbucket.org/1.0/users{/username}/consumers"
+    },
+    "emails": {
+      "href": "https://api.bitbucket.org/1.0/users{/username}/emails"
+    },
+    "invitations": {
+      "href": "https://api.bitbucket.org/1.0/users{/username}/invitations"
+    },
+    "privileges": {
+      "href": "https://api.bitbucket.org/1.0/users{/username}/privileges"
+    },
+    "ssh-keys": {
+      "href": "https://api.bitbucket.org/1.0/users{/username}/ssh-keys"
     }
+  }
 }
 """
 
@@ -71,7 +93,7 @@ class UserV1(BitbucketBase):
             client=self.client)
 
     def __init__(self, data, client=Client()):
-        # This completely override the base constructor
+        # This completely overrides the base constructor
         # because the user data is a child of the root object.
         self.data = data
         self.client = client

@@ -151,7 +151,7 @@ class TestFindingBranchRestrictionById(BranchRestrictionFixture):
             httpretty.GET,
             self.resource_url(),
             content_type='application/json',
-            body=self.resources_data(),
+            body=self.resource_data(),
             status=200)
         response = \
             BranchRestriction.find_branchrestriction_for_repository_by_id(

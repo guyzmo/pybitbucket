@@ -41,14 +41,14 @@ class UserV1Fixture(BitbucketFixture):
 class TestGettingTheStringRepresentation(UserFixture):
     @classmethod
     def setup_class(cls):
-        cls.branchrestriction_str = str(cls.example_object())
+        cls.user_str = str(cls.example_object())
 
     def test_string_is_not_the_default_format(self):
-        assert not self.branchrestriction_str.startswith('<')
-        assert not self.branchrestriction_str.endswith('>')
+        assert not self.user_str.startswith('<')
+        assert not self.user_str.endswith('>')
 
     def test_string_has_the_class_name_and_id_attribute(self):
-        assert self.branchrestriction_str.startswith('User username:')
+        assert self.user_str.startswith('User username:')
 
 
 class TestCheckingTheExampleData(UserFixture):

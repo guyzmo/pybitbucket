@@ -50,7 +50,7 @@ class TestEmbeddedResources(object):
         example = json.loads(
                 data_from_file(
                     self.test_dir,
-                    'example_single_repository.json'))
+                    'Repository.json'))
         my_repo = self.client.convert_to_object(example)
         assert isinstance(my_repo, Repository)
         assert isinstance(my_repo.owner, Team)

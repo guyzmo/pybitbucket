@@ -53,7 +53,7 @@ class BitbucketBaseFixture(BitbucketFixture):
     # GIVEN: Example data for a Bitbucket resource with links
     @classmethod
     def repository_data(cls):
-        return cls.data_from_file('example_single_repository.json')
+        return cls.data_from_file('Repository.json')
 
 
 class TestGettingLinksFromExampleData(BitbucketBaseFixture):
@@ -74,7 +74,7 @@ class TestGettingLinksFromExampleData(BitbucketBaseFixture):
         # And they cannot be traversed with an HTTP client.
         assert not self.links.get('clone')
 
-    def test_count_matches_seven(self):
+    def test_count_matches_nine(self):
         # Count of the links in the example data,
         # not including the clone links.
-        assert 7 == len(list(self.links))
+        assert 9 == len(list(self.links))

@@ -28,7 +28,7 @@ class TestTypes(object):
 
     def test_repository(self):
         import pybitbucket.repository  # noqa
-        s = "%s" % self.object_from_file('example_single_repository.json')
+        s = "%s" % self.object_from_file('Repository.json')
         assert s.startswith('Repository full_name:')
 
     def test_snippet(self):

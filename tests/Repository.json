@@ -1,30 +1,17 @@
 {
   "scm": "git",
-  "_type": "repository",
   "has_wiki": false,
   "name": "teamsinspace.bitbucket.org",
   "links": {
     "watchers": {
       "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org/watchers"
     },
-    "commits": {
-      "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org/commits"
-    },
-    "self": {
-      "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org"
-    },
-    "html": {
-      "href": "https://bitbucket.org/teamsinspace/teamsinspace.bitbucket.org"
-    },
-    "avatar": {
-      "href": "https://d3oaxc4q5k2d6q.cloudfront.net/m/178574514dce/img/language-avatars/default_16.png"
-    },
-    "forks": {
-      "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org/forks"
+    "hooks": {
+      "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org/hooks"
     },
     "clone": [
       {
-        "href": "https://ian_buchanan@bitbucket.org/teamsinspace/teamsinspace.bitbucket.org.git",
+        "href": "https://ianbuchanan@bitbucket.org/teamsinspace/teamsinspace.bitbucket.org.git",
         "name": "https"
       },
       {
@@ -32,6 +19,24 @@
         "name": "ssh"
       }
     ],
+    "self": {
+      "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org"
+    },
+    "html": {
+      "href": "https://bitbucket.org/teamsinspace/teamsinspace.bitbucket.org"
+    },
+    "avatar": {
+      "href": "https://bitbucket.org/teamsinspace/teamsinspace.bitbucket.org/avatar/32/"
+    },
+    "commits": {
+      "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org/commits"
+    },
+    "forks": {
+      "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org/forks"
+    },
+    "downloads": {
+      "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org/downloads"
+    },
     "pullrequests": {
       "href": "https://api.bitbucket.org/2.0/repositories/teamsinspace/teamsinspace.bitbucket.org/pullrequests"
     }
@@ -44,22 +49,24 @@
   "has_issues": false,
   "owner": {
     "username": "teamsinspace",
-    "display_name": "Teams In Space",
+    "display_name": "Teams In Space ",
+    "type": "team",
     "uuid": "{61fc5cf6-d054-47d2-b4a9-061ccf858379}",
     "links": {
       "self": {
         "href": "https://api.bitbucket.org/2.0/teams/teamsinspace"
       },
       "html": {
-        "href": "https://bitbucket.org/teamsinspace"
+        "href": "https://bitbucket.org/teamsinspace/"
       },
       "avatar": {
-        "href": "https://bitbucket-assetroot.s3.amazonaws.com/c/photos/2014/Sep/24/teamsinspace-avatar-3731530358-7_avatar.png"
+        "href": "https://bitbucket.org/account/teamsinspace/avatar/32/"
       }
     }
   },
   "updated_on": "2014-09-25T17:36:42.979044+00:00",
   "size": 76152,
+  "type": "repository",
   "is_private": false,
   "description": ""
 }

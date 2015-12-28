@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 from uritemplate import expand
 
 from pybitbucket.bitbucket import BitbucketBase, Client, enum
@@ -51,29 +50,14 @@ class Consumer(BitbucketBase):
             (data.get('secret') is not None) and
             (data.get('key') is not None))
 
-    @staticmethod
-    def expand_link_urls(data, **kwargs):
-        payload = {}
-        for name, template in BitbucketBase.links_from(data):
-            url = expand(template, kwargs)
-            payload.update({name: {'href': url}})
-        return payload
-
     def __init__(self, data, client=Client()):
         super(Consumer, self).__init__(data, client=client)
-        self.links = Consumer.expand_link_urls(
-            json.loads(self.links_json),
+        expanded_links = self.expand_link_urls(
             bitbucket_url=client.get_bitbucket_url(),
             username=client.get_username(),
             consumer_id=data.get('id'))
-        self.add_remote_relationship_methods(
-            json.loads(Consumer.links_json))
-
-    @staticmethod
-    def get_link(name):
-        links = json.loads(Consumer.links_json)
-        template = links.get('_links', {}).get(name, {}).get('href')
-        return template
+        self.links = expanded_links.get('_links', {})
+        self.add_remote_relationship_methods(expanded_links)
 
     @staticmethod
     def payload(
@@ -109,7 +93,7 @@ class Consumer(BitbucketBase):
             callback_url=None,
             client=Client()):
         post_url = expand(
-            Consumer.get_link('consumers'), {
+            Consumer.get_link_template('consumers'), {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'username': client.get_username()
             })
@@ -147,17 +131,11 @@ class Consumer(BitbucketBase):
     @staticmethod
     def find_consumers(client=Client()):
         url = expand(
-            Consumer.get_link('consumers'), {
+            Consumer.get_link_template('consumers'), {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'username': client.get_username()
             })
-        # Can't use typical `remote_relationship` on lists from 1.0 API.
-        # Instead, we assume the shape is a list of Consumer resources.
-        response = client.session.get(url)
-        client.expect_ok(response)
-        json_data = response.json()
-        for item in json_data:
-            yield client.convert_to_object(item)
+        return client.remote_relationship(url)
 
     """
     Finding a specific consumer by id for the authenticated user.
@@ -165,7 +143,7 @@ class Consumer(BitbucketBase):
     @staticmethod
     def find_consumer_by_id(consumer_id, client=Client()):
         url = expand(
-            Consumer.get_link('self'), {
+            Consumer.get_link_template('self'), {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'username': client.get_username(),
                 'consumer_id': consumer_id,

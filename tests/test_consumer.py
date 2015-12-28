@@ -36,7 +36,7 @@ class ConsumerFixture(BitbucketFixture):
     @classmethod
     def resources_url(cls):
         return expand(
-            Consumer.get_link('consumers'), {
+            Consumer.get_link_template('consumers'), {
                 'bitbucket_url': cls.test_client.get_bitbucket_url(),
                 'username': cls.test_client.get_username()})
 
@@ -74,9 +74,9 @@ class TestCheckingTheExampleData(ConsumerFixture):
 class TestGettingLinks(ConsumerFixture):
     @classmethod
     def setup_class(cls):
-        cls._self = Consumer.get_link('self')
-        cls._owner = Consumer.get_link('owner')
-        cls._consumers = Consumer.get_link('consumers')
+        cls._self = Consumer.get_link_template('self')
+        cls._owner = Consumer.get_link_template('owner')
+        cls._consumers = Consumer.get_link_template('consumers')
 
     def test_self_has_an_id(self):
         assert 'consumer_id' in variables(self._self)

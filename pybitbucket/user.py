@@ -1,8 +1,6 @@
 """
 Provides a class for manipulating User resources on Bitbucket.
 """
-import json
-
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
 
 
@@ -48,28 +46,28 @@ class UserV1(BitbucketBase):
 {
   "_links": {
     "plan": {
-      "href": "https://api.bitbucket.org/1.0/users{/username}/plan"
+      "href": "{+bitbucket_url}/1.0/users{/username}/plan"
     },
     "followers": {
-      "href": "https://api.bitbucket.org/1.0/users{/username}/followers"
+      "href": "{+bitbucket_url}/1.0/users{/username}/followers"
     },
     "events": {
-      "href": "https://api.bitbucket.org/1.0/users{/username}/events"
+      "href": "{+bitbucket_url}/1.0/users{/username}/events"
     },
     "consumers": {
-      "href": "https://api.bitbucket.org/1.0/users{/username}/consumers"
+      "href": "{+bitbucket_url}/1.0/users{/username}/consumers"
     },
     "emails": {
-      "href": "https://api.bitbucket.org/1.0/users{/username}/emails"
+      "href": "{+bitbucket_url}/1.0/users{/username}/emails"
     },
     "invitations": {
-      "href": "https://api.bitbucket.org/1.0/users{/username}/invitations"
+      "href": "{+bitbucket_url}/1.0/users{/username}/invitations"
     },
     "privileges": {
-      "href": "https://api.bitbucket.org/1.0/users{/username}/privileges"
+      "href": "{+bitbucket_url}/1.0/users{/username}/privileges"
     },
     "ssh-keys": {
-      "href": "https://api.bitbucket.org/1.0/users{/username}/ssh-keys"
+      "href": "{+bitbucket_url}/1.0/users{/username}/ssh-keys"
     }
   }
 }
@@ -104,8 +102,11 @@ class UserV1(BitbucketBase):
                 client.convert_to_object(r)
                 for r
                 in data['repositories']]
-        self.add_remote_relationship_methods(
-            json.loads(UserV1.links_json))
+        expanded_links = self.expand_link_urls(
+            bitbucket_url=client.get_bitbucket_url(),
+            username=data.get('username'))
+        self.links = expanded_links.get('_links', {})
+        self.add_remote_relationship_methods(expanded_links)
 
 
 Client.bitbucket_types.add(User)

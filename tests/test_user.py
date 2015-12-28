@@ -2,7 +2,7 @@
 from test_bitbucketbase import BitbucketFixture
 
 import json
-from pybitbucket.user import User
+from pybitbucket.user import User, UserV1
 from pybitbucket.bitbucket import Bitbucket
 
 import httpretty
@@ -21,6 +21,21 @@ class UserFixture(BitbucketFixture):
 
     # GIVEN: Example data attributes a user
     username = 'evzijst'
+
+
+class UserV1Fixture(BitbucketFixture):
+    # GIVEN: a class under test
+    class_under_test = 'UserV1'
+
+    # GIVEN: An example object created from example data
+    @classmethod
+    def example_object(cls):
+        return UserV1(
+            json.loads(cls.resource_data()),
+            client=cls.test_client)
+
+    # GIVEN: Example data attributes a user
+    username = 'ianbuchanan'
 
 
 class TestGettingTheStringRepresentation(UserFixture):
@@ -43,6 +58,15 @@ class TestCheckingTheExampleData(UserFixture):
 
     def test_passes_the_type_check(self):
         assert User.is_type(self.data)
+
+
+class TestCheckingTheExampleDataForV1(UserV1Fixture):
+    @classmethod
+    def setup_class(cls):
+        cls.data = json.loads(cls.resource_data())
+
+    def test_passes_the_type_check(self):
+        assert UserV1.is_type(self.data)
 
 
 class TestFindingUserByUsername(UserFixture):
@@ -87,7 +111,7 @@ class TestCallingFollowersLink(UserFixture):
     @httpretty.activate
     def test_response_is_a_list_of_users(self):
         user = self.example_object()
-        url = (user.links.get('followers', {}).get('href'))
+        url = user.links.get('followers', {}).get('href')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -96,3 +120,28 @@ class TestCallingFollowersLink(UserFixture):
             status=200)
         assert list(user.followers())
         assert isinstance(next(user.followers()), User)
+
+
+class TestCommonAttributesForV1andV2(UserV1Fixture):
+    @httpretty.activate
+    def test_attributes_are_not_empty(self):
+        user = self.example_object()
+        assert user.username
+        assert user.display_name
+
+
+class TestNavigatingToOAuthConsumers(UserFixture):
+    @httpretty.activate
+    def test_attributes_are_not_empty(self):
+        from pybitbucket.consumer import Consumer
+        user = self.example_object()
+        url = user.v1.links.get('consumers', {}).get('href')
+        example = self.data_from_file('example_consumers.json')
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            content_type='application/json',
+            body=example,
+            status=200)
+        assert list(user.v1.consumers())
+        assert isinstance(next(user.v1.consumers()), Consumer)

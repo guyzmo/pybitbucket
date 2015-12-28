@@ -84,6 +84,11 @@ class Consumer(BitbucketBase):
             payload.append(('callback_url', callback_url))
         return payload
 
+    """
+    A convenience method for creating a new consumer.
+    The parameters make it easier to know what can be changed.
+    Consumers can only be created for the currently authenticated user.
+    """
     @staticmethod
     def create(
             name,
@@ -110,6 +115,7 @@ class Consumer(BitbucketBase):
     """
     A convenience method for changing the current consumer.
     The parameters make it easier to know what can be changed.
+    Consumers can only be modified for the currently authenticated user.
     """
     def update(
             self,

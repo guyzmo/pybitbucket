@@ -191,6 +191,15 @@ class RepositoryV1(BitbucketBase):
     links_json = """
 {
   "_links": {
+    "self": {
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}"
+    },
+    "owner": {
+      "href": "{+bitbucket_url}/1.0/repositories{/owner}"
+    },
+    "repositories": {
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}"
+    },
     "changesets": {
       "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/changesets{?limit,start}"
     },

@@ -23,7 +23,7 @@ class TestTypes(object):
 
     def test_commit(self):
         import pybitbucket.commit  # noqa
-        s = "%s" % self.object_from_file('example_single_commit.json')
+        s = "%s" % self.object_from_file('Commit.json')
         assert s.startswith('Commit hash:')
 
     def test_repository(self):

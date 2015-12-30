@@ -22,7 +22,7 @@ class TestEmbeddedResources(object):
         example_commit = json.loads(
                 data_from_file(
                     cls.test_dir,
-                    'example_single_commit.json'))
+                    'Commit.json'))
         cls.commit = cls.client.convert_to_object(example_commit)
 
     def test_webhook_subject_is_a_repository(self):

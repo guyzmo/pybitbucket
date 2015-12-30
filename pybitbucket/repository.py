@@ -31,6 +31,9 @@ RepositoryType = enum(
 class Repository(BitbucketBase):
     id_attribute = 'full_name'
     resource_type = 'repositories'
+    templates = {
+        'create': '{+bitbucket_url}/2.0/repositories{/owner,repository_name}'
+    }
 
     @staticmethod
     def is_type(data):
@@ -45,75 +48,66 @@ class Repository(BitbucketBase):
                 in data['links']['clone']}
 
     @staticmethod
-    def make_new_repository_payload(
-            fork_policy,
-            is_private,
-            scm=None,
-            name=None,
+    def payload(
+            repository_name=None,
             description=None,
-            language=None,
+            scm=None,
+            fork_policy=None,
+            is_private=None,
             has_issues=None,
-            has_wiki=None):
+            has_wiki=None,
+            language=None,
+            **kwargs):
         # Since server defaults may change, method defaults are None.
         # If the parameters are not provided, then don't send them
         # so the server can decide what defaults to use.
         payload = {}
-        RepositoryForkPolicy.expect_valid_value(fork_policy)
-        payload.update({'fork_policy': fork_policy})
-        Repository.expect_bool('is_private', is_private)
-        payload.update({'is_private': is_private})
+        if repository_name is not None:
+            payload.update({'name': repository_name})
+        if description is not None:
+            payload.update({'description': description})
         if scm is not None:
             RepositoryType.expect_valid_value(scm)
             payload.update({'scm': scm})
-        if name is not None:
-            payload.update({'name': name})
-        if description is not None:
-            payload.update({'description': description})
-        if language is not None:
-            payload.update({'language': language})
+        if fork_policy is not None:
+            RepositoryForkPolicy.expect_valid_value(fork_policy)
+            payload.update({'fork_policy': fork_policy})
+        if is_private is not None:
+            Repository.expect_bool('is_private', is_private)
+            payload.update({'is_private': is_private})
         if has_issues is not None:
             Repository.expect_bool('has_issues', has_issues)
             payload.update({'has_issues': has_issues})
         if has_wiki is not None:
             Repository.expect_bool('has_wiki', has_wiki)
             payload.update({'has_wiki': has_wiki})
+        if language is not None:
+            payload.update({'language': language})
         return payload
 
-    @staticmethod
-    def create_repository(
-            username,
+    @classmethod
+    def create(
+            cls,
             repository_name,
             fork_policy,
             is_private,
-            scm=None,
-            name=None,
+            owner=None,
             description=None,
-            language=None,
+            scm=None,
             has_issues=None,
             has_wiki=None,
+            language=None,
             client=Client()):
-        template = (
-            '{+bitbucket_url}' +
-            '/2.0/repositories/{username}/{repository_name}')
+        if owner is None:
+            owner = client.get_username()
+        payload = cls.payload(**locals())
         url = expand(
-            template,
-            {
+            cls.templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'username': username,
-                'repository_name': repository_name
+                'owner': owner,
+                'repository_name': repository_name,
             })
-        payload = Repository.make_new_repository_payload(
-            fork_policy,
-            is_private,
-            scm,
-            name,
-            description,
-            language,
-            has_issues,
-            has_wiki)
-        response = client.session.post(url, data=payload)
-        Client.expect_ok(response)
-        return client.convert_to_object(response.json())
+        return cls.post(url, json=payload, client=client)
 
     """
     A convenience method for finding a specific repository.
@@ -122,10 +116,12 @@ class Repository(BitbucketBase):
     generator.
     """
     @staticmethod
-    def find_repository_by_owner_and_name(
-            owner,
+    def find_repository_by_name_and_owner(
             repository_name,
+            owner=None,
             client=Client()):
+        if owner is None:
+            owner = client.get_username()
         return next(
             Bitbucket(client=client).repositoryByOwnerAndRepositoryName(
                 owner=owner,
@@ -139,15 +135,15 @@ class Repository(BitbucketBase):
     """
     @staticmethod
     def find_repository_by_full_name(
-            repository_full_name,
+            full_name,
             client=Client()):
-        if '/' not in repository_full_name:
-            raise NameError(
+        if '/' not in full_name:
+            raise TypeError(
                 "Repository full name must be in the form: username/name")
-        owner, repository_name = repository_full_name.split('/')
-        return Repository.find_repository_by_owner_and_name(
-            owner,
-            repository_name,
+        owner, repository_name = full_name.split('/')
+        return Repository.find_repository_by_name_and_owner(
+            owner=owner,
+            repository_name=repository_name,
             client=client)
 
     """
@@ -161,28 +157,18 @@ class Repository(BitbucketBase):
     """
     A convenience method for finding a user's repositories.
     The method is a generator Repository objects.
+    When no owner is provided, it uses the currently authenticated user.
     """
     @staticmethod
     def find_repositories_by_owner_and_role(
-            owner,
+            owner=None,
             role=RepositoryRole.OWNER,
             client=Client()):
+        if owner is None:
+            owner = client.get_username()
         RepositoryRole.expect_valid_value(role)
         return Bitbucket(client=client).repositoriesByOwnerAndRole(
             owner=owner,
-            role=role)
-
-    """
-    A convenience method for finding current user's repositories.
-    The method is a generator Repository objects.
-    """
-    @staticmethod
-    def find_my_repositories_by_role(
-            role=RepositoryRole.OWNER,
-            client=Client()):
-        RepositoryRole.expect_valid_value(role)
-        return Bitbucket(client=client).repositoriesByOwnerAndRole(
-            owner=client.get_username(),
             role=role)
 
 

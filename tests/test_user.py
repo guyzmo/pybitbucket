@@ -2,6 +2,7 @@
 from test_bitbucketbase import BitbucketFixture
 
 import json
+from uritemplate import expand
 from pybitbucket.user import User, UserV1
 from pybitbucket.bitbucket import Bitbucket
 
@@ -145,3 +146,32 @@ class TestNavigatingToOAuthConsumers(UserFixture):
             status=200)
         assert list(user.v1.consumers())
         assert isinstance(next(user.v1.consumers()), Consumer)
+
+
+class TestNavigatingFromV1toV2(UserV1Fixture):
+    @classmethod
+    def setup_class(cls):
+        cls.response = cls.example_object()
+        user_template = (
+            Bitbucket(client=cls.test_client)
+            .data
+            .get('_links', {})
+            .get('userByUsername', {})
+            .get('href'))
+        cls.user_url = expand(
+            user_template, {
+                'bitbucket_url': cls.test_client.get_bitbucket_url(),
+                'username': cls.username,
+            })
+        cls.user_data = cls.resource_list_data('User')
+
+    @httpretty.activate
+    def test_v1_self_returns_a_user(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            self.user_url,
+            content_type='application/json',
+            body=self.user_data,
+            status=200)
+        response = self.response.v2.self()
+        assert isinstance(response, User)

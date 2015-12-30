@@ -40,6 +40,23 @@ class User(BitbucketBase):
             username=username))
 
 
+class UserAdapter(object):
+    def __init__(self, data, client=Client()):
+        self.client = client
+        if data.get('user') is not None:
+            # A 1.0 shape has a user container.
+            self.username = data['user'].get('username')
+        else:
+            # but when constructing from a 2.0 shape
+            # then the username is a simple attribute.
+            self.username = data.get('username')
+
+    def self(self):
+        return User.find_user_by_username(
+            self.username,
+            client=self.client)
+
+
 class UserV1(BitbucketBase):
     id_attribute = 'username'
     links_json = """
@@ -85,11 +102,6 @@ class UserV1(BitbucketBase):
             # Categorize as user, not team
             (data['user'].get('is_team') is False))
 
-    def self(self):
-        return User.find_user_by_username(
-            self.username,
-            client=self.client)
-
     def __init__(self, data, client=Client()):
         # This completely overrides the base constructor
         # because the user data is a child of the root object.
@@ -102,9 +114,10 @@ class UserV1(BitbucketBase):
                 client.convert_to_object(r)
                 for r
                 in data['repositories']]
+        self.v2 = UserAdapter(data, client)
         expanded_links = self.expand_link_urls(
             bitbucket_url=client.get_bitbucket_url(),
-            username=data.get('username'))
+            username=self.v2.username)
         self.links = expanded_links.get('_links', {})
         self.add_remote_relationship_methods(expanded_links)
 

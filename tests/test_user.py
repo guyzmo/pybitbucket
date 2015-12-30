@@ -166,7 +166,7 @@ class TestNavigatingFromV1toV2(UserV1Fixture):
         cls.user_data = cls.resource_list_data('User')
 
     @httpretty.activate
-    def test_v1_self_returns_a_user(self):
+    def test_v2_self_returns_a_user(self):
         httpretty.register_uri(
             httpretty.GET,
             self.user_url,

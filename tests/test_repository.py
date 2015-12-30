@@ -479,7 +479,7 @@ class TestNavigatingFromV1toV2(RepositoryV1Fixture):
         cls.user_data = cls.resource_list_data('User')
 
     @httpretty.activate
-    def test_v1_self_returns_a_repository(self):
+    def test_v2_self_returns_a_repository(self):
         print('expected: {}'.format(self.repository_url))
         httpretty.register_uri(
             httpretty.GET,
@@ -491,7 +491,7 @@ class TestNavigatingFromV1toV2(RepositoryV1Fixture):
         assert isinstance(response, Repository)
 
     @httpretty.activate
-    def test_v1_owner_returns_a_user(self):
+    def test_v2_owner_returns_a_user(self):
         httpretty.register_uri(
             httpretty.GET,
             self.user_url,

@@ -32,14 +32,18 @@ class BitbucketFixture(object):
 
     # GIVEN: Example data for a resource
     @classmethod
-    def resource_data(cls):
-        file_name = '{}.json'.format(cls.class_under_test)
+    def resource_data(cls, name=None):
+        if name is None:
+            name = cls.class_under_test
+        file_name = '{}.json'.format(name)
         return cls.data_from_file(file_name)
 
     # GIVEN: Example data for a set of resources
     @classmethod
-    def resource_list_data(cls):
-        file_name = '{}_list.json'.format(cls.class_under_test)
+    def resource_list_data(cls, name=None):
+        if name is None:
+            name = cls.class_under_test
+        file_name = '{}_list.json'.format(name)
         return cls.data_from_file(file_name)
 
     # GIVEN: The URL for the example resource

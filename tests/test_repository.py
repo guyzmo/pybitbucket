@@ -35,7 +35,7 @@ class RepositoryFixture(BitbucketFixture):
     role = RepositoryRole.OWNER
 
 
-class RepositoryV1Fixture(BitbucketFixture):
+class RepositoryV1Fixture(RepositoryFixture):
     # GIVEN: a class under test
     class_under_test = 'RepositoryV1'
 
@@ -90,7 +90,6 @@ class TestAccessingRepositoryAttributes(RepositoryFixture):
         assert self.name == self.response.name
         assert self.scm == self.response.scm
         assert self.language == self.response.language
-        assert self.fork_policy == self.response.fork_policy
 
     def test_owner_is_a_team(self):
         assert isinstance(self.response.owner, Team)
@@ -100,6 +99,17 @@ class TestAccessingRepositoryAttributes(RepositoryFixture):
             'https://ianbuchanan@bitbucket.org/' +
             'teamsinspace/teamsinspace.bitbucket.org.git') == \
                 self.response.clone['https']
+
+
+class TestAccessingRepositoryV1Attributes(RepositoryV1Fixture):
+    @classmethod
+    def setup_class(cls):
+        cls.response = cls.example_object()
+
+    def test_common_attributes_are_valid(self):
+        assert self.name == self.response.name
+        assert self.scm == self.response.scm
+        assert self.language == self.response.language
 
 
 class TestDeleting(RepositoryFixture):
@@ -416,3 +426,77 @@ class TestAccessingLinks(RepositoryFixture):
             status=200)
         response = self.response.pullrequests()
         assert isinstance(next(response), PullRequest)
+
+
+class TestNavigatingToIssues(RepositoryFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.response = cls.example_object()
+        cls.issues_url = cls.response.v1.links.get('issues', {}).get('href')
+        cls.issues_data = cls.resource_list_data('Issue')
+
+    @httpretty.activate
+    def test_attributes_are_not_empty(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            self.issues_url,
+            content_type='application/json',
+            body=self.issues_data,
+            status=200)
+        assert list(self.response.v1.issues())
+        # There's no type for Issues yet.
+        # assert isinstance(next(self.response.v1.issues()), Issue)
+
+
+class TestNavigatingFromV1toV2(RepositoryV1Fixture):
+    @classmethod
+    def setup_class(cls):
+        cls.response = cls.example_object()
+        repository_template = (
+            Bitbucket(client=cls.test_client)
+            .data
+            .get('_links', {})
+            .get('repositoryByOwnerAndRepositoryName', {})
+            .get('href'))
+        cls.repository_url = expand(
+            repository_template, {
+                'bitbucket_url': cls.test_client.get_bitbucket_url(),
+                'owner': cls.owner,
+                'repository_name': cls.name
+            })
+        cls.repository_data = cls.resource_list_data('Repository')
+        user_template = (
+            Bitbucket(client=cls.test_client)
+            .data
+            .get('_links', {})
+            .get('userByUsername', {})
+            .get('href'))
+        cls.user_url = expand(
+            user_template, {
+                'bitbucket_url': cls.test_client.get_bitbucket_url(),
+                'username': cls.owner,
+            })
+        cls.user_data = cls.resource_list_data('User')
+
+    @httpretty.activate
+    def test_v1_self_returns_a_repository(self):
+        print('expected: {}'.format(self.repository_url))
+        httpretty.register_uri(
+            httpretty.GET,
+            self.repository_url,
+            content_type='application/json',
+            body=self.repository_data,
+            status=200)
+        response = self.response.v2.self()
+        assert isinstance(response, Repository)
+
+    @httpretty.activate
+    def test_v1_owner_returns_a_user(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            self.user_url,
+            content_type='application/json',
+            body=self.user_data,
+            status=200)
+        response = self.response.v2.owner()
+        assert isinstance(response, User)

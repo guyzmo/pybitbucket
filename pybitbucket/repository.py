@@ -1,10 +1,10 @@
 """
 Provides a class for manipulating Repository resources on Bitbucket.
 """
-import json
 from uritemplate import expand
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
+from pybitbucket.user import User
 
 
 RepositoryRole = enum(
@@ -46,6 +46,9 @@ class Repository(BitbucketBase):
                 clone_method['name']: clone_method['href']
                 for clone_method
                 in data['links']['clone']}
+        # Some relationships are only available via the 1.0 API.
+        # Create a "mock" RepositoryV1 for those links.
+        self.v1 = RepositoryV1(data, client)
 
     @staticmethod
     def payload(
@@ -172,6 +175,31 @@ class Repository(BitbucketBase):
             role=role)
 
 
+class RepositoryAdapter(object):
+    def __init__(self, data, client=Client()):
+        self.client = client
+        if data.get('full_name') is None:
+            # A 1.0 shape has simple owner and name attributes.
+            self.owner_name = data.get('owner')
+            self.repository_name = data.get('name')
+        else:
+            # but when constructing from a 2.0 shape
+            # then the full_name has to be split.
+            self.owner_name, self.repository_name = \
+                data['full_name'].split('/')
+
+    def self(self):
+        return Repository.find_repository_by_name_and_owner(
+            self.repository_name,
+            owner=self.owner_name,
+            client=self.client)
+
+    def owner(self):
+        return User.find_user_by_username(
+            self.owner_name,
+            client=self.client)
+
+
 class RepositoryV1(BitbucketBase):
     id_attribute = 'name'
     links_json = """
@@ -180,38 +208,35 @@ class RepositoryV1(BitbucketBase):
     "self": {
       "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}"
     },
-    "owner": {
+    "repositories": {
       "href": "{+bitbucket_url}/1.0/repositories{/owner}"
     },
-    "repositories": {
-      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}"
-    },
     "changesets": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/changesets{?limit,start}"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/changesets{?limit,start}"
     },
     "deploy_keys": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/deploy-keys"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/deploy-keys"
     },
     "events": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/events"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/events"
     },
     "followers": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/followers"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/followers"
     },
     "issues": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/issues"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/issues"
     },
     "integration_links": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/links"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/links"
     },
     "services": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/services"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/services"
     },
     "src": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/src{/revision,path}"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/src{/revision,path}"
     },
     "wiki": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/wiki{/page}"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/wiki{/page}"
     }
   }
 }
@@ -227,16 +252,19 @@ class RepositoryV1(BitbucketBase):
             # Categorize as repo, not snippet
             (data.get('slug') is not None))
 
-    def self(self):
-        return Repository.find_repository_by_owner_and_name(
-            self.owner,
-            self.slug,
-            client=self.client)
-
     def __init__(self, data, client=Client()):
         super(RepositoryV1, self).__init__(data, client)
-        self.add_remote_relationship_methods(
-            json.loads(RepositoryV1.links_json))
+        self.v2 = RepositoryAdapter(data, client)
+        # TODO: src and wiki links are broken.
+        # When the uritemplates are filled out,
+        # those 2 don't have enough parameters
+        # to construct a valid URL.
+        expanded_links = self.expand_link_urls(
+            bitbucket_url=client.get_bitbucket_url(),
+            owner=self.v2.owner_name,
+            repository_name=self.v2.repository_name)
+        self.links = expanded_links.get('_links', {})
+        self.add_remote_relationship_methods(expanded_links)
 
 
 Client.bitbucket_types.add(Repository)

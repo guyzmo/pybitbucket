@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from six import binary_type
 import httpretty
 from uritemplate import expand
 from util import JsonSampleDataFixture
@@ -28,6 +29,32 @@ class AuthFixture(JsonSampleDataFixture):
     email = 'pybitbucket@mailinator.com'
     server_base_uri = 'https://staging.bitbucket.org/api'
     a = TestAuth()
+
+    @httpretty.activate
+    def get_username_for_authenticator(self, auth):
+        httpretty.HTTPretty.allow_net_connect = False
+        httpretty.register_uri(
+            httpretty.GET,
+            auth.who_am_i_url,
+            content_type='application/json',
+            body=self.resource_data('User'),
+            status=200)
+        return auth.get_username()
+
+    @staticmethod
+    def safe_str(o):
+        return o.decode('utf-8') if isinstance(o, binary_type) else o
+
+    @httpretty.activate
+    def get_request_headers(self, auth):
+        httpretty.register_uri(httpretty.GET, self.server_base_uri)
+        response = auth.session.get(self.server_base_uri)
+        # Not sure why headers are sometimes unicode
+        # and sometimes binary, but this solves it for testing.
+        return {
+            k: self.safe_str(v)
+            for (k, v)
+            in response.request.headers.items()}
 
 
 class TestAuthFixture(AuthFixture):
@@ -128,23 +155,6 @@ class OAuth2AuthenticatorFixture(AuthFixture):
             client_description=self.client_description)
         return a
 
-    @httpretty.activate
-    def get_username_for_authenticator(self, auth):
-        httpretty.HTTPretty.allow_net_connect = False
-        httpretty.register_uri(
-            httpretty.GET,
-            auth.who_am_i_url,
-            content_type='application/json',
-            body=self.resource_data('User'),
-            status=200)
-        return auth.get_username()
-
-    @httpretty.activate
-    def get_request_headers(self, auth):
-        httpretty.register_uri(httpretty.GET, self.server_base_uri)
-        response = auth.session.get(self.server_base_uri)
-        return response.request.headers
-
 
 class TestCreatingUserAgentHeaderString(AuthFixture):
     @classmethod
@@ -230,10 +240,7 @@ class TestUsingBasicAuthentication(BasicAuthenticatorFixture):
 
     @httpretty.activate
     def test_basicauth_sends_correct_headers(self):
-        httpretty.register_uri(httpretty.GET, self.server_base_uri)
-        session = self.a.start_http_session()
-        response = session.get(self.server_base_uri)
-        h = response.request.headers
+        h = self.get_request_headers(self.a)
         assert self.digest == h.get('Authorization')
         assert self.email == h.get('From')
         assert h.get('User-Agent').startswith('pybitbucket')
@@ -252,35 +259,24 @@ class TestUsingOAuth1Authentication(OAuth1AuthenticatorFixture):
     def test_has_authentication(self):
         assert self.a.session.auth
 
-    @httpretty.activate
     def test_username(self):
-        httpretty.register_uri(
-            httpretty.GET,
-            self.a.who_am_i_url,
-            content_type='application/json',
-            body=self.resource_data('User'),
-            status=200)
-        assert self.username == self.a.get_username()
+        result = self.get_username_for_authenticator(self.a)
+        assert self.username == result
 
-    @httpretty.activate
-    def test_username_exists(self):
-        httpretty.register_uri(
-            httpretty.GET,
-            self.a.who_am_i_url,
-            content_type='application/json',
-            body=self.resource_data('User'),
-            status=200)
-        assert self.a.get_username() is not None
-
-    @httpretty.activate
-    def test_sends_correct_headers(self):
-        httpretty.register_uri(httpretty.GET, self.server_base_uri)
-        session = self.a.start_http_session()
-        response = session.get(self.server_base_uri)
-        h = response.request.headers
+    def test_sent_authorization_header(self):
+        h = self.get_request_headers(self.a)
         assert h.get('Authorization')
-        assert self.email == h.get('From').decode('utf-8')
+
+    def test_sent_from_header(self):
+        h = self.get_request_headers(self.a)
+        assert self.email == h.get('From')
+
+    def test_sent_useragent_header(self):
+        h = self.get_request_headers(self.a)
         assert h.get('User-Agent').startswith('pybitbucket')
+
+    def test_sent_accept_header(self):
+        h = self.get_request_headers(self.a)
         accept_params = h.get('Accept').split(';')
         json = [p for p in accept_params if p == 'application/json']
         assert any(json)
@@ -295,20 +291,27 @@ class TestUsingOAuth2Authentication(OAuth2AuthenticatorFixture):
 
     def test_username(self):
         a = self.get_auth()
-        username = self.get_username_for_authenticator(a)
-        assert self.username == username
+        result = self.get_username_for_authenticator(a)
+        assert self.username == result
 
-    def test_username_exist(self):
-        a = self.get_auth()
-        username = self.get_username_for_authenticator(a)
-        assert username is not None
-
-    def test_sends_correct_headers(self):
+    def test_sent_authorization_header(self):
         a = self.get_auth()
         h = self.get_request_headers(a)
         assert h.get('Authorization')
-        assert self.email == h.get('From').decode('utf-8')
+
+    def test_sent_from_header(self):
+        a = self.get_auth()
+        h = self.get_request_headers(a)
+        assert self.email == h.get('From')
+
+    def test_sent_useragent_header(self):
+        a = self.get_auth()
+        h = self.get_request_headers(a)
         assert h.get('User-Agent').startswith('pybitbucket')
+
+    def test_sent_accept_header(self):
+        a = self.get_auth()
+        h = self.get_request_headers(a)
         accept_params = h.get('Accept').split(';')
         json = [p for p in accept_params if p == 'application/json']
         assert any(json)

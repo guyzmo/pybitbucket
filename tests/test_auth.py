@@ -279,7 +279,7 @@ class TestUsingOAuth1Authentication(OAuth1AuthenticatorFixture):
         response = session.get(self.server_base_uri)
         h = response.request.headers
         assert h.get('Authorization')
-        assert self.email == h.get('From')
+        assert self.email == h.get('From').decode('utf-8')
         assert h.get('User-Agent').startswith('pybitbucket')
         accept_params = h.get('Accept').split(';')
         json = [p for p in accept_params if p == 'application/json']
@@ -307,7 +307,7 @@ class TestUsingOAuth2Authentication(OAuth2AuthenticatorFixture):
         a = self.get_auth()
         h = self.get_request_headers(a)
         assert h.get('Authorization')
-        assert self.email == h.get('From')
+        assert self.email == h.get('From').decode('utf-8')
         assert h.get('User-Agent').startswith('pybitbucket')
         accept_params = h.get('Accept').split(';')
         json = [p for p in accept_params if p == 'application/json']

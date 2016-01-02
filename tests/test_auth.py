@@ -80,10 +80,10 @@ class BasicAuthenticatorFixture(AuthFixture):
 
 
 class OAuth1AuthenticatorFixture(AuthFixture):
-    client_key = ''
-    client_secret = ''
-    access_token = ''
-    access_token_secret = ''
+    client_key = '1'
+    client_secret = 'secret'
+    access_token = 'abc'
+    access_token_secret = 'abc-secret'
 
     @classmethod
     def setup_class(cls):
@@ -238,12 +238,20 @@ class TestUsingBasicAuthentication(BasicAuthenticatorFixture):
     def test_username(self):
         assert self.username == self.a.get_username()
 
-    @httpretty.activate
-    def test_basicauth_sends_correct_headers(self):
+    def test_sent_authorization_header(self):
         h = self.get_request_headers(self.a)
         assert self.digest == h.get('Authorization')
+
+    def test_sent_from_header(self):
+        h = self.get_request_headers(self.a)
         assert self.email == h.get('From')
+
+    def test_sent_useragent_header(self):
+        h = self.get_request_headers(self.a)
         assert h.get('User-Agent').startswith('pybitbucket')
+
+    def test_sent_accept_header(self):
+        h = self.get_request_headers(self.a)
         accept_params = h.get('Accept').split(';')
         json = [p for p in accept_params if p == 'application/json']
         assert any(json)

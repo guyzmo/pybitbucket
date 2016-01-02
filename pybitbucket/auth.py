@@ -114,7 +114,7 @@ class OAuth1Authenticator(Authenticator):
 
 
 class OAuth2Grant(object):
-    def obtain_authorization(cls, session, auth_uri):
+    def obtain_authorization(self, session, auth_uri):
         raise NotImplementedError()
         # return redirect_response
 

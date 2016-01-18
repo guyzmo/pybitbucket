@@ -1,0 +1,5 @@
+tests:
+	- paver test_all
+python:
+	python_version: 2.7
+	pip_requirements_file: requirements-dev.txt

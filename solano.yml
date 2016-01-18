@@ -1,5 +1,7 @@
 python:
-  python_version: 2.7
+  SPLIT:
+    - python_version: 2.7
+    - python_version: 3.4
   pip_requirements_file: requirements-dev.txt
 tests:
   - paver test_all

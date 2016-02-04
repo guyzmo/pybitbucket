@@ -1,6 +1,6 @@
-image: python:2.7
+image: python:3.5-alpine
 pipeline:
     - job:
         script:
             - pip install tox
-            - tox -e py27
+            - tox -e py35

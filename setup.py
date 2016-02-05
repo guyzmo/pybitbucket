@@ -85,16 +85,12 @@ def get_project_files():
         return get_git_project_files()
 
     project_files = []
-    for top, subdirs, files in os.walk('.'):
-        for subdir in subdirs:
-            if subdir.startswith('.'):
-                subdirs.remove(subdir)
-
-        for f in files:
-            if f.startswith('.'):
-                continue
-            project_files.append(os.path.join(top, f))
-
+    for top, subdirs, files in os.walk('.', topdown=True):
+        subdirs[:] = [d for d in subdirs
+            if not d.startswith('.')]
+        [project_files.append(os.path.join(top, f))
+            for f in files
+            if not f.startswith('.')]
     return project_files
 
 

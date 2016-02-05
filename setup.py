@@ -127,11 +127,11 @@ def get_git_project_files():
 
 def safe_str(obj):
     try:
-        return unicode(obj)
+        return str(obj)
     except UnicodeDecodeError:
         # obj is byte string
         text = obj.decode()
-        return unicode(text)
+        return str(text)
 
 
 def git_ls_files(*cmd_args):

@@ -7,3 +7,7 @@ build:
     tests:
         override:
             - paver test
+            -
+                command: paver coverage
+                coverage:
+                    file: '.coverage'

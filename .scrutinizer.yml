@@ -11,3 +11,4 @@ build:
                 command: paver coverage
                 coverage:
                     file: '.coverage'
+                    format: 'py-cc'

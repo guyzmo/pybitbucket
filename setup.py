@@ -125,6 +125,15 @@ def get_git_project_files():
     return sorted(cached_and_untracked_files - uncommitted_deleted_files)
 
 
+def safe_str(obj):
+    try:
+        return str(obj)
+    except UnicodeDecodeError:
+        # obj is byte string
+        text = obj.decode()
+        return str(text)
+
+
 def git_ls_files(*cmd_args):
     """Run ``git ls-files`` in the top-level project directory. Arguments go
     directly to execution call.
@@ -134,7 +143,8 @@ def git_ls_files(*cmd_args):
     """
     cmd = ['git', 'ls-files']
     cmd.extend(cmd_args)
-    return set(subprocess.check_output(cmd).splitlines())
+    files = [safe_str(f) for f in subprocess.check_output(cmd).splitlines()]
+    return set(files)
 
 
 def print_success_message(message):
@@ -185,7 +195,7 @@ def _lint():
     # - The result of subprocess call outputs are byte strings, meaning we need
     #   to pass a byte string to endswith.
     project_python_files = [filename for filename in get_project_files()
-                            if filename.endswith(b'.py')]
+                            if filename.endswith('.py')]
     retcode = subprocess.call(
         ['flake8', '--max-complexity=10'] + project_python_files)
     if retcode == 0:

@@ -60,7 +60,7 @@ class BranchRestriction(BitbucketBase):
             '{+bitbucket_url}' +
             '/2.0/repositories{/owner,repository_name}' +
             '/branch-restrictions')
-        url = expand(
+        api_url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'owner': owner,
@@ -71,7 +71,7 @@ class BranchRestriction(BitbucketBase):
             pattern=pattern,
             groups=groups,
             users=users)
-        return BranchRestriction.post(url, json=payload, client=client)
+        return BranchRestriction.post(api_url, json=payload, client=client)
 
     """
     A convenience method for changing the current branch-restriction.

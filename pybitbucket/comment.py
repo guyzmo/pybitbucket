@@ -30,14 +30,14 @@ class Comment(BitbucketBase):
             '{+bitbucket_url}' +
             '/2.0/snippets/{username}/{snippet_id}' +
             '/comments')
-        url = expand(
+        api_url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'username': username,
                 'snippet_id': snippet_id,
             })
         payload = Comment.make_payload(content)
-        response = client.session.post(url, data=payload)
+        response = client.session.post(api_url, data=payload)
         Client.expect_ok(response)
         return Comment(response.json(), client=client)
 

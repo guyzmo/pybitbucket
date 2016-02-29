@@ -80,13 +80,13 @@ class Snippet(BitbucketBase):
             scm=None,
             client=Client()):
         template = '{+bitbucket_url}/2.0/snippets{/username}'
-        url = expand(
+        api_url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'username': client.get_username()
             })
         payload = Snippet.make_payload(is_private, title, scm)
-        response = client.session.post(url, data=payload, files=files)
+        response = client.session.post(api_url, data=payload, files=files)
         Client.expect_ok(response)
         return Snippet(response.json(), client=client)
 

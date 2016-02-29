@@ -95,7 +95,7 @@ class Repository(BitbucketBase):
         template = (
             '{+bitbucket_url}' +
             '/2.0/repositories/{username}/{repository_name}')
-        url = expand(
+        api_url = expand(
             template,
             {
                 'bitbucket_url': client.get_bitbucket_url(),
@@ -111,7 +111,7 @@ class Repository(BitbucketBase):
             language,
             has_issues,
             has_wiki)
-        response = client.session.post(url, data=payload)
+        response = client.session.post(api_url, data=payload)
         Client.expect_ok(response)
         return client.convert_to_object(response.json())
 

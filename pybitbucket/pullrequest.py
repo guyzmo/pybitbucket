@@ -132,7 +132,7 @@ class PullRequest(BitbucketBase):
         template = (
             '{+bitbucket_url}' +
             '/2.0/repositories{/username,repository_name}/pullrequests')
-        url = expand(
+        api_url = expand(
             template,
             {
                 'bitbucket_url': client.get_bitbucket_url(),
@@ -147,7 +147,7 @@ class PullRequest(BitbucketBase):
             close_source_branch,
             description,
             reviewers)
-        return PullRequest.post(url, json=payload, client=client)
+        return PullRequest.post(api_url, json=payload, client=client)
 
     """
     A convenience method for finding a specific pull request.

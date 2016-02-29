@@ -49,14 +49,14 @@ class Hook(BitbucketBase):
             '/2.0/repositories/{username}/{repository_name}/hooks')
         if username is None:
             username = client.get_username()
-        url = expand(
+        api_url = expand(
             template, {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'username': username,
                 'repository_name': repository_name
             })
         payload = Hook.make_payload(description, callback_url, active, events)
-        return Hook.post(url, json=payload, client=client)
+        return Hook.post(api_url, json=payload, client=client)
 
     @staticmethod
     def find_hook_in_repository_by_uuid(

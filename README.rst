@@ -21,12 +21,6 @@ previously known as Stash.
 .. image:: https://img.shields.io/pypi/dm/pybitbucket.svg
     :target: https://pypi.python.org/pypi/pybitbucket
 
-.. image:: https://img.shields.io/pypi/dw/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket
-
-.. image:: https://img.shields.io/pypi/dd/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket
-
 ---------------------
 Adopting this library
 ---------------------

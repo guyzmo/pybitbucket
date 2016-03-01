@@ -282,6 +282,7 @@ class Bitbucket(BitbucketBase):
 
 
 class BitbucketError(HTTPError):
+    """Raise when Bitbucket has an HTTP error."""
     interpretation = "The client encountered an error."
 
     def format_message(self):
@@ -311,6 +312,7 @@ class BitbucketError(HTTPError):
 
 
 class BadRequestError(BitbucketError):
+    """Raise when Bitbucket complains about a bad request."""
     interpretation = "Bitbucket considered it a bad request."
 
     def __init__(self, response):
@@ -318,6 +320,7 @@ class BadRequestError(BitbucketError):
 
 
 class ServerError(BitbucketError):
+    """Raise when Bitbucket complains about a server error."""
     interpretation = "The client encountered a server error."
 
     def __init__(self, response):

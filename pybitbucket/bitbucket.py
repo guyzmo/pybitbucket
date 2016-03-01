@@ -284,7 +284,7 @@ class Bitbucket(BitbucketBase):
 class BitbucketError(HTTPError):
     interpretation = "The client encountered an error."
 
-    def formatMessage(self):
+    def format_message(self):
         return u'''Attempted to request {url}. \
 {interpretation} {code} - {text}\
 '''.format(
@@ -307,7 +307,7 @@ class BitbucketError(HTTPError):
         except ValueError:
             pass
         super(BitbucketError, self).__init__(
-            self.formatMessage())
+            self.format_message())
 
 
 class BadRequestError(BitbucketError):

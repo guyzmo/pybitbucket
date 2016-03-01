@@ -6,9 +6,19 @@ A Python wrapper for the Bitbucket Cloud REST API.
 This is not known to work with Bitbucket Server,
 previously known as Stash.
 
------
-Using
------
+.. image:: https://img.shields.io/pypi/v/pybitbucket.svg   :target:
+.. image:: https://img.shields.io/pypi/status/pybitbucket.svg   :target:
+.. image:: https://img.shields.io/pypi/pyversions/pybitbucket.svg   :target:
+.. image:: https://img.shields.io/pypi/l/pybitbucket.svg   :target:
+
+.. image:: https://img.shields.io/pypi/dm/pybitbucket.svg   :target:
+.. image:: https://img.shields.io/pypi/dw/pybitbucket.svg   :target:
+.. image:: https://img.shields.io/pypi/dd/pybitbucket.svg   :target:
+
+
+---------------------
+Adopting this library
+---------------------
 
 Authenticate
 ============

@@ -35,7 +35,7 @@ class Enumeration(object):
     def expect_valid_value(cls, value):
         if value not in cls.values():
             raise NameError(
-                "Value '{}' is not in expected set [{}]."
+                "Value '{0}' is not in expected set [{1}]."
                 .format(value, '|'.join(str(x) for x in cls.values())))
 
 
@@ -108,13 +108,13 @@ class BitbucketBase(object):
     def expect_bool(name, value):
         if not isinstance(value, bool):
             raise TypeError(
-                "{} is {} instead of bool".format(name, type(value)))
+                "{0} is {1} instead of bool".format(name, type(value)))
 
     @staticmethod
     def expect_list(name, value):
         if not isinstance(value, (list, tuple)):
             raise TypeError(
-                "{} is {} instead of list".format(name, type(value)))
+                "{0} is {1} instead of list".format(name, type(value)))
 
     @staticmethod
     def links_from(data):

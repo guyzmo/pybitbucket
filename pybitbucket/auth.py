@@ -16,7 +16,7 @@ class Authenticator(object):
 
     @staticmethod
     def user_agent_header():
-        return u'%s/%s %s' % (
+        return u'{0}/{1} {2}'.format(
             metadata.package,
             metadata.version,
             default_user_agent())

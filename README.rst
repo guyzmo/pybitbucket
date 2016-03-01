@@ -6,15 +6,26 @@ A Python wrapper for the Bitbucket Cloud REST API.
 This is not known to work with Bitbucket Server,
 previously known as Stash.
 
-.. image:: https://img.shields.io/pypi/v/pybitbucket.svg   :target:
-.. image:: https://img.shields.io/pypi/status/pybitbucket.svg   :target:
-.. image:: https://img.shields.io/pypi/pyversions/pybitbucket.svg   :target:
-.. image:: https://img.shields.io/pypi/l/pybitbucket.svg   :target:
+.. image:: https://img.shields.io/pypi/v/pybitbucket.svg
+    :target: https://pypi.python.org/pypi/pybitbucket/0.10.0
 
-.. image:: https://img.shields.io/pypi/dm/pybitbucket.svg   :target:
-.. image:: https://img.shields.io/pypi/dw/pybitbucket.svg   :target:
-.. image:: https://img.shields.io/pypi/dd/pybitbucket.svg   :target:
+.. image:: https://img.shields.io/pypi/status/pybitbucket.svg
+    :target: https://pypi.python.org/pypi/pybitbucket
 
+.. image:: https://img.shields.io/pypi/pyversions/pybitbucket.svg
+    :target: https://pypi.python.org/pypi/pybitbucket
+
+.. image:: https://img.shields.io/pypi/l/pybitbucket.svg
+    :target: https://bitbucket.org/atlassian/python-bitbucket/src/master/LICENSE.txt
+
+.. image:: https://img.shields.io/pypi/dm/pybitbucket.svg
+    :target: https://pypi.python.org/pypi/pybitbucket
+
+.. image:: https://img.shields.io/pypi/dw/pybitbucket.svg
+    :target: https://pypi.python.org/pypi/pybitbucket
+
+.. image:: https://img.shields.io/pypi/dd/pybitbucket.svg
+    :target: https://pypi.python.org/pypi/pybitbucket
 
 ---------------------
 Adopting this library

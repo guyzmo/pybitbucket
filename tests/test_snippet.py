@@ -213,7 +213,7 @@ class TestSnippet(object):
         url = snip.data['links']['commits']['href']
         example = data_from_file(
             self.test_dir,
-            'example_commits.json')
+            'Commit_list.json')
         httpretty.register_uri(
             httpretty.GET,
             url,

@@ -1,10 +1,10 @@
 """
 Provides a class for manipulating Repository resources on Bitbucket.
 """
-import json
 from uritemplate import expand
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
+from pybitbucket.user import User
 
 
 RepositoryRole = enum(
@@ -31,6 +31,9 @@ RepositoryType = enum(
 class Repository(BitbucketBase):
     id_attribute = 'full_name'
     resource_type = 'repositories'
+    templates = {
+        'create': '{+bitbucket_url}/2.0/repositories{/owner,repository_name}'
+    }
 
     @staticmethod
     def is_type(data):
@@ -43,77 +46,71 @@ class Repository(BitbucketBase):
                 clone_method['name']: clone_method['href']
                 for clone_method
                 in data['links']['clone']}
+        # Some relationships are only available via the 1.0 API.
+        # Create a "mock" RepositoryV1 for those links.
+        self.v1 = RepositoryV1(data, client)
 
     @staticmethod
-    def make_new_repository_payload(
-            fork_policy,
-            is_private,
-            scm=None,
-            name=None,
+    def payload(
+            repository_name=None,
             description=None,
-            language=None,
+            scm=None,
+            fork_policy=None,
+            is_private=None,
             has_issues=None,
-            has_wiki=None):
+            has_wiki=None,
+            language=None,
+            **kwargs):
         # Since server defaults may change, method defaults are None.
         # If the parameters are not provided, then don't send them
         # so the server can decide what defaults to use.
         payload = {}
-        RepositoryForkPolicy.expect_valid_value(fork_policy)
-        payload.update({'fork_policy': fork_policy})
-        Repository.expect_bool('is_private', is_private)
-        payload.update({'is_private': is_private})
+        if repository_name is not None:
+            payload.update({'name': repository_name})
+        if description is not None:
+            payload.update({'description': description})
         if scm is not None:
             RepositoryType.expect_valid_value(scm)
             payload.update({'scm': scm})
-        if name is not None:
-            payload.update({'name': name})
-        if description is not None:
-            payload.update({'description': description})
-        if language is not None:
-            payload.update({'language': language})
+        if fork_policy is not None:
+            RepositoryForkPolicy.expect_valid_value(fork_policy)
+            payload.update({'fork_policy': fork_policy})
+        if is_private is not None:
+            Repository.expect_bool('is_private', is_private)
+            payload.update({'is_private': is_private})
         if has_issues is not None:
             Repository.expect_bool('has_issues', has_issues)
             payload.update({'has_issues': has_issues})
         if has_wiki is not None:
             Repository.expect_bool('has_wiki', has_wiki)
             payload.update({'has_wiki': has_wiki})
+        if language is not None:
+            payload.update({'language': language})
         return payload
 
-    @staticmethod
-    def create_repository(
-            username,
+    @classmethod
+    def create(
+            cls,
             repository_name,
             fork_policy,
             is_private,
-            scm=None,
-            name=None,
+            owner=None,
             description=None,
-            language=None,
+            scm=None,
             has_issues=None,
             has_wiki=None,
+            language=None,
             client=Client()):
-        template = (
-            '{+bitbucket_url}' +
-            '/2.0/repositories/{username}/{repository_name}')
+        if owner is None:
+            owner = client.get_username()
+        payload = cls.payload(**locals())
         api_url = expand(
-            template,
-            {
+            cls.templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'username': username,
-                'repository_name': repository_name
+                'owner': owner,
+                'repository_name': repository_name,
             })
-        payload = Repository.make_new_repository_payload(
-            fork_policy,
-            is_private,
-            scm,
-            name,
-            description,
-            language,
-            has_issues,
-            has_wiki)
-        response = client.session.post(api_url, data=payload)
-        Client.expect_ok(response)
-        return client.convert_to_object(response.json())
+        return cls.post(api_url, json=payload, client=client)
 
     """
     A convenience method for finding a specific repository.
@@ -122,10 +119,12 @@ class Repository(BitbucketBase):
     generator.
     """
     @staticmethod
-    def find_repository_by_owner_and_name(
-            owner,
+    def find_repository_by_name_and_owner(
             repository_name,
+            owner=None,
             client=Client()):
+        if owner is None:
+            owner = client.get_username()
         return next(
             Bitbucket(client=client).repositoryByOwnerAndRepositoryName(
                 owner=owner,
@@ -139,15 +138,15 @@ class Repository(BitbucketBase):
     """
     @staticmethod
     def find_repository_by_full_name(
-            repository_full_name,
+            full_name,
             client=Client()):
-        if '/' not in repository_full_name:
-            raise NameError(
+        if '/' not in full_name:
+            raise TypeError(
                 "Repository full name must be in the form: username/name")
-        owner, repository_name = repository_full_name.split('/')
-        return Repository.find_repository_by_owner_and_name(
-            owner,
-            repository_name,
+        owner, repository_name = full_name.split('/')
+        return Repository.find_repository_by_name_and_owner(
+            owner=owner,
+            repository_name=repository_name,
             client=client)
 
     """
@@ -161,29 +160,44 @@ class Repository(BitbucketBase):
     """
     A convenience method for finding a user's repositories.
     The method is a generator Repository objects.
+    When no owner is provided, it uses the currently authenticated user.
     """
     @staticmethod
     def find_repositories_by_owner_and_role(
-            owner,
+            owner=None,
             role=RepositoryRole.OWNER,
             client=Client()):
+        if owner is None:
+            owner = client.get_username()
         RepositoryRole.expect_valid_value(role)
         return Bitbucket(client=client).repositoriesByOwnerAndRole(
             owner=owner,
             role=role)
 
-    """
-    A convenience method for finding current user's repositories.
-    The method is a generator Repository objects.
-    """
-    @staticmethod
-    def find_my_repositories_by_role(
-            role=RepositoryRole.OWNER,
-            client=Client()):
-        RepositoryRole.expect_valid_value(role)
-        return Bitbucket(client=client).repositoriesByOwnerAndRole(
-            owner=client.get_username(),
-            role=role)
+
+class RepositoryAdapter(object):
+    def __init__(self, data, client=Client()):
+        self.client = client
+        if data.get('full_name') is None:
+            # A 1.0 shape has simple owner and name attributes.
+            self.owner_name = data.get('owner')
+            self.repository_name = data.get('name')
+        else:
+            # but when constructing from a 2.0 shape
+            # then the full_name has to be split.
+            self.owner_name, self.repository_name = \
+                data['full_name'].split('/')
+
+    def self(self):
+        return Repository.find_repository_by_name_and_owner(
+            self.repository_name,
+            owner=self.owner_name,
+            client=self.client)
+
+    def owner(self):
+        return User.find_user_by_username(
+            self.owner_name,
+            client=self.client)
 
 
 class RepositoryV1(BitbucketBase):
@@ -191,32 +205,38 @@ class RepositoryV1(BitbucketBase):
     links_json = """
 {
   "_links": {
+    "self": {
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}"
+    },
+    "repositories": {
+      "href": "{+bitbucket_url}/1.0/repositories{/owner}"
+    },
     "changesets": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/changesets{?limit,start}"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/changesets{?limit,start}"
     },
     "deploy_keys": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/deploy-keys"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/deploy-keys"
     },
     "events": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/events"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/events"
     },
     "followers": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/followers"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/followers"
     },
     "issues": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/issues"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/issues"
     },
     "integration_links": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/links"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/links"
     },
     "services": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/services"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/services"
     },
     "src": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/src{/revision,path}"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/src{/revision,path}"
     },
     "wiki": {
-      "href": "https://api.bitbucket.org/1.0/repositories{/owner,slug}/wiki{/page}"
+      "href": "{+bitbucket_url}/1.0/repositories{/owner,repository_name}/wiki{/page}"
     }
   }
 }
@@ -232,16 +252,19 @@ class RepositoryV1(BitbucketBase):
             # Categorize as repo, not snippet
             (data.get('slug') is not None))
 
-    def self(self):
-        return Repository.find_repository_by_owner_and_name(
-            self.owner,
-            self.slug,
-            client=self.client)
-
     def __init__(self, data, client=Client()):
         super(RepositoryV1, self).__init__(data, client)
-        self.add_remote_relationship_methods(
-            json.loads(RepositoryV1.links_json))
+        self.v2 = RepositoryAdapter(data, client)
+        # TODO: src and wiki links are broken.
+        # When the uritemplates are filled out,
+        # those 2 don't have enough parameters
+        # to construct a valid URL.
+        expanded_links = self.expand_link_urls(
+            bitbucket_url=client.get_bitbucket_url(),
+            owner=self.v2.owner_name,
+            repository_name=self.v2.repository_name)
+        self.links = expanded_links.get('_links', {})
+        self.add_remote_relationship_methods(expanded_links)
 
 
 Client.bitbucket_types.add(Repository)

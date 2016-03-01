@@ -4,3 +4,4 @@ requests==2.9.1
 requests_oauthlib==0.6.0
 oauthlib==1.0.3
 uritemplate==0.6
+simplejson==3.8.1

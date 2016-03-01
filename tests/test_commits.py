@@ -22,7 +22,7 @@ class TestCommit(object):
     def load_example_commit(self):
         example_path = path.join(
             self.test_dir,
-            'example_single_commit.json')
+            'Commit.json')
         with open(example_path) as f:
             example = json.load(f)
         return Commit(example, client=self.client)
@@ -46,7 +46,7 @@ class TestCommit(object):
             commit_hash)
         example = data_from_file(
             self.test_dir,
-            'example_single_commit.json')
+            'Commit.json')
         httpretty.register_uri(
             httpretty.GET,
             url,

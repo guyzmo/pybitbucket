@@ -153,7 +153,7 @@ class TestBuildStatus(object):
             '/commit/' + sha)
         example = data_from_file(
             self.test_dir,
-            'example_single_commit.json')
+            'Commit.json')
         httpretty.register_uri(
             httpretty.GET,
             url,

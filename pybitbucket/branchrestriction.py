@@ -83,11 +83,8 @@ class BranchRestriction(BitbucketBase):
             pattern=None,
             groups=None,
             users=None):
-        payload = self.payload(
-            kind=kind,
-            pattern=pattern,
-            groups=groups,
-            users=users)
+        kwargs = {k: v for k, v in locals().items() if k != 'self'}
+        payload = self.payload(**kwargs)
         return self.put(payload)
 
     """

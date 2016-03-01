@@ -22,7 +22,7 @@ class TestRemoteRelationships(object):
             'teamsinspace/teamsinspace.bitbucket.org')
         example = data_from_file(
             self.test_dir,
-            'example_single_repository.json')
+            'Repository.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -42,7 +42,7 @@ class TestRemoteRelationships(object):
             '/2.0/repositories')
         example = data_from_file(
             self.test_dir,
-            'example_repositories.json')
+            'Repository_list.json')
         httpretty.register_uri(
             httpretty.GET,
             url,

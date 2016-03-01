@@ -24,7 +24,7 @@ class TestPullRequest(object):
     def load_example_pullrequest(self):
         example_path = path.join(
             self.test_dir,
-            'example_single_pullrequest.json')
+            'PullRequest.json')
         with open(example_path) as f:
             example = json.load(f)
         return PullRequest(example, client=self.client)
@@ -45,7 +45,7 @@ class TestPullRequest(object):
             '/pullrequests/1')
         example = data_from_file(
             self.test_dir,
-            'example_single_pullrequest.json')
+            'PullRequest.json')
         httpretty.register_uri(
             httpretty.GET,
             url,
@@ -85,7 +85,7 @@ class TestPullRequest(object):
             '/pullrequests')
         example = data_from_file(
             self.test_dir,
-            'example_single_pullrequest.json')
+            'PullRequest.json')
         httpretty.register_uri(
             httpretty.POST,
             url,
@@ -210,7 +210,7 @@ class TestPullRequest(object):
             'atlassian/snippet/pullrequests/1/commits')
         example = data_from_file(
             self.test_dir,
-            'example_commits.json')
+            'Commit_list.json')
         httpretty.register_uri(
             httpretty.GET,
             url,

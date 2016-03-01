@@ -13,7 +13,7 @@ class TestV2Categorizer(object):
     def test_repository_categorization(self):
         example_path = path.join(
             self.test_dir,
-            'example_single_repository.json')
+            'Repository.json')
         with open(example_path) as f:
             example = json.load(f)
         assert BitbucketBase._has_v2_self_url(
@@ -22,7 +22,7 @@ class TestV2Categorizer(object):
     def test_commit_categorization(self):
         example_path = path.join(
             self.test_dir,
-            'example_single_commit.json')
+            'Commit.json')
         with open(example_path) as f:
             example = json.load(f)
         assert BitbucketBase._has_v2_self_url(

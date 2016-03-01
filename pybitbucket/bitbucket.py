@@ -69,12 +69,17 @@ class Client(object):
             response = self.session.get(url)
             self.expect_ok(response)
             json_data = response.json()
-            if json_data.get('values'):
+            if isinstance(json_data, list):
+                for item in json_data:
+                    yield self.convert_to_object(item)
+                url = None
+            elif json_data.get('values'):
                 for item in json_data['values']:
                     yield self.convert_to_object(item)
+                url = json_data.get('next')
             else:
                 yield self.convert_to_object(json_data)
-            url = json_data.get('next')
+                url = None
 
     def get_bitbucket_url(self):
         return self.config.server_base_uri
@@ -187,6 +192,29 @@ class BitbucketBase(object):
                         for i in body])
                 else:
                     setattr(self, name, body)
+
+    '''
+    A helper method for 1.0 API resources that expands uri templates
+    found in links into a fully navigable URL as would be found
+    with a HAL-JSON resource.
+    '''
+    @classmethod
+    def expand_link_urls(cls, **kwargs):
+        links = loads(cls.links_json)
+        return {'_links': {
+            name: {'href': expand(template, kwargs)}
+            for (name, template)
+            in cls.links_from(links)}}
+
+    '''
+    A helper method for 1.0 API resources that gets the raw uri template
+    for a specific link.
+    '''
+    @classmethod
+    def get_link_template(cls, name):
+        links = loads(cls.links_json)
+        templates = [v for k, v in cls.links_from(links) if k == name]
+        return templates[0]
 
     def __init__(self, data, client=Client()):
         self.data = data

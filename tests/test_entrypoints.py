@@ -16,7 +16,7 @@ class TestEntrypoints(object):
     @httpretty.activate
     def test_find_current_user(self):
         url = ('https://api.bitbucket.org/2.0/user')
-        example_path = path.join(self.test_dir, 'example_single_user.json')
+        example_path = path.join(self.test_dir, 'User.json')
         with open(example_path) as f:
             example = f.read()
         httpretty.register_uri(
@@ -32,7 +32,7 @@ class TestEntrypoints(object):
     @httpretty.activate
     def test_find_user_by_username(self):
         url = ('https://api.bitbucket.org/2.0/users/evzijst')
-        example_path = path.join(self.test_dir, 'example_single_user.json')
+        example_path = path.join(self.test_dir, 'User.json')
         with open(example_path) as f:
             example = f.read()
         httpretty.register_uri(

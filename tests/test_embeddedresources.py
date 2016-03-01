@@ -22,7 +22,7 @@ class TestEmbeddedResources(object):
         example_commit = json.loads(
                 data_from_file(
                     cls.test_dir,
-                    'example_single_commit.json'))
+                    'Commit.json'))
         cls.commit = cls.client.convert_to_object(example_commit)
 
     def test_webhook_subject_is_a_repository(self):
@@ -50,7 +50,7 @@ class TestEmbeddedResources(object):
         example = json.loads(
                 data_from_file(
                     self.test_dir,
-                    'example_single_repository.json'))
+                    'Repository.json'))
         my_repo = self.client.convert_to_object(example)
         assert isinstance(my_repo, Repository)
         assert isinstance(my_repo.owner, Team)

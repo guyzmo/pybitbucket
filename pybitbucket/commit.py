@@ -74,9 +74,11 @@ class Commit(BitbucketBase):
             username,
             repository_name,
             branch=None,
-            include=[],
-            exclude=[],
+            include=None,
+            exclude=None,
             client=Client()):
+        include = include or []
+        exclude = exclude or []
         template = (
             '{+bitbucket_url}' +
             '/2.0/repositories/{username}/{repository_name}' +
@@ -98,9 +100,11 @@ class Commit(BitbucketBase):
     def find_commits_in_repository_full_name(
             repository_full_name,
             branch=None,
-            include=[],
-            exclude=[],
+            include=None,
+            exclude=None,
             client=Client()):
+        include = include or []
+        exclude = exclude or []
         if '/' not in repository_full_name:
             raise NameError(
                 "Repository full name must be in the form: username/name")

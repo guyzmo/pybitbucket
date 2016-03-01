@@ -130,10 +130,11 @@ class Snippet(BitbucketBase):
     """
     def modify(
             self,
-            files=open_files([]),
+            files=None,
             is_private=None,
             is_unlisted=None,
             title=None):
+        files = files or open_files([])
         payload = self.make_payload(is_private, is_unlisted, title)
         return self.put(payload, files=files)
 

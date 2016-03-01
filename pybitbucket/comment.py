@@ -41,18 +41,18 @@ class Comment(BitbucketBase):
         Client.expect_ok(response)
         return Comment(response.json(), client=client)
 
-    """
-    A convenience method for finding a specific comment on a snippet.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Comment object, instead of the
-    generator.
-    """
     @staticmethod
     def find_comment_for_snippet_by_id(
             snippet_id,
             comment_id,
             username=None,
             client=Client()):
+        """
+        A convenience method for finding a specific comment on a snippet.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Comment object, instead of the
+        generator.
+        """
         if username is None:
             username = client.get_username()
         return next(Bitbucket(client=client).snippetCommentByCommentId(
@@ -60,12 +60,6 @@ class Comment(BitbucketBase):
             snippet_id=snippet_id,
             comment_id=comment_id))
 
-    """
-    A convenience method for finding a specific comment on a commit.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Comment object, instead of the
-    generator.
-    """
     @staticmethod
     def find_comment_for_repository_commit_by_id(
             owner,
@@ -73,6 +67,12 @@ class Comment(BitbucketBase):
             revision,
             comment_id,
             client=Client()):
+        """
+        A convenience method for finding a specific comment on a commit.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Comment object, instead of the
+        generator.
+        """
         return next(
             Bitbucket(client=client).repositoryCommitCommentByCommentId(
                 owner=owner,
@@ -80,12 +80,6 @@ class Comment(BitbucketBase):
                 revision=revision,
                 comment_id=comment_id))
 
-    """
-    A convenience method for finding a specific comment on a pull request.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Comment object, instead of the
-    generator.
-    """
     @staticmethod
     def find_comment_for_repository_pullrequest_by_id(
             owner,
@@ -93,6 +87,12 @@ class Comment(BitbucketBase):
             pullrequest_id,
             comment_id,
             client=Client()):
+        """
+        A convenience method for finding a specific comment on a pull request.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Comment object, instead of the
+        generator.
+        """
         return next(
             Bitbucket(client=client).repositoryPullRequestCommentsByCommentId(
                 owner=owner,

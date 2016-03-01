@@ -193,25 +193,25 @@ class BitbucketBase(object):
                 else:
                     setattr(self, name, body)
 
-    '''
-    A helper method for 1.0 API resources that expands uri templates
-    found in links into a fully navigable URL as would be found
-    with a HAL-JSON resource.
-    '''
     @classmethod
     def expand_link_urls(cls, **kwargs):
+        """
+        A helper method for 1.0 API resources that expands uri templates
+        found in links into a fully navigable URL as would be found
+        with a HAL-JSON resource.
+        """
         links = loads(cls.links_json)
         return {'_links': {
             name: {'href': expand(template, kwargs)}
             for (name, template)
             in cls.links_from(links)}}
 
-    '''
-    A helper method for 1.0 API resources that gets the raw uri template
-    for a specific link.
-    '''
     @classmethod
     def get_link_template(cls, name):
+        """
+        A helper method for 1.0 API resources that gets the raw uri template
+        for a specific link.
+        """
         links = loads(cls.links_json)
         templates = [v for k, v in cls.links_from(links) if k == name]
         return templates[0]

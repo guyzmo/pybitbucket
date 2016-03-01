@@ -73,47 +73,47 @@ class BranchRestriction(BitbucketBase):
             users=users)
         return BranchRestriction.post(api_url, json=payload, client=client)
 
-    """
-    A convenience method for changing the current branch-restriction.
-    The parameters make it easier to know what can be changed.
-    """
     def update(
             self,
             kind=None,
             pattern=None,
             groups=None,
             users=None):
+        """
+        A convenience method for changing the current branch-restriction.
+        The parameters make it easier to know what can be changed.
+        """
         kwargs = {k: v for k, v in locals().items() if k != 'self'}
         payload = self.payload(**kwargs)
         return self.put(payload)
 
-    """
-    A convenience method for finding branch-restrictions for a repository.
-    The method is a generator BranchRestriction objects.
-    """
     @staticmethod
     def find_branchrestrictions_for_repository(
             repository_name,
             owner=None,
             client=Client()):
+        """
+        A convenience method for finding branch-restrictions for a repository.
+        The method is a generator BranchRestriction objects.
+        """
         if (owner is None):
             owner = client.get_username()
         return Bitbucket(client=client).repositoryBranchRestrictions(
             owner=owner,
             repository_name=repository_name)
 
-    """
-    A convenience method for finding a specific branch-restriction.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a BranchRestriction object, instead of the
-    generator.
-    """
     @staticmethod
     def find_branchrestriction_for_repository_by_id(
             repository_name,
             restriction_id,
             owner=None,
             client=Client()):
+        """
+        A convenience method for finding a specific branch-restriction.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a BranchRestriction object, instead of the
+        generator.
+        """
         if (owner is None):
             owner = client.get_username()
         return next(

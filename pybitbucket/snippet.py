@@ -90,58 +90,58 @@ class Snippet(BitbucketBase):
         Client.expect_ok(response)
         return Snippet(response.json(), client=client)
 
-    """
-    A convenience method for finding snippets by the user's role.
-    The method is a generator Snippet objects.
-    """
     @staticmethod
     def find_snippets_for_role(role=SnippetRole.OWNER, client=Client()):
+        """
+        A convenience method for finding snippets by the user's role.
+        The method is a generator Snippet objects.
+        """
         SnippetRole.expect_valid_value(role)
         return Bitbucket(client=client).snippetsForRole(role=role)
 
-    """
-    A convenience method for finding a specific snippet.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Snippet object, instead of the
-    generator.
-    """
     @staticmethod
     def find_my_snippet_by_id(id, client=Client()):
+        """
+        A convenience method for finding a specific snippet.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Snippet object, instead of the
+        generator.
+        """
         return next(Bitbucket(client=client).snippetByOwnerAndSnippetId(
             owner=client.get_username(),
             snippet_id=id))
 
-    """
-    A convenience method for finding a specific snippet.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Snippet object, instead of the
-    generator.
-    """
     @staticmethod
     def find_snippet_by_owner_and_id(owner, id, client=Client()):
+        """
+        A convenience method for finding a specific snippet.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Snippet object, instead of the
+        generator.
+        """
         return next(Bitbucket(client=client).snippetByOwnerAndSnippetId(
             owner=owner,
             snippet_id=id))
 
-    """
-    A convenience method for changing the current snippet.
-    The parameters make it easier to know what can be changed
-    and allow references with file names instead of File objects.
-    """
     def modify(
             self,
             files=None,
             is_private=None,
             is_unlisted=None,
             title=None):
+        """
+        A convenience method for changing the current snippet.
+        The parameters make it easier to know what can be changed
+        and allow references with file names instead of File objects.
+        """
         files = files or open_files([])
         payload = self.make_payload(is_private, is_unlisted, title)
         return self.put(payload, files=files)
 
-    """
-    A convenience method that compensates for a bug in the Bitbucket API.
-    """
     def isPrivate(self):
+        """
+        A convenience method that compensates for a bug in the Bitbucket API.
+        """
         return (self.data['is_private'] == 'True')
 
     def content(self, filename):

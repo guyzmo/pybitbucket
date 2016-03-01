@@ -112,17 +112,17 @@ class Repository(BitbucketBase):
             })
         return cls.post(api_url, json=payload, client=client)
 
-    """
-    A convenience method for finding a specific repository.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Repository object, instead of the
-    generator.
-    """
     @staticmethod
     def find_repository_by_name_and_owner(
             repository_name,
             owner=None,
             client=Client()):
+        """
+        A convenience method for finding a specific repository.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Repository object, instead of the
+        generator.
+        """
         if owner is None:
             owner = client.get_username()
         return next(
@@ -130,16 +130,16 @@ class Repository(BitbucketBase):
                 owner=owner,
                 repository_name=repository_name))
 
-    """
-    A convenience method for finding a specific repository.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a Repository object, instead of the
-    generator.
-    """
     @staticmethod
     def find_repository_by_full_name(
             full_name,
             client=Client()):
+        """
+        A convenience method for finding a specific repository.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Repository object, instead of the
+        generator.
+        """
         if '/' not in full_name:
             raise TypeError(
                 "Repository full name must be in the form: username/name")
@@ -149,24 +149,24 @@ class Repository(BitbucketBase):
             repository_name=repository_name,
             client=client)
 
-    """
-    A convenience method for finding public repositories.
-    The method is a generator Repository objects.
-    """
     @staticmethod
     def find_public_repositories(client=Client()):
+        """
+        A convenience method for finding public repositories.
+        The method is a generator Repository objects.
+        """
         return Bitbucket(client=client).repositoriesThatArePublic()
 
-    """
-    A convenience method for finding a user's repositories.
-    The method is a generator Repository objects.
-    When no owner is provided, it uses the currently authenticated user.
-    """
     @staticmethod
     def find_repositories_by_owner_and_role(
             owner=None,
             role=RepositoryRole.OWNER,
             client=Client()):
+        """
+        A convenience method for finding a user's repositories.
+        The method is a generator Repository objects.
+        When no owner is provided, it uses the currently authenticated user.
+        """
         if owner is None:
             owner = client.get_username()
         RepositoryRole.expect_valid_value(role)

@@ -28,7 +28,7 @@ class AuthFixture(JsonSampleDataFixture):
     username = 'evzijst'
     email = 'pybitbucket@mailinator.com'
     server_base_uri = 'https://staging.bitbucket.org/api'
-    a = TestAuth()
+    auth = TestAuth()
 
     @httpretty.activate
     def get_username_for_authenticator(self, auth):
@@ -58,11 +58,11 @@ class AuthFixture(JsonSampleDataFixture):
 
 
 class TestAuthFixture(AuthFixture):
-    a = TestAuth()
+    auth = TestAuth()
 
 
 class AnonymousFixture(AuthFixture):
-    a = Anonymous()
+    auth = Anonymous()
 
 
 class BasicAuthenticatorFixture(AuthFixture):
@@ -72,7 +72,7 @@ class BasicAuthenticatorFixture(AuthFixture):
 
     @classmethod
     def setup_class(cls):
-        cls.a = BasicAuthenticator(
+        cls.auth = BasicAuthenticator(
             cls.username,
             cls.password,
             cls.email,
@@ -87,7 +87,7 @@ class OAuth1AuthenticatorFixture(AuthFixture):
 
     @classmethod
     def setup_class(cls):
-        cls.a = OAuth1Authenticator(
+        cls.auth = OAuth1Authenticator(
             cls.client_key,
             cls.client_secret,
             client_email=cls.email,
@@ -191,67 +191,67 @@ class TestCreatingHeaders(AuthFixture):
 
 class TestUsingTestAuth(TestAuthFixture):
     def test_constructor_was_able_to_construct_a_base_uri(self):
-        assert self.a.server_base_uri
+        assert self.auth.server_base_uri
 
     def test_constructor_has_created_an_http_session(self):
-        assert self.a.session
+        assert self.auth.session
 
     def test_username_exists(self):
-        assert self.a.get_username() is not None
+        assert self.auth.get_username() is not None
 
     def test_testauth_sends_no_authentication(self):
-        assert not self.a.session.auth
-        assert not self.a.session.headers.get('Authorization')
+        assert not self.auth.session.auth
+        assert not self.auth.session.headers.get('Authorization')
 
 
 class TestUsingAnonymous(AnonymousFixture):
     def test_constructor_was_able_to_construct_a_base_uri(self):
-        assert self.a.server_base_uri
+        assert self.auth.server_base_uri
 
     def test_constructor_has_created_an_http_session(self):
-        assert self.a.session
+        assert self.auth.session
 
     def test_anonymous_sends_no_authentication(self):
-        assert not self.a.session.auth
-        assert not self.a.session.headers.get('Authorization')
+        assert not self.auth.session.auth
+        assert not self.auth.session.headers.get('Authorization')
 
     def test_username_is_blank(self):
         # TODO: Is this really the right behavior?
         # Since the username is used in some methods
         # perhaps Anonymous should raise an exception?
-        assert '' == self.a.get_username()
+        assert '' == self.auth.get_username()
 
 
 class TestUsingBasicAuthentication(BasicAuthenticatorFixture):
     def test_constructor_was_able_to_construct_a_base_uri(self):
-        assert self.a.server_base_uri
+        assert self.auth.server_base_uri
 
     def test_constructor_has_created_an_http_session(self):
-        assert self.a.session
+        assert self.auth.session
 
     def test_basicauth_has_authentication(self):
-        assert self.a.session.auth
+        assert self.auth.session.auth
 
     def test_username_exists(self):
-        assert self.a.get_username() is not None
+        assert self.auth.get_username() is not None
 
     def test_username(self):
-        assert self.username == self.a.get_username()
+        assert self.username == self.auth.get_username()
 
     def test_sent_authorization_header(self):
-        h = self.get_request_headers(self.a)
+        h = self.get_request_headers(self.auth)
         assert self.digest == h.get('Authorization')
 
     def test_sent_from_header(self):
-        h = self.get_request_headers(self.a)
+        h = self.get_request_headers(self.auth)
         assert self.email == h.get('From')
 
     def test_sent_useragent_header(self):
-        h = self.get_request_headers(self.a)
+        h = self.get_request_headers(self.auth)
         assert h.get('User-Agent').startswith('pybitbucket')
 
     def test_sent_accept_header(self):
-        h = self.get_request_headers(self.a)
+        h = self.get_request_headers(self.auth)
         accept_params = h.get('Accept').split(';')
         json = [p for p in accept_params if p == 'application/json']
         assert any(json)
@@ -259,32 +259,32 @@ class TestUsingBasicAuthentication(BasicAuthenticatorFixture):
 
 class TestUsingOAuth1Authentication(OAuth1AuthenticatorFixture):
     def test_constructor_was_able_to_construct_a_base_uri(self):
-        assert self.a.server_base_uri
+        assert self.auth.server_base_uri
 
     def test_constructor_has_created_an_http_session(self):
-        assert self.a.session
+        assert self.auth.session
 
     def test_has_authentication(self):
-        assert self.a.session.auth
+        assert self.auth.session.auth
 
     def test_username(self):
-        result = self.get_username_for_authenticator(self.a)
+        result = self.get_username_for_authenticator(self.auth)
         assert self.username == result
 
     def test_sent_authorization_header(self):
-        h = self.get_request_headers(self.a)
+        h = self.get_request_headers(self.auth)
         assert h.get('Authorization')
 
     def test_sent_from_header(self):
-        h = self.get_request_headers(self.a)
+        h = self.get_request_headers(self.auth)
         assert self.email == h.get('From')
 
     def test_sent_useragent_header(self):
-        h = self.get_request_headers(self.a)
+        h = self.get_request_headers(self.auth)
         assert h.get('User-Agent').startswith('pybitbucket')
 
     def test_sent_accept_header(self):
-        h = self.get_request_headers(self.a)
+        h = self.get_request_headers(self.auth)
         accept_params = h.get('Accept').split(';')
         json = [p for p in accept_params if p == 'application/json']
         assert any(json)

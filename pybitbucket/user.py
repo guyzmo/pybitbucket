@@ -18,24 +18,24 @@ class User(BitbucketBase):
         # Create a "mock" UserV1 for those links.
         self.v1 = UserV1(data, client)
 
-    """
-    A convenience method for finding the current user.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a User object, instead of the
-    generator.
-    """
     @staticmethod
     def find_current_user(client=Client()):
+        """
+        A convenience method for finding the current user.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a User object, instead of the
+        generator.
+        """
         return next(Bitbucket(client=client).userForMyself())
 
-    """
-    A convenience method for finding a specific user.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a User object, instead of the
-    generator.
-    """
     @staticmethod
     def find_user_by_username(username, client=Client()):
+        """
+        A convenience method for finding a specific user.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a User object, instead of the
+        generator.
+        """
         return next(Bitbucket(client=client).userByUsername(
             username=username))
 

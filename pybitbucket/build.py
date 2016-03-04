@@ -79,9 +79,6 @@ class BuildStatus(BitbucketBase):
             description=description)
         return BuildStatus.post(api_url, json=payload, client=client)
 
-    """
-    A convenience method for changing the current build status.
-    """
     def modify(
             self,
             key=None,
@@ -89,6 +86,9 @@ class BuildStatus(BitbucketBase):
             url=None,
             name=None,
             description=None):
+        """
+        A convenience method for changing the current build status.
+        """
         if (state is None):
             state = self.state
         if (key is None):
@@ -107,12 +107,6 @@ class BuildStatus(BitbucketBase):
             description=description)
         return self.put(json=payload)
 
-    """
-    A convenience method for finding a specific build status.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a BuildStatus object, instead of the
-    generator.
-    """
     @staticmethod
     def find_buildstatus_for_repository_commit_by_key(
             repository_name,
@@ -120,6 +114,12 @@ class BuildStatus(BitbucketBase):
             key,
             owner=None,
             client=Client()):
+        """
+        A convenience method for finding a specific build status.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a BuildStatus object, instead of the
+        generator.
+        """
         if (owner is None):
             owner = client.get_username()
         return next(
@@ -129,17 +129,17 @@ class BuildStatus(BitbucketBase):
                 revision=revision,
                 key=key))
 
-    """
-    A convenience method for finding build statuses
-    for a repository's commit.
-    The method is a generator BuildStatus objects.
-    """
     @staticmethod
     def find_buildstatuses_for_repository_commit(
             repository_name,
             revision,
             owner=None,
             client=Client()):
+        """
+        A convenience method for finding build statuses
+        for a repository's commit.
+        The method is a generator BuildStatus objects.
+        """
         if (owner is None):
             owner = client.get_username()
         return Bitbucket(client=client).repositoryCommitBuildStatuses(

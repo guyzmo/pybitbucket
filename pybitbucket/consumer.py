@@ -84,11 +84,6 @@ class Consumer(BitbucketBase):
             payload.append(('callback_url', callback_url))
         return payload
 
-    """
-    A convenience method for creating a new consumer.
-    The parameters make it easier to know what can be changed.
-    Consumers can only be created for the currently authenticated user.
-    """
     @staticmethod
     def create(
             name,
@@ -97,6 +92,11 @@ class Consumer(BitbucketBase):
             url=None,
             callback_url=None,
             client=Client()):
+        """
+        A convenience method for creating a new consumer.
+        The parameters make it easier to know what can be changed.
+        Consumers can only be created for the currently authenticated user.
+        """
         post_url = expand(
             Consumer.get_link_template('consumers'), {
                 'bitbucket_url': client.get_bitbucket_url(),
@@ -112,11 +112,6 @@ class Consumer(BitbucketBase):
         # Hence, use `data` instead of `json`.
         return Consumer.post(post_url, data=payload, client=client)
 
-    """
-    A convenience method for changing the current consumer.
-    The parameters make it easier to know what can be changed.
-    Consumers can only be modified for the currently authenticated user.
-    """
     def update(
             self,
             name=None,
@@ -124,18 +119,23 @@ class Consumer(BitbucketBase):
             description=None,
             url=None,
             callback_url=None):
+        """
+        A convenience method for changing the current consumer.
+        The parameters make it easier to know what can be changed.
+        Consumers can only be modified for the currently authenticated user.
+        """
         kwargs = {k: v for k, v in locals().items() if k != 'self'}
         payload = self.payload(**kwargs)
         # Note: The Bitbucket API expects a urlencoded-form, not json.
         # Hence, use `data` instead of `json`.
         return self.put(data=payload)
 
-    """
-    Find consumers for the authenticated user.
-    The method is a generator Consumer objects.
-    """
     @staticmethod
     def find_consumers(client=Client()):
+        """
+        Find consumers for the authenticated user.
+        The method is a generator Consumer objects.
+        """
         url = expand(
             Consumer.get_link_template('consumers'), {
                 'bitbucket_url': client.get_bitbucket_url(),
@@ -143,11 +143,11 @@ class Consumer(BitbucketBase):
             })
         return client.remote_relationship(url)
 
-    """
-    Finding a specific consumer by id for the authenticated user.
-    """
     @staticmethod
     def find_consumer_by_id(consumer_id, client=Client()):
+        """
+        Finding a specific consumer by id for the authenticated user.
+        """
         url = expand(
             Consumer.get_link_template('self'), {
                 'bitbucket_url': client.get_bitbucket_url(),

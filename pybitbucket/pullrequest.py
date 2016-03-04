@@ -149,36 +149,36 @@ class PullRequest(BitbucketBase):
             reviewers)
         return PullRequest.post(api_url, json=payload, client=client)
 
-    """
-    A convenience method for finding a specific pull request.
-    In contrast to the pure hypermedia driven method on the Bitbucket
-    class, this method returns a PullRequest object, instead of the
-    generator.
-    """
     @staticmethod
     def find_pullrequest_in_repository_by_id(
             owner,
             repository_name,
             pullrequest_id,
             client=Client()):
+        """
+        A convenience method for finding a specific pull request.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a PullRequest object, instead of the
+        generator.
+        """
         return next(
             Bitbucket(client=client).repositoryPullRequestByPullRequestId(
                 owner=owner,
                 repository_name=repository_name,
                 pullrequest_id=pullrequest_id))
 
-    """
-    A convenience method for finding pull requests for a repository.
-    The method is a generator PullRequest objects.
-    If no owner is provided, this method assumes the client can provide one.
-    If no state is provided, the server will assume open pull requests.
-    """
     @staticmethod
     def find_pullrequests_for_repository_by_state(
             repository_name,
             owner=None,
             state=None,
             client=Client()):
+        """
+        A convenience method for finding pull requests for a repository.
+        The method is a generator PullRequest objects.
+        If no owner is provided, this method assumes the client can provide one.
+        If no state is provided, the server will assume open pull requests.
+        """
         if (state is not None):
             PullRequestState.expect_state(state)
         if (owner is None):

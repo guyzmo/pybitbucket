@@ -57,6 +57,21 @@ entrypoints_json = """
     "repositoryCommitBuildStatusByKey": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/commit{/revision}/statuses/build{/key}"
     },
+    "repositoryRefs": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/refs"
+    },
+    "repositoryTags": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/refs/tags"
+    },
+    "repositoryTagByName": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/refs/tags{/ref_name}"
+    },
+    "repositoryBranches": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/refs/branches"
+    },
+    "repositoryBranchByName": {
+      "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/refs/branches{/ref_name}"
+    },
     "repositoryPullRequestsInState": {
       "href": "https://api.bitbucket.org/2.0/repositories{/owner,repository_name}/pullrequests{?state}"
     },

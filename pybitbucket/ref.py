@@ -15,7 +15,7 @@ class Ref(BitbucketBase):
     id_attribute = 'name'
 
     @staticmethod
-    def is_type(data):
+    def is_type(*args):
         # Ref is an abstraction so does not match on data
         return False
 

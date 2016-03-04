@@ -101,8 +101,7 @@ class Repository(BitbucketBase):
             has_wiki=None,
             language=None,
             client=Client()):
-        if owner is None:
-            owner = client.get_username()
+        owner = owner or client.get_username()
         payload = cls.payload(**locals())
         api_url = expand(
             cls.templates['create'], {
@@ -123,8 +122,7 @@ class Repository(BitbucketBase):
         class, this method returns a Repository object, instead of the
         generator.
         """
-        if owner is None:
-            owner = client.get_username()
+        owner = owner or client.get_username()
         return next(
             Bitbucket(client=client).repositoryByOwnerAndRepositoryName(
                 owner=owner,
@@ -167,8 +165,7 @@ class Repository(BitbucketBase):
         The method is a generator Repository objects.
         When no owner is provided, it uses the currently authenticated user.
         """
-        if owner is None:
-            owner = client.get_username()
+        owner = owner or client.get_username()
         RepositoryRole.expect_valid_value(role)
         return Bitbucket(client=client).repositoriesByOwnerAndRole(
             owner=owner,

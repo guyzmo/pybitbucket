@@ -1,0 +1,567 @@
+{
+  "pagelen": 10,
+  "values": [
+    {
+      "links": {
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/bug/35-url-name-collision"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/branches/bug/35-url-name-collision"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket/branch/bug/35-url-name-collision"
+        }
+      },
+      "type": "branch",
+      "name": "bug/35-url-name-collision",
+      "repository": {
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+          }
+        },
+        "type": "repository",
+        "name": "python-bitbucket",
+        "full_name": "atlassian/python-bitbucket",
+        "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+      },
+      "target": {
+        "hash": "0d84b1758b5620aab804727f042e46a74b1efb6d",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/0d84b1758b5620aab804727f042e46a74b1efb6d"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/0d84b1758b5620aab804727f042e46a74b1efb6d"
+          }
+        },
+        "author": {
+          "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+          "user": {
+            "username": "ian_buchanan",
+            "display_name": "Ian Buchanan [Atlassian]",
+            "type": "user",
+            "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+              },
+              "html": {
+                "href": "https://bitbucket.org/ian_buchanan/"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+              }
+            }
+          }
+        },
+        "parents": [
+          {
+            "hash": "f3e27b26f37af6ea5fbabf9d4c3847f27bb8a406",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/f3e27b26f37af6ea5fbabf9d4c3847f27bb8a406"
+              },
+              "html": {
+                "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/f3e27b26f37af6ea5fbabf9d4c3847f27bb8a406"
+              }
+            }
+          }
+        ],
+        "date": "2016-02-29T23:07:11+00:00",
+        "message": "fixed `api` name collision\n\nChanged name in all `create` locations.\n",
+        "type": "commit"
+      }
+    },
+    {
+      "links": {
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/bugfix/setup-without-git"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/branches/bugfix/setup-without-git"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket/branch/bugfix/setup-without-git"
+        }
+      },
+      "type": "branch",
+      "name": "bugfix/setup-without-git",
+      "repository": {
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+          }
+        },
+        "type": "repository",
+        "name": "python-bitbucket",
+        "full_name": "atlassian/python-bitbucket",
+        "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+      },
+      "target": {
+        "hash": "a95779d4b6d3cf35c6325448c4dd8424dd274a1f",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/a95779d4b6d3cf35c6325448c4dd8424dd274a1f"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/a95779d4b6d3cf35c6325448c4dd8424dd274a1f"
+          }
+        },
+        "author": {
+          "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+          "user": {
+            "username": "ian_buchanan",
+            "display_name": "Ian Buchanan [Atlassian]",
+            "type": "user",
+            "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+              },
+              "html": {
+                "href": "https://bitbucket.org/ian_buchanan/"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+              }
+            }
+          }
+        },
+        "parents": [
+          {
+            "hash": "d720b7d3f802521f6350adf0926f962f57878d9c",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/d720b7d3f802521f6350adf0926f962f57878d9c"
+              },
+              "html": {
+                "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/d720b7d3f802521f6350adf0926f962f57878d9c"
+              }
+            }
+          }
+        ],
+        "date": "2016-02-05T14:25:47+00:00",
+        "message": "changed unicode call to str\n",
+        "type": "commit"
+      }
+    },
+    {
+      "links": {
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/build/scrutinizer"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/branches/build/scrutinizer"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket/branch/build/scrutinizer"
+        }
+      },
+      "type": "branch",
+      "name": "build/scrutinizer",
+      "repository": {
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+          }
+        },
+        "type": "repository",
+        "name": "python-bitbucket",
+        "full_name": "atlassian/python-bitbucket",
+        "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+      },
+      "target": {
+        "hash": "4fec3b3d37015e66b41c5f9af6e26abd46a636e6",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/4fec3b3d37015e66b41c5f9af6e26abd46a636e6"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/4fec3b3d37015e66b41c5f9af6e26abd46a636e6"
+          }
+        },
+        "author": {
+          "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+          "user": {
+            "username": "ian_buchanan",
+            "display_name": "Ian Buchanan [Atlassian]",
+            "type": "user",
+            "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+              },
+              "html": {
+                "href": "https://bitbucket.org/ian_buchanan/"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+              }
+            }
+          }
+        },
+        "parents": [
+          {
+            "hash": "5eb2d1a96159009ad72ec56271971d7f04c8a5a9",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/5eb2d1a96159009ad72ec56271971d7f04c8a5a9"
+              },
+              "html": {
+                "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/5eb2d1a96159009ad72ec56271971d7f04c8a5a9"
+              }
+            }
+          }
+        ],
+        "date": "2016-02-05T15:07:47+00:00",
+        "message": "added required coverage format\n",
+        "type": "commit"
+      }
+    },
+    {
+      "links": {
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/build/solano-labs"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/branches/build/solano-labs"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket/branch/build/solano-labs"
+        }
+      },
+      "type": "branch",
+      "name": "build/solano-labs",
+      "repository": {
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+          }
+        },
+        "type": "repository",
+        "name": "python-bitbucket",
+        "full_name": "atlassian/python-bitbucket",
+        "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+      },
+      "target": {
+        "hash": "c54d9c62d77b292ea54d45ca9a035a3331f4d053",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/c54d9c62d77b292ea54d45ca9a035a3331f4d053"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/c54d9c62d77b292ea54d45ca9a035a3331f4d053"
+          }
+        },
+        "author": {
+          "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+          "user": {
+            "username": "ian_buchanan",
+            "display_name": "Ian Buchanan [Atlassian]",
+            "type": "user",
+            "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+              },
+              "html": {
+                "href": "https://bitbucket.org/ian_buchanan/"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+              }
+            }
+          }
+        },
+        "parents": [
+          {
+            "hash": "f7ad3065f25ca42ac52a082d8bf4abc31b59a93e",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/f7ad3065f25ca42ac52a082d8bf4abc31b59a93e"
+              },
+              "html": {
+                "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/f7ad3065f25ca42ac52a082d8bf4abc31b59a93e"
+              }
+            }
+          }
+        ],
+        "date": "2016-02-05T14:27:24+00:00",
+        "message": "removed py35\n",
+        "type": "commit"
+      }
+    },
+    {
+      "links": {
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/feature/oauth"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/branches/feature/oauth"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket/branch/feature/oauth"
+        }
+      },
+      "type": "branch",
+      "name": "feature/oauth",
+      "repository": {
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+          }
+        },
+        "type": "repository",
+        "name": "python-bitbucket",
+        "full_name": "atlassian/python-bitbucket",
+        "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+      },
+      "target": {
+        "hash": "0a0ec4f622734d2a4ed8584bb2fa4a2b851686e8",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/0a0ec4f622734d2a4ed8584bb2fa4a2b851686e8"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/0a0ec4f622734d2a4ed8584bb2fa4a2b851686e8"
+          }
+        },
+        "author": {
+          "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+          "user": {
+            "username": "ian_buchanan",
+            "display_name": "Ian Buchanan [Atlassian]",
+            "type": "user",
+            "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+              },
+              "html": {
+                "href": "https://bitbucket.org/ian_buchanan/"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+              }
+            }
+          }
+        },
+        "parents": [
+          {
+            "hash": "74ee2ea4bf6eb7a5cef18ff35cba665da265c16e",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/74ee2ea4bf6eb7a5cef18ff35cba665da265c16e"
+              },
+              "html": {
+                "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/74ee2ea4bf6eb7a5cef18ff35cba665da265c16e"
+              }
+            }
+          }
+        ],
+        "date": "2016-01-02T16:54:02+00:00",
+        "message": "fixed method signature\n",
+        "type": "commit"
+      }
+    },
+    {
+      "links": {
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/master"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/branches/master"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket/branch/master"
+        }
+      },
+      "type": "branch",
+      "name": "master",
+      "repository": {
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+          }
+        },
+        "type": "repository",
+        "name": "python-bitbucket",
+        "full_name": "atlassian/python-bitbucket",
+        "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+      },
+      "target": {
+        "hash": "3a08ca088175f3f99f8828cb574bff0dec5c2e8d",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/3a08ca088175f3f99f8828cb574bff0dec5c2e8d"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/3a08ca088175f3f99f8828cb574bff0dec5c2e8d"
+          }
+        },
+        "author": {
+          "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+          "user": {
+            "username": "ian_buchanan",
+            "display_name": "Ian Buchanan [Atlassian]",
+            "type": "user",
+            "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+              },
+              "html": {
+                "href": "https://bitbucket.org/ian_buchanan/"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+              }
+            }
+          }
+        },
+        "parents": [
+          {
+            "hash": "808933498d3b2861f6693c843fe1ecfebee77ad9",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/808933498d3b2861f6693c843fe1ecfebee77ad9"
+              },
+              "html": {
+                "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/808933498d3b2861f6693c843fe1ecfebee77ad9"
+              }
+            }
+          }
+        ],
+        "date": "2016-03-01T03:56:12+00:00",
+        "message": "removed some less than useful badges\n",
+        "type": "commit"
+      }
+    },
+    {
+      "links": {
+        "commits": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/release/0.10"
+        },
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/branches/release/0.10"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket/branch/release/0.10"
+        }
+      },
+      "type": "branch",
+      "name": "release/0.10",
+      "repository": {
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+          }
+        },
+        "type": "repository",
+        "name": "python-bitbucket",
+        "full_name": "atlassian/python-bitbucket",
+        "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+      },
+      "target": {
+        "hash": "d87f4c082eb97c9efb133d6ccc89a0dc243d08be",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/d87f4c082eb97c9efb133d6ccc89a0dc243d08be"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/d87f4c082eb97c9efb133d6ccc89a0dc243d08be"
+          }
+        },
+        "author": {
+          "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+          "user": {
+            "username": "ian_buchanan",
+            "display_name": "Ian Buchanan [Atlassian]",
+            "type": "user",
+            "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+              },
+              "html": {
+                "href": "https://bitbucket.org/ian_buchanan/"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+              }
+            }
+          }
+        },
+        "parents": [
+          {
+            "hash": "7fa580757c92fa989a1c9b656dc7f848a9cc4504",
+            "type": "commit",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/7fa580757c92fa989a1c9b656dc7f848a9cc4504"
+              },
+              "html": {
+                "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/7fa580757c92fa989a1c9b656dc7f848a9cc4504"
+              }
+            }
+          }
+        ],
+        "date": "2016-03-01T02:55:36+00:00",
+        "message": "fixed docstrings\n",
+        "type": "commit"
+      }
+    }
+  ],
+  "page": 1,
+  "size": 7
+}

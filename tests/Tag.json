@@ -1,0 +1,63 @@
+{
+  "type": "tag",
+  "name": "v0.1.1",
+  "links": {
+    "commits": {
+      "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/v0.1.1"
+    },
+    "self": {
+      "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/tags/v0.1.1"
+    },
+    "html": {
+      "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/tag/v0.1.1"
+    }
+  },
+  "target": {
+    "hash": "7bf8f89e7450b9d835d116721fbe3d439c623840",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/7bf8f89e7450b9d835d116721fbe3d439c623840"
+      },
+      "html": {
+        "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/7bf8f89e7450b9d835d116721fbe3d439c623840"
+      }
+    },
+    "author": {
+      "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+      "user": {
+        "username": "ian_buchanan",
+        "display_name": "Ian Buchanan [Atlassian]",
+        "type": "user",
+        "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+          },
+          "html": {
+            "href": "https://bitbucket.org/ian_buchanan/"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+          }
+        }
+      }
+    },
+    "parents": [
+      {
+        "hash": "8099a569f2d09e6c1a7e855e29255608d278f445",
+        "type": "commit",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/8099a569f2d09e6c1a7e855e29255608d278f445"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/8099a569f2d09e6c1a7e855e29255608d278f445"
+          }
+        }
+      }
+    ],
+    "date": "2015-02-26T23:01:25+00:00",
+    "message": "bump version\n",
+    "type": "commit"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "links": {
+    "commits": {
+      "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commits/bug/35-url-name-collision"
+    },
+    "self": {
+      "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/refs/branches/bug/35-url-name-collision"
+    },
+    "html": {
+      "href": "https://bitbucket.org/atlassian/python-bitbucket/branch/bug/35-url-name-collision"
+    }
+  },
+  "type": "branch",
+  "name": "bug/35-url-name-collision",
+  "repository": {
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+      },
+      "html": {
+        "href": "https://bitbucket.org/atlassian/python-bitbucket"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+      }
+    },
+    "type": "repository",
+    "name": "python-bitbucket",
+    "full_name": "atlassian/python-bitbucket",
+    "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+  },
+  "target": {
+    "hash": "0d84b1758b5620aab804727f042e46a74b1efb6d",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/0d84b1758b5620aab804727f042e46a74b1efb6d"
+      },
+      "html": {
+        "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/0d84b1758b5620aab804727f042e46a74b1efb6d"
+      }
+    },
+    "author": {
+      "raw": "Ian Buchanan <ibuchanan@atlassian.com>",
+      "user": {
+        "username": "ian_buchanan",
+        "display_name": "Ian Buchanan [Atlassian]",
+        "type": "user",
+        "uuid": "{27e49bd2-9ecb-4a41-8387-033c972d1399}",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/ian_buchanan"
+          },
+          "html": {
+            "href": "https://bitbucket.org/ian_buchanan/"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/ian_buchanan/avatar/32/"
+          }
+        }
+      }
+    },
+    "parents": [
+      {
+        "hash": "f3e27b26f37af6ea5fbabf9d4c3847f27bb8a406",
+        "type": "commit",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/commit/f3e27b26f37af6ea5fbabf9d4c3847f27bb8a406"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/python-bitbucket/commits/f3e27b26f37af6ea5fbabf9d4c3847f27bb8a406"
+          }
+        }
+      }
+    ],
+    "date": "2016-02-29T23:07:11+00:00",
+    "message": "fixed `api` name collision\n\nChanged name in all `create` locations.\n",
+    "type": "commit"
+  }
+}

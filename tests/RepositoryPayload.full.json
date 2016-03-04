@@ -1,0 +1,10 @@
+{
+  "is_private": false,
+  "fork_policy": "allow_forks",
+  "name": "teamsinspace.bitbucket.org",
+  "description": "Description",
+  "scm": "git",
+  "has_issues": true,
+  "has_wiki": true,
+  "language": "python"
+}

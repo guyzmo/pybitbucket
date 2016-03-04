@@ -5,8 +5,9 @@ import json
 import httpretty
 from uritemplate import expand
 from pybitbucket.repository import (
-    Repository, RepositoryV1, RepositoryRole,
-    RepositoryType, RepositoryForkPolicy)
+    RepositoryRole, RepositoryType, RepositoryForkPolicy,
+    Repository, RepositoryV1,
+    RepositoryPayload)
 from pybitbucket.team import Team
 from pybitbucket.bitbucket import Bitbucket
 from pybitbucket.user import User
@@ -26,6 +27,25 @@ class RepositoryFixture(BitbucketFixture):
             client=cls.test_client)
 
     # GIVEN: Example data attributes for a repository
+    owner = 'teamsinspace'
+    name = 'teamsinspace.bitbucket.org'
+    full_name = owner + '/' + name
+    language = ''
+    scm = RepositoryType.GIT
+    fork_policy = RepositoryForkPolicy.ALLOW_FORKS
+    role = RepositoryRole.OWNER
+
+
+class RepositoryPayloadFixture(BitbucketFixture):
+    # GIVEN: a class under test
+    class_under_test = 'RepositoryPayload'
+
+    # GIVEN: An example object created from example data
+    @classmethod
+    def example_object(cls):
+        return RepositoryPayload(json.loads(cls.resource_data()))
+
+    # GIVEN: Example data attributes for a repository payload
     owner = 'teamsinspace'
     name = 'teamsinspace.bitbucket.org'
     full_name = owner + '/' + name
@@ -123,60 +143,6 @@ class TestDeleting(RepositoryFixture):
         assert result is None
 
 
-class TestCreatingPayloadWithInvalidParameters(RepositoryFixture):
-    def test_raising_exception_for_invalid_repository_type(self):
-        try:
-            Repository.payload(scm='invalid')
-        except Exception as e:
-            assert isinstance(e, NameError)
-
-    def test_raising_exception_for_invalid_fork_policy(self):
-        try:
-            Repository.payload(fork_policy='invalid')
-        except Exception as e:
-            assert isinstance(e, NameError)
-
-
-class TestCreatingMinimalPayload(RepositoryFixture):
-    @classmethod
-    def setup_class(cls):
-        cls.payload = Repository.payload(
-            repository_name=cls.name,
-            fork_policy=cls.fork_policy,
-            is_private=False)
-
-    def test_minimum_viable_payload_structure_for_create(self):
-        assert self.payload == {
-            'fork_policy': 'allow_forks',
-            'is_private': False,
-            'name': 'teamsinspace.bitbucket.org'}
-
-
-class TestCreatingFullPayload(RepositoryFixture):
-    @classmethod
-    def setup_class(cls):
-        cls.payload = Repository.payload(
-            repository_name=cls.name,
-            description='Description',
-            scm=RepositoryType.GIT,
-            fork_policy=cls.fork_policy,
-            is_private=False,
-            has_issues=True,
-            has_wiki=True,
-            language='python')
-
-    def test_full_payload_structure(self):
-        assert self.payload == {
-            'fork_policy': 'allow_forks',
-            'is_private': False,
-            'name': 'teamsinspace.bitbucket.org',
-            'description': 'Description',
-            'has_issues': True,
-            'has_wiki': True,
-            'language': 'python',
-            'scm': 'git'}
-
-
 class TestCreatingNewRepository(RepositoryFixture):
     @classmethod
     def setup_class(cls):
@@ -196,9 +162,10 @@ class TestCreatingNewRepository(RepositoryFixture):
             body=self.resource_data(),
             status=200)
         response = Repository.create(
-            repository_name=self.name,
-            fork_policy=self.fork_policy,
-            is_private=False,
+            RepositoryPayload(
+                repository_name=self.name,
+                fork_policy=self.fork_policy,
+                is_private=False),
             client=self.test_client)
         assert 'application/json' == \
             httpretty.last_request().headers.get('Content-Type')
@@ -500,3 +467,54 @@ class TestNavigatingFromV1toV2(RepositoryV1Fixture):
             status=200)
         response = self.response.v2.owner()
         assert isinstance(response, User)
+
+
+class TestCreatingRepositoryPayloadWithInvalidParameters(
+        RepositoryPayloadFixture):
+    def test_raising_exception_for_invalid_repository_type(self):
+        try:
+            RepositoryPayload(scm='invalid')
+        except Exception as e:
+            assert isinstance(e, NameError)
+
+    def test_raising_exception_for_invalid_fork_policy(self):
+        try:
+            RepositoryPayload(fork_policy='invalid')
+        except Exception as e:
+            assert isinstance(e, NameError)
+
+
+class TestCreatingMinimalRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.payload = RepositoryPayload(
+            fork_policy=cls.fork_policy,
+            is_private=False).data()
+        cls.json = json.dumps(cls.payload)
+        cls.actual = json.loads(cls.json)
+        cls.expected = json.loads(cls.resource_data(
+            'RepositoryPayload.minimal'))
+
+    def test_minimum_viable_payload_structure_for_create(self):
+        assert self.payload == self.expected
+
+
+class TestCreatingFullRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.payload = RepositoryPayload(
+            repository_name=cls.name,
+            description='Description',
+            scm=RepositoryType.GIT,
+            fork_policy=cls.fork_policy,
+            is_private=False,
+            has_issues=True,
+            has_wiki=True,
+            language='python').data()
+        cls.json = json.dumps(cls.payload)
+        cls.actual = json.loads(cls.json)
+        cls.expected = json.loads(cls.resource_data(
+            'RepositoryPayload.full'))
+
+    def test_full_payload_structure(self):
+        assert self.actual == self.expected

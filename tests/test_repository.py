@@ -36,7 +36,7 @@ class RepositoryFixture(BitbucketFixture):
     role = RepositoryRole.OWNER
 
 
-class RepositoryPayloadFixture(BitbucketFixture):
+class RepositoryPayloadFixture(RepositoryFixture):
     # GIVEN: a class under test
     class_under_test = 'RepositoryPayload'
 
@@ -44,15 +44,6 @@ class RepositoryPayloadFixture(BitbucketFixture):
     @classmethod
     def example_object(cls):
         return RepositoryPayload(json.loads(cls.resource_data()))
-
-    # GIVEN: Example data attributes for a repository payload
-    owner = 'teamsinspace'
-    name = 'teamsinspace.bitbucket.org'
-    full_name = owner + '/' + name
-    language = ''
-    scm = RepositoryType.GIT
-    fork_policy = RepositoryForkPolicy.ALLOW_FORKS
-    role = RepositoryRole.OWNER
 
 
 class RepositoryV1Fixture(RepositoryFixture):

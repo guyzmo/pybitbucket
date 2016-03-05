@@ -59,27 +59,27 @@ class BranchFixture(RefFixture):
 class TestGettingTheStringRepresentationOfATag(TagFixture):
     @classmethod
     def setup_class(cls):
-        cls.repository_str = str(cls.example_object())
+        cls.tag_str = str(cls.example_object())
 
     def test_string_is_not_the_default_format(self):
-        assert not self.repository_str.startswith('<')
-        assert not self.repository_str.endswith('>')
+        assert not self.tag_str.startswith('<')
+        assert not self.tag_str.endswith('>')
 
     def test_string_has_the_class_name_and_id_attribute(self):
-        assert self.repository_str.startswith('Tag name:')
+        assert self.tag_str.startswith('Tag name:')
 
 
 class TestGettingTheStringRepresentationOfABranch(BranchFixture):
     @classmethod
     def setup_class(cls):
-        cls.repository_str = str(cls.example_object())
+        cls.branch_str = str(cls.example_object())
 
     def test_string_is_not_the_default_format(self):
-        assert not self.repository_str.startswith('<')
-        assert not self.repository_str.endswith('>')
+        assert not self.branch_str.startswith('<')
+        assert not self.branch_str.endswith('>')
 
     def test_string_has_the_class_name_and_id_attribute(self):
-        assert self.repository_str.startswith('Branch name:')
+        assert self.branch_str.startswith('Branch name:')
 
 
 class TestCheckingTheExampleTagData(TagFixture):

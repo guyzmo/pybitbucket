@@ -292,7 +292,7 @@ class Repository(BitbucketBase):
     def find_repositories_by_owner_and_role(
             owner=None,
             role=RepositoryRole.OWNER,
-            client=None:
+            client=None):
         """
         A convenience method for finding a user's repositories.
         The method is a generator Repository objects.

@@ -36,14 +36,7 @@ class PullRequestPayload(object):
     def __init__(self, **kwargs):
         """Create an instance of a pull request payload.
 
-            source_repository_full_name
-            source_branch_name
-            source_commit
-
-            destination_branch_name
-            destination_commit
-
-        :param title: title of the pull request
+        :param title: (required) title of the pull request
         :type title: str
         :param description: human-readable description of the pull request
         :type description: str
@@ -52,23 +45,21 @@ class PullRequestPayload(object):
         :param close_source_branch: whether to close the source branch
             when the pull request is merged
         :type close_source_branch: bool
-
-        :param language: the main (programming) language of the repository
-            source files
-        :type language: str
-        :param scm: the source control manager for the repository.
-            This is either hg or git.
-        :type scm: str or RepositoryType
-        :param fork_policy: (required) control the rules
-            for forking this repository
-        :type fork_policy: str or RepositoryForkPolicy
-        :param is_private: (required) whether this repository is private
-        :type is_private: bool
-        :param has_issues: whether this repository has
-            the issue tracker enabled
-        :type has_issues: bool
-        :param has_wiki: whether this repository has the wiki enabled
-        :type has_wiki: bool
+        :param source_repository_full_name: (required) the owner and name
+            of the source repository. Like atlassian/pybitbucket
+        :type source_repository_full_name: str
+        :param source_branch_name: (required) the source branch
+            from the source repository.
+        :type source_branch_name: str
+        :param source_commit: the source commit
+            from the source repository.
+        :type source_commit: str
+        :param destination_branch: the target branch
+            in the destination repository.
+        :type destination_branch: str
+        :param destination_commit: the target commit
+            in the destination repository.
+        :type destination_commit: str
         :raises: ValueError
         """
         for p in self.properties:
@@ -78,13 +69,7 @@ class PullRequestPayload(object):
             self._source_repository_owner = owner
             self._source_repository_name = name
 
-    def data(self):
-        """Convert this value type to a serializable data structure.
-
-        :returns: dict
-        :raises: KeyError
-        """
-
+    def expect_required(self):
         required = [
             'title',
             'source_branch_name',
@@ -93,6 +78,20 @@ class PullRequestPayload(object):
         for v in required:
             if getattr(self, '_' + v) is None:
                 raise KeyError('{0} is required'.format(v))
+
+    @staticmethod
+    def update_if_not_none(d, key, value, expression=None):
+        expression = expression or value
+        if value is not None:
+            d.update({key: expression})
+
+    def data(self):
+        """Convert this value type to a serializable data structure.
+
+        :returns: dict
+        :raises: KeyError
+        """
+        self.expect_required()
         payload = {
             'title': self._title,
             'source': {
@@ -109,20 +108,27 @@ class PullRequestPayload(object):
                 }
             }
         }
-        if self._close_source_branch is not None:
-            payload.update({'close_source_branch': self._close_source_branch})
-        if self._description is not None:
-            payload.update({'description': self._description})
+        self.update_if_not_none(
+            payload,
+            'close_source_branch',
+            self._close_source_branch)
+        self.update_if_not_none(
+            payload,
+            'description',
+            self._description)
+        self.update_if_not_none(
+            payload.get('source', {}),
+            'commit',
+            self._source_commit,
+            {'hash': self._source_commit})
+        self.update_if_not_none(
+            payload.get('destination', {}),
+            'commit',
+            self._destination_commit,
+            {'hash': self._destination_commit})
         if self._reviewers is not None:
-            PullRequest.expect_list('reviewers', self._reviewers)
             payload.update(
                 {'reviewers': [{'username': u} for u in self._reviewers]})
-        if self._source_commit is not None:
-            payload.get('source', {}).update(
-                {'commit': {'hash': self._source_commit}})
-        if self._destination_commit is not None:
-            payload.get('destination', {}).update(
-                {'commit': {'hash': self._destination_commit}})
 
         return payload
 
@@ -138,6 +144,11 @@ class PullRequestPayload(object):
     def reviewers(self):
         return self._reviewers
 
+    @reviewers.setter
+    def reviewers(self, value):
+        PullRequest.expect_list('reviewers', self._reviewers)
+        self._reviewers = value
+
     @property
     def close_source_branch(self):
         return self._close_source_branch
@@ -148,12 +159,32 @@ class PullRequestPayload(object):
         self._close_source_branch = value
 
     @property
+    def source_repository_full_name(self):
+        return self._source_repository_full_name
+
+    @property
     def source_repository_owner(self):
         return self._source_repository_owner
 
     @property
     def source_repository_name(self):
         return self._source_repository_name
+
+    @property
+    def source_branch_name(self):
+        return self._source_branch_name
+
+    @property
+    def source_commit(self):
+        return self._source_commit
+
+    @property
+    def destination_branch_name(self):
+        return self._destination_branch_name
+
+    @property
+    def destination_commit(self):
+        return self._destination_commit
 
 
 class PullRequest(BitbucketBase):
@@ -171,20 +202,24 @@ class PullRequest(BitbucketBase):
     def is_type(data):
         return (PullRequest.has_v2_self_url(data))
 
+    def attr_from_subchild(self, target_attribute, child, child_object):
+        if self.data.get(child, {}).get(child_object, {}):
+            setattr(
+                self,
+                target_attribute,
+                self.client.convert_to_object(
+                    self.data[child][child_object]))
+
     def __init__(self, data, client=Client()):
         super(PullRequest, self).__init__(data, client=client)
-        if data.get('source', {}).get('commit', {}):
-            self.source_commit = client.convert_to_object(
-                data['source']['commit'])
-        if data.get('source', {}).get('repository', {}):
-            self.source_repository = client.convert_to_object(
-                data['source']['repository'])
-        if data.get('destination', {}).get('commit', {}):
-            self.destination_commit = client.convert_to_object(
-                data['destination']['commit'])
-        if data.get('destination', {}).get('repository', {}):
-            self.destination_repository = client.convert_to_object(
-                data['destination']['repository'])
+        self.attr_from_subchild(
+            'source_commit', 'source', 'commit')
+        self.attr_from_subchild(
+            'source_repository', 'source', 'repository')
+        self.attr_from_subchild(
+            'destination_commit', 'destination', 'commit')
+        self.attr_from_subchild(
+            'destination_repository', 'destination', 'repository')
         # Special treatment for approve, decline, merge, and diff
         if data.get('links', {}).get('approve', {}).get('href', {}):
             url = data['links']['approve']['href']

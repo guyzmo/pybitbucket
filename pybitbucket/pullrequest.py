@@ -4,6 +4,7 @@ Defines the PullRequest resource and registers the type with the Client.
 
 Classes:
 - PullRequestState: enumerates the possible states of a pull request
+- PullRequestPayload: a value type for creating and updating pull requests
 - PullRequest: represents a pull request for code review
 """
 from functools import partial
@@ -14,14 +15,157 @@ from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 PullRequestState = enum(
     'PullRequestState',
-    OPEN='open',
-    MERGED='merged',
-    DECLINED='declined')
+    OPEN='OPEN',
+    MERGED='MERGED',
+    DECLINED='DECLINED')
+
+
+class PullRequestPayload(object):
+    """A value type for creating and updating pull requests."""
+    properties = [
+        'title',
+        'description',
+        'reviewers',
+        'close_source_branch',
+        'source_repository_full_name',
+        'source_branch_name',
+        'source_commit',
+        'destination_branch_name',
+        'destination_commit']
+
+    def __init__(self, **kwargs):
+        """Create an instance of a pull request payload.
+
+            source_repository_full_name
+            source_branch_name
+            source_commit
+
+            destination_branch_name
+            destination_commit
+
+        :param title: title of the pull request
+        :type title: str
+        :param description: human-readable description of the pull request
+        :type description: str
+        :param reviewers: a set of reviewers for the pull request
+        :type reviewers: set(str)
+        :param close_source_branch: whether to close the source branch
+            when the pull request is merged
+        :type close_source_branch: bool
+
+        :param language: the main (programming) language of the repository
+            source files
+        :type language: str
+        :param scm: the source control manager for the repository.
+            This is either hg or git.
+        :type scm: str or RepositoryType
+        :param fork_policy: (required) control the rules
+            for forking this repository
+        :type fork_policy: str or RepositoryForkPolicy
+        :param is_private: (required) whether this repository is private
+        :type is_private: bool
+        :param has_issues: whether this repository has
+            the issue tracker enabled
+        :type has_issues: bool
+        :param has_wiki: whether this repository has the wiki enabled
+        :type has_wiki: bool
+        :raises: ValueError
+        """
+        for p in self.properties:
+            setattr(self, '_' + p, kwargs.get(p))
+        if kwargs.get('source_repository_full_name'):
+            owner, name = kwargs['source_repository_full_name'].split('/')
+            self._source_repository_owner = owner
+            self._source_repository_name = name
+
+    def data(self):
+        """Convert this value type to a serializable data structure.
+
+        :returns: dict
+        :raises: KeyError
+        """
+
+        required = [
+            'title',
+            'source_branch_name',
+            'source_repository_full_name',
+            'destination_branch_name']
+        for v in required:
+            if getattr(self, '_' + v) is None:
+                raise KeyError('{0} is required'.format(v))
+        payload = {
+            'title': self._title,
+            'source': {
+                'branch': {
+                    'name': self._source_branch_name
+                },
+                'repository': {
+                    'full_name': self._source_repository_full_name
+                }
+            },
+            'destination': {
+                'branch': {
+                    'name': self._destination_branch_name
+                }
+            }
+        }
+        if self._close_source_branch is not None:
+            payload.update({'close_source_branch': self._close_source_branch})
+        if self._description is not None:
+            payload.update({'description': self._description})
+        if self._reviewers is not None:
+            PullRequest.expect_list('reviewers', self._reviewers)
+            payload.update(
+                {'reviewers': [{'username': u} for u in self._reviewers]})
+        if self._source_commit is not None:
+            payload.get('source', {}).update(
+                {'commit': {'hash': self._source_commit}})
+        if self._destination_commit is not None:
+            payload.get('destination', {}).update(
+                {'commit': {'hash': self._destination_commit}})
+
+        return payload
+
+    @property
+    def title(self):
+        return self._title
+
+    @property
+    def description(self):
+        return self._description
+
+    @property
+    def reviewers(self):
+        return self._reviewers
+
+    @property
+    def close_source_branch(self):
+        return self._close_source_branch
+
+    @close_source_branch.setter
+    def close_source_branch(self, value):
+        PullRequest.expect_bool('close_source_branch', value)
+        self._close_source_branch = value
+
+    @property
+    def source_repository_owner(self):
+        return self._source_repository_owner
+
+    @property
+    def source_repository_name(self):
+        return self._source_repository_name
 
 
 class PullRequest(BitbucketBase):
     id_attribute = 'id'
     resource_type = 'pullrequests'
+    templates = {
+        'create': (
+            '{+bitbucket_url}' +
+            '/2.0/repositories' +
+            '{/owner,repository_name}' +
+            '/pullrequests')
+    }
 
     @staticmethod
     def is_type(data):
@@ -71,96 +215,39 @@ class PullRequest(BitbucketBase):
         Client.expect_ok(response)
         return response.content
 
-    @staticmethod
-    def make_new_pullrequest_payload(
-            title,
-            source_branch_name,
-            source_repository_full_name,
-            destination_branch_name,
-            close_source_branch=None,
-            description=None,
-            reviewers=None,
-            source_commit=None,
-            destination_commit=None):
-        payload = {
-            'title': title,
-            'source': {
-                'branch': {
-                    'name': source_branch_name
-                },
-                'repository': {
-                    'full_name': source_repository_full_name
-                }
-            },
-            'destination': {
-                'branch': {
-                    'name': destination_branch_name
-                }
-            }
-        }
-        # Since server defaults may change, method defaults are None.
-        # If the parameters are not provided, then don't send them
-        # so the server can decide what defaults to use.
-        if close_source_branch is not None:
-            PullRequest.expect_bool('close_source_branch', close_source_branch)
-            payload.update({'close_source_branch': close_source_branch})
-        if description is not None:
-            payload.update({'description': description})
-        if reviewers is not None:
-            PullRequest.expect_list('reviewers', reviewers)
-            payload.update(
-                {'reviewers': [{'username': u} for u in reviewers]})
-        if source_commit is not None:
-            payload.get('source', {}).update(
-                {'commit': {'hash': source_commit}})
-        if destination_commit is not None:
-            payload.get('destination', {}).update(
-                {'commit': {'hash': destination_commit}})
-        return payload
-
-    @staticmethod
-    def create_pullrequest(
-            username,
-            repository_name,
-            title,
-            source_branch_name,
-            destination_branch_name,
-            close_source_branch=None,
-            description=None,
-            reviewers=None,
-            client=Client()):
-        template = (
-            '{+bitbucket_url}' +
-            '/2.0/repositories{/username,repository_name}/pullrequests')
+    @classmethod
+    def create(
+            cls,
+            payload,
+            repository_name=None,
+            owner=None,
+            client=None):
+        client = client or Client()
+        owner = owner or payload.source_repository_owner
+        repository_name = repository_name or payload.source_repository_name
+        json = payload.data()
         api_url = expand(
-            template,
-            {
+            cls.templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'username': username,
-                'repository_name': repository_name
+                'owner': owner,
+                'repository_name': repository_name,
             })
-        payload = PullRequest.make_new_pullrequest_payload(
-            title,
-            source_branch_name,
-            (username + '/' + repository_name),
-            destination_branch_name,
-            close_source_branch,
-            description,
-            reviewers)
-        return PullRequest.post(api_url, json=payload, client=client)
+        return cls.post(api_url, json=json, client=client)
 
     @staticmethod
-    def find_pullrequest_in_repository_by_id(
-            owner,
-            repository_name,
+    def find_pullrequest_by_id_in_repository(
             pullrequest_id,
-            client=Client()):
+            repository_name,
+            owner=None,
+            client=None):
         """
         A convenience method for finding a specific pull request.
         In contrast to the pure hypermedia driven method on the Bitbucket
         class, this method returns a PullRequest object, instead of the
         generator.
         """
+        client = client or Client()
+        owner = owner or client.get_username()
         return next(
             Bitbucket(client=client).repositoryPullRequestByPullRequestId(
                 owner=owner,
@@ -172,17 +259,17 @@ class PullRequest(BitbucketBase):
             repository_name,
             owner=None,
             state=None,
-            client=Client()):
+            client=None):
         """
         A convenience method for finding pull requests for a repository.
         The method is a generator PullRequest objects.
-        If no owner is provided, this method assumes the client can provide one.
+        If no owner is provided, this method assumes client can provide one.
         If no state is provided, the server will assume open pull requests.
         """
+        client = client or Client()
+        owner = owner or client.get_username()
         if (state is not None):
-            PullRequestState.expect_state(state)
-        if (owner is None):
-            owner = client.get_username()
+            PullRequestState.expect_valid_value(state)
         return Bitbucket(client=client).repositoryPullRequestsInState(
             owner=owner,
             repository_name=repository_name,

@@ -1,0 +1,16 @@
+{
+  "title": "Update entrypoint handling",
+  "source": {
+    "branch": {
+      "name": "snippet"
+    },
+    "repository": {
+      "full_name": "pybitbucket/snippet"
+    }
+  },
+  "destination": {
+    "branch": {
+      "name": "master"
+    }
+  }
+}

@@ -219,7 +219,7 @@ class Repository(BitbucketBase):
     def find_repository_by_name_and_owner(
             repository_name,
             owner=None,
-            client=Client()):
+            client=None):
         """
         A convenience method for finding a specific repository.
         In contrast to the pure hypermedia driven method on the Bitbucket

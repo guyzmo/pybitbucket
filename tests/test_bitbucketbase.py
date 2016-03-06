@@ -11,11 +11,19 @@ class BitbucketFixture(JsonSampleDataFixture):
     # GIVEN: A test Bitbucket client with test credentials
     test_client = Client(TestAuth())
 
+    @classmethod
+    def get_link_url(cls, name):
+        return (
+            cls.example_object()
+            .data
+            .get('links', {})
+            .get(name, {})
+            .get('href'))
+
     # GIVEN: The URL for the example resource
     @classmethod
     def resource_url(cls):
-        o = cls.example_object()
-        return o.links['self']['href']
+        return cls.get_link_url('self')
 
 
 class BitbucketBaseFixture(BitbucketFixture):

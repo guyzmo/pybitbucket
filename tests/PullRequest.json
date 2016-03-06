@@ -16,7 +16,7 @@
       "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/commits"
     },
     "self": {
-      "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1"
+      "href": "https://api.bitbucket.org/2.0/repositories/pybitbucket/snippet/pullrequests/1"
     },
     "comments": {
       "href": "https://api.bitbucket.org/2.0/repositories/atlassian/snippet/pullrequests/1/comments"

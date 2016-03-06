@@ -87,7 +87,7 @@ class TestCommit(object):
             '/comments')
         example = data_from_file(
             self.test_dir,
-            'example_comments.json')
+            'Comment_list.json')
         httpretty.register_uri(
             httpretty.GET,
             url,

@@ -1,0 +1,59 @@
+{
+  "links": {
+    "self": {
+      "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/pullrequests/1/comments/15371972"
+    },
+    "html": {
+      "href": "https://bitbucket.org/ianbuchanan/example/pull-requests/1/_/diff#comment-15371972"
+    }
+  },
+  "parent": {
+    "id": 15371971,
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/pullrequests/1/comments/15371971"
+      },
+      "html": {
+        "href": "https://bitbucket.org/ianbuchanan/example/pull-requests/1/_/diff#comment-15371971"
+      }
+    }
+  },
+  "pullrequest": {
+    "type": "pullrequest",
+    "id": 1,
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/ianbuchanan/example/pullrequests/1"
+      },
+      "html": {
+        "href": "https://bitbucket.org/ianbuchanan/example/pull-requests/1"
+      }
+    },
+    "title": "alternate README"
+  },
+  "content": {
+    "raw": "I want to respond to my own question.",
+    "markup": "markdown",
+    "html": "<p>I want to respond to my own question.</p>"
+  },
+  "created_on": "2016-03-05T22:25:31.714629+00:00",
+  "user": {
+    "username": "ianbuchanan",
+    "display_name": "Ian Buchanan",
+    "type": "user",
+    "uuid": "{8317ffb8-8e21-4641-8f05-8ce1d074ea6e}",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/ianbuchanan"
+      },
+      "html": {
+        "href": "https://bitbucket.org/ianbuchanan/"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/account/ianbuchanan/avatar/32/"
+      }
+    }
+  },
+  "updated_on": "2016-03-05T22:25:31.716184+00:00",
+  "id": 15371972
+}

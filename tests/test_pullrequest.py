@@ -1,256 +1,404 @@
 # -*- coding: utf-8 -*-
-import httpretty
+from test_bitbucketbase import BitbucketFixture
 import json
+
+import httpretty
 from past.builtins import basestring
-from os import path
-from test_auth import TestAuth
-
-from util import data_from_file
-
-from pybitbucket.pullrequest import PullRequest
-from pybitbucket.commit import Commit
+from uritemplate import expand
+from pybitbucket.pullrequest import (
+    PullRequest, PullRequestPayload, PullRequestState)
+from pybitbucket.bitbucket import Bitbucket
 from pybitbucket.comment import Comment
+from pybitbucket.commit import Commit
 from pybitbucket.repository import Repository
 from pybitbucket.user import User
-from pybitbucket.bitbucket import Client
 
 
-class TestPullRequest(object):
+class PullRequestFixture(BitbucketFixture):
+    # GIVEN: a class under test
+    class_under_test = 'PullRequest'
+
+    # GIVEN: An example object created from example data
+    @classmethod
+    def example_object(cls):
+        return PullRequest(
+            json.loads(cls.resource_data()),
+            client=cls.test_client)
+
+    # GIVEN: Example data attributes for a pull request
+    pullrequest_id = 1
+    title = 'Update entrypoint handling'
+    description = ''
+    state = PullRequestState.MERGED
+    reason = ''
+    reviewers = ''
+    close_source_branch = True
+    source_repository_owner = 'pybitbucket'
+    source_repository_name = 'snippet'
+    source_repository_full_name = (
+        source_repository_owner + '/' + source_repository_name)
+    source_branch_name = 'feature-branch'
+    source_commit = ''
+    destination_branch_name = 'master'
+    destination_commit = ''
+
+
+class PullRequestPayloadFixture(PullRequestFixture):
+    # GIVEN: a class under test
+    class_under_test = 'PullRequestPayload'
+
+    # GIVEN: An example object created from example data
+    @classmethod
+    def example_object(cls):
+        return PullRequestPayload(json.loads(cls.resource_data()))
+
+
+class TestGettingTheStringRepresentation(PullRequestFixture):
     @classmethod
     def setup_class(cls):
-        cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client(TestAuth())
+        cls.pullrequest_str = str(cls.example_object())
 
-    def load_example_pullrequest(self):
-        example_path = path.join(
-            self.test_dir,
-            'PullRequest.json')
-        with open(example_path) as f:
-            example = json.load(f)
-        return PullRequest(example, client=self.client)
+    def test_string_is_not_the_default_format(self):
+        assert not self.pullrequest_str.startswith('<')
+        assert not self.pullrequest_str.endswith('>')
 
-    def test_pullrequest_string_representation(self):
-        # Just tests that the __str__ method works and
-        # that it does not use the default representation
-        pr_str = "%s" % self.load_example_pullrequest()
-        assert not pr_str.startswith('<')
-        assert not pr_str.endswith('>')
-        assert pr_str.startswith('PullRequest id:')
+    def test_string_has_the_class_name_and_id_attribute(self):
+        assert self.pullrequest_str.startswith('PullRequest id:')
 
+
+class TestCheckingTheExampleData(PullRequestFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.data = json.loads(cls.resource_data())
+
+    def test_passes_the_type_check(self):
+        assert PullRequest.is_type(self.data)
+
+
+class TestAccessingPullRequestAttributes(PullRequestFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.response = cls.example_object()
+
+    def test_common_attributes_are_valid(self):
+        assert self.pullrequest_id == self.response.id
+        assert self.title == self.response.title
+        assert self.response.description
+        assert self.state == self.response.state
+        assert self.reason == self.response.reason
+        assert self.close_source_branch == self.response.close_source_branch
+
+    def test_date_attributes(self):
+        assert self.response.created_on
+        assert self.response.updated_on
+
+    def test_merge_commit_is_a_commit(self):
+        assert isinstance(self.response.merge_commit, Commit)
+
+    def test_destination_commit_is_a_commit(self):
+        assert isinstance(self.response.destination_commit, Commit)
+
+    def test_destination_repository_is_a_repository(self):
+        assert isinstance(self.response.destination_repository, Repository)
+
+    def test_source_commit_is_a_commit(self):
+        assert isinstance(self.response.source_commit, Commit)
+
+    def test_source_repository_is_a_repository(self):
+        assert isinstance(self.response.source_repository, Repository)
+
+    def test_closed_by_is_a_user(self):
+        assert isinstance(self.response.closed_by, User)
+
+    def test_author_is_a_user(self):
+        assert isinstance(self.response.author, User)
+
+    def test_reviewers_is_a_list_of_users(self):
+        # TODO: reviewers array is missing sample data
+        pass
+
+    def test_participants_is_a_list_of_users(self):
+        # TODO: participants array is missing sample data
+        pass
+
+
+class TestDeleting(PullRequestFixture):
     @httpretty.activate
-    def test_find_pullrequest_in_repository_by_id(self):
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet' +
-            '/pullrequests/1')
-        example = data_from_file(
-            self.test_dir,
-            'PullRequest.json')
-        httpretty.register_uri(
-            httpretty.GET,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        pr = PullRequest.find_pullrequest_in_repository_by_id(
-            'atlassian',
-            'snippet',
-            1,
-            client=self.client)
-        assert isinstance(pr, PullRequest)
-
-    def test_create_payload(self):
-        payload = PullRequest.make_new_pullrequest_payload(
-            title='REQUIRED title',
-            source_branch_name='REQUIRED name',
-            source_repository_full_name='owner/repo_slug',
-            destination_branch_name='name',
-            destination_commit='name',
-            close_source_branch=True,
-            description='description',
-            reviewers=['accountname'])
-        example_path = path.join(
-            self.test_dir,
-            'example_pullrequest_create_payload.json')
-        with open(example_path) as f:
-            example = json.load(f)
-        assert payload == example
-
-    @httpretty.activate
-    def test_create_pullrequest(self):
-        url = (
-            self.client.get_bitbucket_url() +
-            '/2.0/repositories/' +
-            'atlassian/snippet' +
-            '/pullrequests')
-        example = data_from_file(
-            self.test_dir,
-            'PullRequest.json')
-        httpretty.register_uri(
-            httpretty.POST,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        pr = PullRequest.create_pullrequest(
-            'atlassian',
-            'snippet',
-            'Update entrypoint handling',
-            'entrypoint',
-            'master',
-            client=self.client)
-        assert 'application/json' == \
-            httpretty.last_request().headers.get('Content-Type')
-        assert isinstance(pr, PullRequest)
-
-    def test_pullrequest_merge_commit(self):
-        pr = self.load_example_pullrequest()
-        assert isinstance(pr.merge_commit, Commit)
-
-    def test_pullrequest_users(self):
-        pr = self.load_example_pullrequest()
-        assert isinstance(pr.author, User)
-        assert isinstance(pr.closed_by, User)
-        # TODO: pr.reviewers array, but example is missing data
-        # TODO: pr.participants array, but example is missing data
-
-    def test_pullrequest_nodes(self):
-        pr = self.load_example_pullrequest()
-        assert isinstance(pr.source_commit, Commit)
-        assert isinstance(pr.source_repository, Repository)
-        assert isinstance(pr.destination_commit, Commit)
-        assert isinstance(pr.destination_repository, Repository)
-
-    @httpretty.activate
-    def test_pullrequest_approve(self):
-        pr = self.load_example_pullrequest()
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet/pullrequests/1/approve')
-        example = data_from_file(
-            self.test_dir,
-            'example_approve_pullrequest.json')
-        httpretty.register_uri(
-            httpretty.POST,
-            url,
-            content_type='application/json',
-            body=example,
-            status=200)
-        assert pr.approve()
-
-    @httpretty.activate
-    def test_pullrequest_unapprove(self):
-        pr = self.load_example_pullrequest()
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet/pullrequests/1/approve')
+    def test_response_is_not_an_exception(self):
         httpretty.register_uri(
             httpretty.DELETE,
-            url,
+            self.resource_url(),
             status=204)
-        assert pr.unapprove()
+        result = self.example_object().delete()
+        assert result is None
+
+
+class TestApproving(PullRequestFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.action_url = cls.get_link_url('approve')
+        cls.response_data = cls.resource_data('PullRequest.approve')
 
     @httpretty.activate
-    def test_pullrequest_decline(self):
-        pr = self.load_example_pullrequest()
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet/pullrequests/1/decline')
-        example = data_from_file(
-            self.test_dir,
-            'example_decline_pullrequest.json')
+    def test_approve_response_is_true(self):
         httpretty.register_uri(
             httpretty.POST,
-            url,
+            self.action_url,
             content_type='application/json',
-            body=example,
+            body=self.response_data,
             status=200)
-        assert pr.decline()
+        result = self.example_object().approve()
+        assert result
 
     @httpretty.activate
-    def test_pullrequest_merge(self):
-        pr = self.load_example_pullrequest()
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet/pullrequests/1/merge')
-        example = data_from_file(
-            self.test_dir,
-            'example_merge_pullrequest.json')
+    def test_unapprove_response_is_true(self):
+        httpretty.register_uri(
+            httpretty.DELETE,
+            self.action_url,
+            status=204)
+        result = self.example_object().unapprove()
+        assert result
+
+
+class TestDeclining(PullRequestFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.action_url = cls.get_link_url('decline')
+        cls.response_data = cls.resource_data('PullRequest.decline')
+
+    @httpretty.activate
+    def test_decline_response_is_true(self):
         httpretty.register_uri(
             httpretty.POST,
-            url,
+            self.action_url,
             content_type='application/json',
-            body=example,
+            body=self.response_data,
             status=200)
-        assert pr.merge()
+        result = self.example_object().decline()
+        assert result
+
+
+class TestMerging(PullRequestFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.action_url = cls.get_link_url('merge')
+        cls.response_data = cls.resource_data('PullRequest.merge')
 
     @httpretty.activate
-    def test_pullrequest_comments(self):
-        pr = self.load_example_pullrequest()
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet/pullrequests/1/comments')
-        example = data_from_file(
-            self.test_dir,
-            'example_comments.json')
+    def test_merge_response_is_true(self):
         httpretty.register_uri(
-            httpretty.GET,
-            url,
+            httpretty.POST,
+            self.action_url,
             content_type='application/json',
-            body=example,
+            body=self.response_data,
             status=200)
-        assert list(pr.comments())
-        assert isinstance(next(pr.comments()), Comment)
+        result = self.example_object().merge()
+        assert result
+
+
+class TestCreatingNewPullRequest(PullRequestFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.url = expand(
+            PullRequest.templates['create'], {
+                'bitbucket_url': cls.test_client.get_bitbucket_url(),
+                'owner': cls.test_client.get_username(),
+                'repository_name': cls.source_repository_name,
+            })
 
     @httpretty.activate
-    def test_pullrequest_commits(self):
-        pr = self.load_example_pullrequest()
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet/pullrequests/1/commits')
-        example = data_from_file(
-            self.test_dir,
-            'Commit_list.json')
+    def test_response_is_a_pullrequest(self):
+        httpretty.register_uri(
+            httpretty.POST,
+            self.url,
+            content_type='application/json',
+            body=self.resource_data(),
+            status=200)
+        response = PullRequest.create(
+            PullRequestPayload(
+                title=self.title,
+                source_branch_name=self.source_branch_name,
+                source_repository_full_name=self.source_repository_full_name,
+                destination_branch_name=self.destination_branch_name),
+            client=self.test_client)
+        assert 'application/json' == \
+            httpretty.last_request().headers.get('Content-Type')
+        assert isinstance(response, PullRequest)
+
+
+class TestFindingPullRequestById(PullRequestFixture):
+    @httpretty.activate
+    def test_response_is_a_pullrequest(self):
         httpretty.register_uri(
             httpretty.GET,
-            url,
+            self.resource_url(),
             content_type='application/json',
-            body=example,
+            body=self.resource_data(),
             status=200)
-        assert list(pr.commits())
-        assert isinstance(next(pr.commits()), Commit)
+        print(self.resource_url())
+        response = PullRequest.find_pullrequest_by_id_in_repository(
+            pullrequest_id=self.pullrequest_id,
+            repository_name=self.source_repository_name,
+            owner=self.source_repository_owner,
+            client=self.test_client)
+        assert isinstance(response, PullRequest)
+
+
+class TestFindingPullRequestsByState(PullRequestFixture):
+    @classmethod
+    def setup_class(cls):
+        template = (
+            Bitbucket(client=cls.test_client)
+            .data
+            .get('_links', {})
+            .get('repositoryPullRequestsInState', {})
+            .get('href'))
+        cls.url = expand(
+            template, {
+                'bitbucket_url': cls.test_client.get_bitbucket_url(),
+                'owner': cls.source_repository_owner,
+                'repository_name': cls.source_repository_name,
+                'state': cls.state
+            })
 
     @httpretty.activate
-    def test_pullrequest_activity(self):
-        pr = self.load_example_pullrequest()
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet/pullrequests/1/activity')
-        example = data_from_file(
-            self.test_dir,
-            'example_activity.json')
+    def test_response_from_only_name_is_a_repository_generator(self):
         httpretty.register_uri(
             httpretty.GET,
-            url,
+            self.url,
             content_type='application/json',
-            body=example,
+            body=self.resource_list_data(),
             status=200)
-        assert list(pr.activity())
-        assert isinstance(next(pr.activity()), dict)
+        response = PullRequest.find_pullrequests_for_repository_by_state(
+            repository_name=self.source_repository_name,
+            client=self.test_client)
+        assert isinstance(next(response), PullRequest)
 
     @httpretty.activate
-    def test_pullrequest_diff(self):
-        pr = self.load_example_pullrequest()
-        url = (
-            'https://api.bitbucket.org/2.0/repositories/' +
-            'atlassian/snippet/pullrequests/1/diff')
-        example = data_from_file(
-            self.test_dir,
-            'example_diff.txt')
+    def test_response_from_all_parameters_is_a_repository_generator(self):
         httpretty.register_uri(
             httpretty.GET,
-            url,
-            content_type='text/plain',
-            body=example,
+            self.url,
+            content_type='application/json',
+            body=self.resource_list_data(),
             status=200)
-        assert isinstance(pr.diff(), basestring)
+        response = PullRequest.find_pullrequests_for_repository_by_state(
+            repository_name=self.source_repository_name,
+            owner=self.source_repository_owner,
+            state=self.state,
+            client=self.test_client)
+        assert isinstance(next(response), PullRequest)
+
+
+class TestAccessingLinks(PullRequestFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.response = cls.example_object()
+        cls.commits_url = cls.get_link_url('commits')
+        cls.commits_data = cls.resource_list_data('Commit')
+        cls.comments_url = cls.get_link_url('comments')
+        cls.comments_data = cls.resource_list_data('Comment')
+        cls.diff_url = cls.get_link_url('diff')
+        cls.diff_data = cls.data_from_file('Diff.txt')
+        cls.activity_url = cls.get_link_url('activity')
+        cls.activity_data = cls.resource_data('PullRequest.activity')
+
+    @httpretty.activate
+    def test_commits_returns_a_commit_generator(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            self.commits_url,
+            content_type='application/json',
+            body=self.commits_data,
+            status=200)
+        response = self.response.commits()
+        assert isinstance(next(response), Commit)
+
+    @httpretty.activate
+    def test_comments_returns_a_comments_generator(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            self.comments_url,
+            content_type='application/json',
+            body=self.comments_data,
+            status=200)
+        print(self.commits_url)
+        response = self.response.comments()
+        assert isinstance(next(response), Comment)
+
+    @httpretty.activate
+    def test_diff_is_a_string(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            self.diff_url,
+            content_type='application/json',
+            body=self.diff_data,
+            status=200)
+        response = self.response.diff()
+        assert isinstance(response, basestring)
+
+    @httpretty.activate
+    def test_activity_is_a_dictionary_generator(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            self.activity_url,
+            content_type='application/json',
+            body=self.activity_data,
+            status=200)
+        response = self.response.activity()
+        assert isinstance(next(response), dict)
+
+
+class TestCreatingPullRequestPayloadWithInvalidParameters(
+        PullRequestPayloadFixture):
+    def test_raising_exception_for_invalid_repository_type(self):
+        try:
+            PullRequestPayload(scm='invalid')
+        except Exception as e:
+            assert isinstance(e, NameError)
+
+    def test_raising_exception_for_invalid_fork_policy(self):
+        try:
+            PullRequestPayload(fork_policy='invalid')
+        except Exception as e:
+            assert isinstance(e, NameError)
+
+
+class TestCreatingMinimalPullRequestPayload(PullRequestPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.payload = PullRequestPayload(
+                title=cls.title,
+                source_branch_name=cls.source_repository_name,
+                source_repository_full_name=cls.source_repository_full_name,
+                destination_branch_name=cls.destination_branch_name
+            ).data()
+        cls.json = json.dumps(cls.payload)
+        cls.actual = json.loads(cls.json)
+        cls.expected = json.loads(cls.resource_data(
+            'PullRequestPayload.minimal'))
+
+    def test_minimum_viable_payload_structure_for_create(self):
+        assert self.payload == self.expected
+
+
+class TestCreatingFullPullRequestPayload(PullRequestPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.payload = PullRequestPayload(
+                title='REQUIRED title',
+                source_branch_name='REQUIRED name',
+                source_repository_full_name='owner/repo_slug',
+                destination_branch_name='name',
+                destination_commit='name',
+                close_source_branch=True,
+                description='description',
+                reviewers=['accountname']
+            ).data()
+        cls.json = json.dumps(cls.payload)
+        cls.actual = json.loads(cls.json)
+        cls.expected = json.loads(cls.resource_data(
+            'PullRequestPayload.full'))
+
+    def test_full_payload_structure(self):
+        assert self.actual == self.expected

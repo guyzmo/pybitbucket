@@ -198,7 +198,7 @@ class TestSnippet(object):
         url = snip.data['links']['comments']['href']
         example = data_from_file(
             self.test_dir,
-            'example_comments.json')
+            'Comment_list.json')
         httpretty.register_uri(
             httpretty.GET,
             url,

@@ -16,3 +16,4 @@ emails = ['ibuchanan@atlassian.com']
 license = 'Apache'
 copyright = '2015 ' + 'Atlassian'
 url = 'https://bitbucket.org/atlassian/python-bitbucket'
+bugtrack_url = 'https://bitbucket.org/atlassian/python-bitbucket/issues'

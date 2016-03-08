@@ -351,15 +351,21 @@ class TestAccessingLinks(PullRequestFixture):
 
 class TestCreatingPullRequestPayloadWithInvalidParameters(
         PullRequestPayloadFixture):
-    def test_raising_exception_for_invalid_repository_type(self):
+    def test_invalid_parameter_is_ignored(self):
+        p = PullRequestPayload(foo='invalid')
+        assert not hasattr(p, '_foo')
+
+    def test_raising_exception_for_invalid_reviewers(self):
         try:
-            PullRequestPayload(scm='invalid')
+            PullRequestPayload(reviewers='invalid')
+            assert False
         except Exception as e:
             assert isinstance(e, NameError)
 
-    def test_raising_exception_for_invalid_fork_policy(self):
+    def test_raising_exception_for_invalid_close_source_branch(self):
         try:
-            PullRequestPayload(fork_policy='invalid')
+            PullRequestPayload(close_source_branch='invalid')
+            assert False
         except Exception as e:
             assert isinstance(e, NameError)
 

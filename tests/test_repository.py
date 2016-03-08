@@ -465,12 +465,14 @@ class TestCreatingRepositoryPayloadWithInvalidParameters(
     def test_raising_exception_for_invalid_repository_type(self):
         try:
             RepositoryPayload(scm='invalid')
+            assert False
         except Exception as e:
             assert isinstance(e, NameError)
 
     def test_raising_exception_for_invalid_fork_policy(self):
         try:
             RepositoryPayload(fork_policy='invalid')
+            assert False
         except Exception as e:
             assert isinstance(e, NameError)
 

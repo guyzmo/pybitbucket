@@ -146,7 +146,7 @@ class PullRequestPayload(object):
 
     @reviewers.setter
     def reviewers(self, value):
-        PullRequest.expect_list('reviewers', self._reviewers)
+        self.expect_list('reviewers', self._reviewers)
         self._reviewers = value
 
     @property
@@ -155,7 +155,7 @@ class PullRequestPayload(object):
 
     @close_source_branch.setter
     def close_source_branch(self, value):
-        PullRequest.expect_bool('close_source_branch', value)
+        self.expect_bool('close_source_branch', value)
         self._close_source_branch = value
 
     @property

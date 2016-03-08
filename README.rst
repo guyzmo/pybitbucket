@@ -7,7 +7,7 @@ This is not known to work with Bitbucket Server,
 previously known as Stash.
 
 .. image:: https://img.shields.io/pypi/v/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket/0.10.0
+    :target: https://pypi.python.org/pypi/pybitbucket/0.11.0
 
 .. image:: https://img.shields.io/pypi/status/pybitbucket.svg
     :target: https://pypi.python.org/pypi/pybitbucket

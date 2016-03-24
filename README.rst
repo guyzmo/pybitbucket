@@ -5,6 +5,7 @@
 A Python wrapper for the Bitbucket Cloud REST API.
 This is not known to work with Bitbucket Server,
 previously known as Stash.
+To start working with this library, just do: :code:`pip install pybitbucket`
 
 .. image:: https://img.shields.io/pypi/v/pybitbucket.svg
     :target: https://pypi.python.org/pypi/pybitbucket/0.11.0

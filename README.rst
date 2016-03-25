@@ -196,4 +196,3 @@ TODO
     - groups
     - group-privileges
     - invitations
-* :code:`POST` for :code:`commit` from `REST Browser <http://restbrowser.bitbucket.org/>`_. What does this even mean?

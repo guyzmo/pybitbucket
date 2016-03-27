@@ -2,7 +2,7 @@
 --requirement requirements.txt
 
 # Testing
-pytest==2.8.7
+pytest==2.9.1
 httpretty==0.8.10  # latest versions break py3: 0.8.11 and 0.8.12
 mock==1.3.0
 funcsigs==0.4
@@ -22,7 +22,7 @@ pyflakes==1.0.0
 # Documentation
 Sphinx==1.3.6
 Babel==2.2.0
-pytz==2015.7
+pytz==2016.3
 alabaster==0.7.7
 sphinx-rtd-theme==0.1.9
 docutils==0.12

@@ -303,6 +303,23 @@ class PullRequest(BitbucketBase):
             repository_name=None,
             owner=None,
             client=None):
+        """Create a new Pull Request.
+
+        :param payload: the options for creating the new Pull Request
+        :type payload: PullRequestPayload
+        :param repository_name: name of the destination repository,
+            also known as repo_slug. Optional, if provided in the payload.
+        :type repository_name: str
+        :param owner: the owner of the destination repository.
+            If not provided, assumes the current user.
+        :type owner: str
+        :param client: the configured connection to Bitbucket.
+            If not provided, assumes an Anonymous connection.
+        :type client: bitbucket.Client
+        :returns: the new repository object.
+        :rtype: PullRequest
+        :raises: ValueError
+        """
         client = client or Client()
         owner = (
             owner or

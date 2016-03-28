@@ -9,6 +9,7 @@ Classes:
 """
 from functools import partial
 from uritemplate import expand
+from voluptuous import Schema, Required, Optional
 
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
@@ -21,170 +22,215 @@ PullRequestState = enum(
 
 
 class PullRequestPayload(object):
-    """A value type for creating and updating pull requests."""
-    properties = [
-        'title',
-        'description',
-        'reviewers',
-        'close_source_branch',
-        'source_repository_full_name',
-        'source_branch_name',
-        'source_commit',
-        'destination_branch_name',
-        'destination_commit']
+    """
+    A builder object to help create payloads
+    for creating and updating pull requests.
+    """
 
-    def __init__(self, **kwargs):
-        """Create an instance of a pull request payload.
-
-        :param title: (required) title of the pull request
-        :type title: str
-        :param description: human-readable description of the pull request
-        :type description: str
-        :param reviewers: a set of reviewers for the pull request
-        :type reviewers: set(str)
-        :param close_source_branch: whether to close the source branch
-            when the pull request is merged
-        :type close_source_branch: bool
-        :param source_repository_full_name: (required) the owner and name
-            of the source repository. Like atlassian/pybitbucket
-        :type source_repository_full_name: str
-        :param source_branch_name: (required) the source branch
-            from the source repository.
-        :type source_branch_name: str
-        :param source_commit: the source commit
-            from the source repository.
-        :type source_commit: str
-        :param destination_branch: the target branch
-            in the destination repository.
-        :type destination_branch: str
-        :param destination_commit: the target commit
-            in the destination repository.
-        :type destination_commit: str
-        :raises: ValueError
-        """
-        for p in self.properties:
-            setattr(self, '_' + p, kwargs.get(p))
-        if kwargs.get('source_repository_full_name'):
-            owner, name = kwargs['source_repository_full_name'].split('/')
-            self._source_repository_owner = owner
-            self._source_repository_name = name
-
-    def expect_required(self):
-        required = [
-            'title',
-            'source_branch_name',
-            'source_repository_full_name',
-            'destination_branch_name']
-        for v in required:
-            if getattr(self, '_' + v) is None:
-                raise KeyError('{0} is required'.format(v))
-
-    @staticmethod
-    def update_if_not_none(d, key, value, expression=None):
-        expression = expression or value
-        if value is not None:
-            d.update({key: expression})
-
-    def data(self):
-        """Convert this value type to a serializable data structure.
-
-        :returns: dict
-        :raises: KeyError
-        """
-        self.expect_required()
-        payload = {
-            'title': self._title,
-            'source': {
-                'branch': {
-                    'name': self._source_branch_name
-                },
-                'repository': {
-                    'full_name': self._source_repository_full_name
-                }
+    schema = Schema({
+        Required('title'): str,
+        Optional('description'): str,
+        Optional('close_source_branch'): bool,
+        Optional('reviewers'): [{Required('username'): str}],
+        Required('destination'): {
+            Required('branch'): {
+                Required('name'): str
             },
-            'destination': {
-                'branch': {
-                    'name': self._destination_branch_name
-                }
+            Optional('commit'): {
+                Required('hash'): str
+            }
+        },
+        Required('source'): {
+            Required('branch'): {
+                Required('name'): str
+            },
+            Required('repository'): {
+                Required('full_name'): str
+            },
+            Optional('commit'): {
+                Required('hash'): str
             }
         }
-        self.update_if_not_none(
-            payload,
-            'close_source_branch',
-            self._close_source_branch)
-        self.update_if_not_none(
-            payload,
-            'description',
-            self._description)
-        self.update_if_not_none(
-            payload.get('source', {}),
-            'commit',
-            self._source_commit,
-            {'hash': self._source_commit})
-        self.update_if_not_none(
-            payload.get('destination', {}),
-            'commit',
-            self._destination_commit,
-            {'hash': self._destination_commit})
-        if self._reviewers is not None:
-            payload.update(
-                {'reviewers': [{'username': u} for u in self._reviewers]})
+    })
 
-        return payload
+    def __init__(
+            self,
+            payload=None,
+            destination_repository_owner=None,
+            destination_repository_name=None):
+        self._payload = payload or {}
+        self._destination_repository_owner = destination_repository_owner
+        self._destination_repository_name = destination_repository_name
 
     @property
-    def title(self):
-        return self._title
+    def destination_repository_owner(self):
+        return self._destination_repository_owner
 
     @property
-    def description(self):
-        return self._description
+    def destination_repository_name(self):
+        return self._destination_repository_name
 
-    @property
-    def reviewers(self):
-        return self._reviewers
+    def build(self):
+        return self._payload
 
-    @reviewers.setter
-    def reviewers(self, value):
-        self.expect_list('reviewers', self._reviewers)
-        self._reviewers = value
+    def validate(self):
+        self.schema(self._payload)
+        return self
 
-    @property
-    def close_source_branch(self):
-        return self._close_source_branch
+    def add_title(self, title):
+        new = self._payload.copy()
+        new['title'] = title
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
 
-    @close_source_branch.setter
-    def close_source_branch(self, value):
-        self.expect_bool('close_source_branch', value)
-        self._close_source_branch = value
+    def add_description(self, description):
+        new = self._payload.copy()
+        new['description'] = description
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
 
-    @property
-    def source_repository_full_name(self):
-        return self._source_repository_full_name
+    def add_close_source_branch(self, close):
+        new = self._payload.copy()
+        new['close_source_branch'] = close
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
 
-    @property
-    def source_repository_owner(self):
-        return self._source_repository_owner
+    def add_reviewer_by_username(self, username):
+        new = self._payload.copy()
+        reviewers = self._payload.get('reviewers', [])
+        if {'username': username} not in reviewers:
+            reviewers.append({'username': username})
+        new['reviewers'] = reviewers
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
 
-    @property
-    def source_repository_name(self):
-        return self._source_repository_name
+    def add_reviewer(self, user):
+        return self.add_reviewer_by_username(user.username)
 
-    @property
-    def source_branch_name(self):
-        return self._source_branch_name
+    def add_reviewers_from_usernames(self, usernames):
+        new = self._payload.copy()
+        reviewers = self._payload.get('reviewers', [])
+        for username in usernames:
+            if {'username': username} not in reviewers:
+                reviewers.append({'username': username})
+        new['reviewers'] = reviewers
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
 
-    @property
-    def source_commit(self):
-        return self._source_commit
+    def add_destination_repository_owner(self, owner):
+        return PullRequestPayload(
+            payload=self._payload.copy(),
+            destination_repository_owner=owner,
+            destination_repository_name=self._destination_repository_name)
 
-    @property
-    def destination_branch_name(self):
-        return self._destination_branch_name
+    def add_destination_repository_name(self, name):
+        return PullRequestPayload(
+            payload=self._payload.copy(),
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=name)
 
-    @property
-    def destination_commit(self):
-        return self._destination_commit
+    def add_destination_repository_full_name(self, full_name):
+        owner, name = full_name.split('/', 1)
+        return PullRequestPayload(
+            payload=self._payload.copy(),
+            destination_repository_owner=owner,
+            destination_repository_name=name)
+
+    def add_destination_repository(self, repository):
+        owner, name = repository.full_name.split('/', 1)
+        return PullRequestPayload(
+            payload=self._payload.copy(),
+            destination_repository_owner=owner,
+            destination_repository_name=name)
+
+    def add_destination_branch_name(self, name):
+        new = self._payload.copy()
+        destination = self._payload.get('destination', {})
+        destination['branch'] = destination.get('branch', {})
+        destination['branch']['name'] = name
+        new['destination'] = destination
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
+
+    def add_destination_branch(self, branch):
+        owner, name = branch.repository.full_name.split('/', 1)
+        return PullRequestPayload(
+                payload=self._payload.copy(),
+                destination_repository_owner=owner,
+                destination_repository_name=name) \
+            .add_destination_branch_name(branch.name)
+
+    def add_destination_commit_by_hash(self, hash):
+        new = self._payload.copy()
+        destination = self._payload.get('destination', {})
+        destination['commit'] = destination.get('commit', {})
+        destination['commit']['hash'] = hash
+        new['destination'] = destination
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
+
+    def add_destination_commit(self, commit):
+        owner, name = commit.repository.full_name.split('/', 1)
+        return PullRequestPayload(
+                payload=self._payload.copy(),
+                destination_repository_owner=owner,
+                destination_repository_name=name) \
+            .add_destination_commit_by_hash(commit.hash)
+
+    def add_source_branch_name(self, name):
+        new = self._payload.copy()
+        source = self._payload.get('source', {})
+        source['branch'] = source.get('branch', {})
+        source['branch']['name'] = name
+        new['source'] = source
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
+
+    def add_source_repository_full_name(self, full_name):
+        new = self._payload.copy()
+        source = self._payload.get('source', {})
+        source['repository'] = source.get('repository', {})
+        source['repository']['full_name'] = full_name
+        new['source'] = source
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
+
+    def add_source_branch(self, branch):
+        return self.add_source_branch_name(branch.name) \
+            .add_source_repository_full_name(branch.repository.full_name)
+
+    def add_source_commit_by_hash(self, hash):
+        new = self._payload.copy()
+        source = self._payload.get('source', {})
+        source['commit'] = source.get('commit', {})
+        source['commit']['hash'] = hash
+        new['source'] = source
+        return PullRequestPayload(
+            payload=new,
+            destination_repository_owner=self._destination_repository_owner,
+            destination_repository_name=self._destination_repository_name)
+
+    def add_source_commit(self, commit):
+        return self.add_source_commit_by_hash(commit.hash) \
+            .add_source_repository_full_name(commit.repository.full_name)
 
 
 class PullRequest(BitbucketBase):
@@ -258,9 +304,15 @@ class PullRequest(BitbucketBase):
             owner=None,
             client=None):
         client = client or Client()
-        owner = owner or payload.source_repository_owner
-        repository_name = repository_name or payload.source_repository_name
-        json = payload.data()
+        owner = (
+            owner or
+            payload.destination_repository_owner)
+        repository_name = (
+            repository_name or
+            payload.destination_repository_name)
+        if not (owner and repository_name):
+            raise ValueError('owner and repository_name are required')
+        json = payload.validate().build()
         api_url = expand(
             cls.templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),

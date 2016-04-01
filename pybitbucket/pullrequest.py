@@ -11,7 +11,8 @@ from functools import partial
 from uritemplate import expand
 from voluptuous import Schema, Required, Optional
 
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
+from pybitbucket.bitbucket import (
+    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
 
 
 PullRequestState = enum(
@@ -21,7 +22,7 @@ PullRequestState = enum(
     DECLINED='DECLINED')
 
 
-class PullRequestPayload(object):
+class PullRequestPayload(PayloadBuilder):
     """
     A builder object to help create payloads
     for creating and updating pull requests.
@@ -58,7 +59,7 @@ class PullRequestPayload(object):
             payload=None,
             destination_repository_owner=None,
             destination_repository_name=None):
-        self._payload = payload or {}
+        super(self.__class__, self).__init__(payload=payload)
         self._destination_repository_owner = destination_repository_owner
         self._destination_repository_name = destination_repository_name
 
@@ -69,13 +70,6 @@ class PullRequestPayload(object):
     @property
     def destination_repository_name(self):
         return self._destination_repository_name
-
-    def build(self):
-        return self._payload
-
-    def validate(self):
-        self.schema(self._payload)
-        return self
 
     def add_title(self, title):
         new = self._payload.copy()

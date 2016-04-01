@@ -4,7 +4,7 @@ Defines the PullRequest resource and registers the type with the Client.
 
 Classes:
 - PullRequestState: enumerates the possible states of a pull request
-- PullRequestPayload: a value type for creating and updating pull requests
+- PullRequestPayload: a builder object to help create PullRequest payloads
 - PullRequest: represents a pull request for code review
 """
 from functools import partial

@@ -37,8 +37,8 @@ class RepositoryFixture(BitbucketFixture):
     fork_policy = RepositoryForkPolicy.ALLOW_FORKS
     role = RepositoryRole.OWNER
     is_private = False
-    has_issues=True
-    has_wiki=True
+    has_issues = True
+    has_wiki = True
 
 
 class RepositoryPayloadFixture(RepositoryFixture):

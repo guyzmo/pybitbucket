@@ -17,6 +17,7 @@ from functools import partial
 from requests import codes
 from requests.exceptions import HTTPError
 from uritemplate import expand
+from voluptuous import Schema
 
 from pybitbucket.auth import Anonymous
 from pybitbucket.entrypoints import entrypoints_json
@@ -272,6 +273,20 @@ class BitbucketBase(object):
             name=type(self).__name__,
             id=self.id_attribute,
             data=getattr(self, self.id_attribute))
+
+
+class PayloadBuilder(object):
+    schema = Schema({})
+
+    def __init__(self, payload=None):
+        self._payload = payload or {}
+
+    def build(self):
+        return self._payload
+
+    def validate(self):
+        self.schema(self._payload)
+        return self
 
 
 class Bitbucket(BitbucketBase):

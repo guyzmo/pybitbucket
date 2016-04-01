@@ -11,8 +11,10 @@ Classes:
 - RepositoryV1: represents a repository in the 1.0 API
 """
 from uritemplate import expand
+from voluptuous import Schema, Required, Optional, In
 
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
+from pybitbucket.bitbucket import (
+    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
 from pybitbucket.user import User
 
 
@@ -37,121 +39,95 @@ RepositoryType = enum(
     HG='hg')
 
 
-class RepositoryPayload(object):
-    """A value type for creating and updating repositories."""
+class RepositoryPayload(PayloadBuilder):
+    """
+    A builder object to help create payloads
+    for creating and updating repositories.
+    """
 
-    def __init__(self, **kwargs):
-        """Create an instance of a repository payload.
+    schema = Schema({
+        Optional('scm'): In(RepositoryType.values()),
+        Optional('name'): str,
+        Required('is_private'): bool,
+        Optional('description'): str,
+        Required('fork_policy'): In(RepositoryForkPolicy.values()),
+        Optional('language'): str,
+        Optional('has_issues'): bool,
+        Optional('has_wiki'): bool
+    })
 
-        :param name: name of the repository,
-            also known as repo_slug
-        :type name: str
-        :param description: human-readable description of the repository
-        :type description: str
-        :param language: the main (programming) language of the repository
-            source files
-        :type language: str
-        :param scm: the source control manager for the repository.
-            This is either hg or git.
-        :type scm: str or RepositoryType
-        :param fork_policy: (required) control the rules
-            for forking this repository
-        :type fork_policy: str or RepositoryForkPolicy
-        :param is_private: (required) whether this repository is private
-        :type is_private: bool
-        :param has_issues: whether this repository has
-            the issue tracker enabled
-        :type has_issues: bool
-        :param has_wiki: whether this repository has the wiki enabled
-        :type has_wiki: bool
-        :raises: ValueError
-        """
-        self._name = kwargs.get('repository_name')
-        for key, value in kwargs.items():
-            if (key in [
-                    'name',
-                    'description',
-                    'language',
-                    'scm',
-                    'fork_policy',
-                    'is_private',
-                    'has_issues',
-                    'has_wiki']):
-                setattr(self, '_' + key, value)
+    def __init__(self, payload=None, owner=None):
+        super(self.__class__, self).__init__(payload=payload)
+        self._owner = owner
 
-    def data(self):
-        """Convert this value type to a simple dictionary.
-
-        :returns: dict
-        :raises: KeyError
-        """
-        if self._fork_policy is None:
-            raise KeyError('fork_policy is required')
-        if self._is_private is None:
-            raise KeyError('is_private is required')
-        return {
-            (key[1:]): value
-            for key, value
-            in self.__dict__.items()
-            if (key.startswith('_') and
-                value is not None)}
+    @property
+    def owner(self):
+        return self._owner
 
     @property
     def name(self):
-        return self._name
+        return self._payload.get('name')
 
-    @property
-    def description(self):
-        return self._description
+    def add_owner(self, owner):
+        return RepositoryPayload(
+            payload=self._payload.copy(),
+            owner=owner)
 
-    @property
-    def language(self):
-        return self._language
+    def add_name(self, name):
+        new = self._payload.copy()
+        new['name'] = name
+        return RepositoryPayload(
+            payload=new,
+            owner=self._owner)
 
-    @property
-    def scm(self):
-        return self._scm
+    def add_is_private(self, is_private):
+        new = self._payload.copy()
+        new['is_private'] = is_private
+        return RepositoryPayload(
+            payload=new,
+            owner=self._owner)
 
-    @scm.setter
-    def scm(self, value):
-        RepositoryType.expect_valid_value(value)
-        self._scm = value
+    def add_fork_policy(self, policy):
+        new = self._payload.copy()
+        new['fork_policy'] = policy
+        return RepositoryPayload(
+            payload=new,
+            owner=self._owner)
 
-    @property
-    def fork_policy(self):
-        return self._fork_policy
+    def add_scm(self, scm):
+        new = self._payload.copy()
+        new['scm'] = scm
+        return RepositoryPayload(
+            payload=new,
+            owner=self._owner)
 
-    @fork_policy.setter
-    def fork_policy(self, value):
-        RepositoryForkPolicy.expect_valid_value(value)
-        self._fork_policy = value
+    def add_description(self, description):
+        new = self._payload.copy()
+        new['description'] = description
+        return RepositoryPayload(
+            payload=new,
+            owner=self._owner)
 
-    @property
-    def is_private(self):
-        return self._is_private
+    def add_language(self, language):
+        new = self._payload.copy()
+        new['language'] = language
+        return RepositoryPayload(
+            payload=new,
+            owner=self._owner)
 
-    @is_private.setter
-    def is_private(self, value):
-        Repository.expect_bool('is_private', value)
-        self._is_private = value
+    def add_has_wiki(self, has_wiki):
+        new = self._payload.copy()
+        new['has_wiki'] = has_wiki
+        return RepositoryPayload(
+            payload=new,
+            owner=self._owner)
 
-    @property
-    def has_issues(self):
-        return self._has_issues
-
-    @has_issues.setter
-    def has_issues(self, value):
-        Repository.expect_bool('has_issues', value)
-        self._is_private = value
-
-    @property
-    def has_wiki(self):
-        return self._has_wiki
-
-    @has_wiki.setter
-    def has_wiki(self, value):
-        Repository.expect_bool('has_wiki', value)
-        self._is_private = value
+    def add_has_issues(self, has_isues):
+        new = self._payload.copy()
+        new['has_issues'] = has_isues
+        return RepositoryPayload(
+            payload=new,
+            owner=self._owner)
 
 
 class Repository(BitbucketBase):
@@ -206,7 +182,9 @@ class Repository(BitbucketBase):
         client = client or Client()
         owner = owner or client.get_username()
         repository_name = repository_name or payload.name
-        json = payload.data()
+        if not (owner and repository_name):
+            raise ValueError('owner and repository_name are required')
+        json = payload.validate().build()
         api_url = expand(
             cls.templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from test_bitbucketbase import BitbucketFixture
 import json
-import pytest
 
 import httpretty
 from uritemplate import expand
@@ -14,6 +13,7 @@ from pybitbucket.bitbucket import Bitbucket
 from pybitbucket.user import User
 from pybitbucket.commit import Commit
 from pybitbucket.pullrequest import PullRequest
+from voluptuous import MultipleInvalid
 
 
 class RepositoryFixture(BitbucketFixture):
@@ -30,14 +30,20 @@ class RepositoryFixture(BitbucketFixture):
     # GIVEN: Example data attributes for a repository
     owner = 'teamsinspace'
     name = 'teamsinspace.bitbucket.org'
+    description = 'Description'
     full_name = owner + '/' + name
-    language = ''
+    language = 'python'
     scm = RepositoryType.GIT
     fork_policy = RepositoryForkPolicy.ALLOW_FORKS
     role = RepositoryRole.OWNER
+    is_private = False
+    has_issues=True
+    has_wiki=True
 
 
 class RepositoryPayloadFixture(RepositoryFixture):
+    builder = RepositoryPayload()
+
     # GIVEN: a class under test
     class_under_test = 'RepositoryPayload'
 
@@ -153,12 +159,11 @@ class TestCreatingNewRepository(RepositoryFixture):
             content_type='application/json',
             body=self.resource_data(),
             status=200)
-        response = Repository.create(
-            RepositoryPayload(
-                repository_name=self.name,
-                fork_policy=self.fork_policy,
-                is_private=False),
-            client=self.test_client)
+        payload = RepositoryPayload() \
+            .add_name(self.name) \
+            .add_fork_policy(self.fork_policy) \
+            .add_is_private(self.is_private)
+        response = Repository.create(payload, client=self.test_client)
         assert 'application/json' == \
             httpretty.last_request().headers.get('Content-Type')
         assert isinstance(response, Repository)
@@ -461,55 +466,178 @@ class TestNavigatingFromV1toV2(RepositoryV1Fixture):
         assert isinstance(response, User)
 
 
-@pytest.mark.skip(reason="payload needs fixing")
-class TestCreatingRepositoryPayloadWithInvalidParameters(
-        RepositoryPayloadFixture):
-    def test_raising_exception_for_invalid_repository_type(self):
-        try:
-            RepositoryPayload(scm='invalid')
-            assert False
-        except Exception as e:
-            assert isinstance(e, NameError)
+class TestCreatingDefaultRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.data = cls.builder.build()
 
-    def test_raising_exception_for_invalid_fork_policy(self):
+    def test_default_payload_is_empty_dictionary(self):
+        assert {} == self.data
+
+    def test_default_is_invalid(self):
         try:
-            RepositoryPayload(fork_policy='invalid')
+            self.builder.validate()
             assert False
         except Exception as e:
-            assert isinstance(e, NameError)
+            assert isinstance(e, MultipleInvalid)
+
+
+class TestAddingIsPrivateToRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.with_is_private = cls.builder.add_is_private(cls.is_private)
+
+    def test_immutability_on_adding_is_private(self):
+        assert self.with_is_private
+        assert {} == self.builder.build()
+
+    def test_title_structure(self):
+        expected = {
+            'is_private': self.is_private
+        }
+        assert expected == self.with_is_private.build()
+
+
+class TestAddingForkPolicyToRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.with_fork_policy = cls.builder.add_fork_policy(cls.fork_policy)
+
+    def test_immutability_on_adding_a_fork_policy(self):
+        assert self.with_fork_policy
+        assert {} == self.builder.build()
+
+    def test_title_structure(self):
+        expected = {
+            'fork_policy': self.fork_policy
+        }
+        assert expected == self.with_fork_policy.build()
+
+
+class TestAddingScmToRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.with_scm = cls.builder.add_scm(cls.scm)
+
+    def test_immutability_on_adding_scm(self):
+        assert self.with_scm
+        assert {} == self.builder.build()
+
+    def test_title_structure(self):
+        expected = {
+            'scm': self.scm
+        }
+        assert expected == self.with_scm.build()
+
+
+class TestAddingNameToRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.with_name = cls.builder.add_name(cls.name)
+
+    def test_immutability_on_adding_a_name(self):
+        assert self.with_name
+        assert {} == self.builder.build()
+
+    def test_title_structure(self):
+        expected = {
+            'name': self.name
+        }
+        assert expected == self.with_name.build()
+
+
+class TestAddingDescriptionToRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.with_description = cls.builder.add_description(cls.description)
+
+    def test_immutability_on_adding_a_description(self):
+        assert self.with_description
+        assert {} == self.builder.build()
+
+    def test_title_structure(self):
+        expected = {
+            'description': self.description
+        }
+        assert expected == self.with_description.build()
+
+
+class TestAddingLanguageToRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.with_language = cls.builder.add_language(cls.language)
+
+    def test_immutability_on_adding_a_language(self):
+        assert self.with_language
+        assert {} == self.builder.build()
+
+    def test_title_structure(self):
+        expected = {
+            'language': self.language
+        }
+        assert expected == self.with_language.build()
+
+
+class TestAddingHasIssuesToRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.with_has_issues = cls.builder.add_has_issues(cls.has_issues)
+
+    def test_immutability_on_adding_a_has_issues(self):
+        assert self.with_has_issues
+        assert {} == self.builder.build()
+
+    def test_title_structure(self):
+        expected = {
+            'has_issues': self.has_issues
+        }
+        assert expected == self.with_has_issues.build()
+
+
+class TestAddingHasWikiToRepositoryPayload(RepositoryPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.with_has_wiki = cls.builder.add_has_wiki(cls.has_wiki)
+
+    def test_immutability_on_adding_a_has_wiki(self):
+        assert self.with_has_wiki
+        assert {} == self.builder.build()
+
+    def test_title_structure(self):
+        expected = {
+            'has_wiki': self.has_wiki
+        }
+        assert expected == self.with_has_wiki.build()
 
 
 class TestCreatingMinimalRepositoryPayload(RepositoryPayloadFixture):
     @classmethod
     def setup_class(cls):
-        cls.payload = RepositoryPayload(
-            fork_policy=cls.fork_policy,
-            is_private=False).data()
-        cls.json = json.dumps(cls.payload)
-        cls.actual = json.loads(cls.json)
+        cls.payload = RepositoryPayload() \
+            .add_fork_policy(cls.fork_policy) \
+            .add_is_private(cls.is_private)
         cls.expected = json.loads(cls.resource_data(
             'RepositoryPayload.minimal'))
 
     def test_minimum_viable_payload_structure_for_create(self):
-        assert self.payload == self.expected
+        assert self.payload.validate().build() == self.expected
 
 
 class TestCreatingFullRepositoryPayload(RepositoryPayloadFixture):
     @classmethod
     def setup_class(cls):
-        cls.payload = RepositoryPayload(
-            repository_name=cls.name,
-            description='Description',
-            scm=RepositoryType.GIT,
-            fork_policy=cls.fork_policy,
-            is_private=False,
-            has_issues=True,
-            has_wiki=True,
-            language='python').data()
-        cls.json = json.dumps(cls.payload)
-        cls.actual = json.loads(cls.json)
+        cls.payload = RepositoryPayload() \
+            .add_owner(cls.owner) \
+            .add_name(cls.name) \
+            .add_description(cls.description) \
+            .add_scm(RepositoryType.GIT) \
+            .add_fork_policy(cls.fork_policy) \
+            .add_is_private(cls.is_private) \
+            .add_has_issues(cls.has_issues) \
+            .add_has_wiki(cls.has_wiki) \
+            .add_language(cls.language)
         cls.expected = json.loads(cls.resource_data(
             'RepositoryPayload.full'))
 
     def test_full_payload_structure(self):
-        assert self.actual == self.expected
+        assert self.payload.validate().build() == self.expected

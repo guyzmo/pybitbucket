@@ -43,7 +43,7 @@
   },
   "fork_policy": "allow_forks",
   "uuid": "{a2925176-b539-4985-b4d6-44c59850b3bb}",
-  "language": "",
+  "language": "python",
   "created_on": "2014-09-23T16:40:12.835612+00:00",
   "full_name": "teamsinspace/teamsinspace.bitbucket.org",
   "has_issues": false,

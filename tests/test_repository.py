@@ -491,7 +491,7 @@ class TestAddingIsPrivateToRepositoryPayload(RepositoryPayloadFixture):
         assert self.with_is_private
         assert {} == self.builder.build()
 
-    def test_title_structure(self):
+    def test_structure(self):
         expected = {
             'is_private': self.is_private
         }
@@ -507,7 +507,7 @@ class TestAddingForkPolicyToRepositoryPayload(RepositoryPayloadFixture):
         assert self.with_fork_policy
         assert {} == self.builder.build()
 
-    def test_title_structure(self):
+    def test_structure(self):
         expected = {
             'fork_policy': self.fork_policy
         }
@@ -523,7 +523,7 @@ class TestAddingScmToRepositoryPayload(RepositoryPayloadFixture):
         assert self.with_scm
         assert {} == self.builder.build()
 
-    def test_title_structure(self):
+    def test_structure(self):
         expected = {
             'scm': self.scm
         }
@@ -539,7 +539,7 @@ class TestAddingNameToRepositoryPayload(RepositoryPayloadFixture):
         assert self.with_name
         assert {} == self.builder.build()
 
-    def test_title_structure(self):
+    def test_structure(self):
         expected = {
             'name': self.name
         }
@@ -555,7 +555,7 @@ class TestAddingDescriptionToRepositoryPayload(RepositoryPayloadFixture):
         assert self.with_description
         assert {} == self.builder.build()
 
-    def test_title_structure(self):
+    def test_structure(self):
         expected = {
             'description': self.description
         }
@@ -571,7 +571,7 @@ class TestAddingLanguageToRepositoryPayload(RepositoryPayloadFixture):
         assert self.with_language
         assert {} == self.builder.build()
 
-    def test_title_structure(self):
+    def test_structure(self):
         expected = {
             'language': self.language
         }
@@ -587,7 +587,7 @@ class TestAddingHasIssuesToRepositoryPayload(RepositoryPayloadFixture):
         assert self.with_has_issues
         assert {} == self.builder.build()
 
-    def test_title_structure(self):
+    def test_structure(self):
         expected = {
             'has_issues': self.has_issues
         }
@@ -603,7 +603,7 @@ class TestAddingHasWikiToRepositoryPayload(RepositoryPayloadFixture):
         assert self.with_has_wiki
         assert {} == self.builder.build()
 
-    def test_title_structure(self):
+    def test_structure(self):
         expected = {
             'has_wiki': self.has_wiki
         }

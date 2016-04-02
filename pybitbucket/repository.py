@@ -141,7 +141,7 @@ class Repository(BitbucketBase):
 
     @staticmethod
     def is_type(data):
-        return (Repository.has_v2_self_url(data))
+        return Repository.has_v2_self_url(data)
 
     def __init__(self, data, client=None):
         client = client or Client()

@@ -14,9 +14,9 @@ from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 PullRequestState = enum(
     'PullRequestState',
-    OPEN='open',
-    MERGED='merged',
-    DECLINED='declined')
+    OPEN='OPEN',
+    MERGED='MERGED',
+    DECLINED='DECLINED')
 
 
 class PullRequest(BitbucketBase):
@@ -180,7 +180,7 @@ class PullRequest(BitbucketBase):
             state=None,
             client=Client()):
         if (state is not None):
-            PullRequestState.expect_state(state)
+            PullRequestState.expect_valid_value(state)
         if (owner is None):
             owner = client.get_username()
         return Bitbucket(client=client).repositoryPullRequestsInState(

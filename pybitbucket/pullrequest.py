@@ -180,7 +180,7 @@ class PullRequest(BitbucketBase):
             state=None,
             client=Client()):
         if (state is not None):
-            PullRequestState.expect_state(state)
+            PullRequestState.expect_valid_value(state)
         if (owner is None):
             owner = client.get_username()
         return Bitbucket(client=client).repositoryPullRequestsInState(

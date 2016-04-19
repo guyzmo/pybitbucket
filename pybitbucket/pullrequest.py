@@ -14,9 +14,9 @@ from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
 
 PullRequestState = enum(
     'PullRequestState',
-    OPEN='open',
-    MERGED='merged',
-    DECLINED='declined')
+    OPEN='OPEN',
+    MERGED='MERGED',
+    DECLINED='DECLINED')
 
 
 class PullRequest(BitbucketBase):

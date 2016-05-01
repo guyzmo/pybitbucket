@@ -59,7 +59,7 @@ class TestEmbeddedResources(object):
         example = json.loads(
                 data_from_file(
                     self.test_dir,
-                    'example_single_snippet.json'))
+                    'Snippet.json'))
         my_snip = self.client.convert_to_object(example)
         assert isinstance(my_snip, Snippet)
         assert isinstance(my_snip.owner, User)

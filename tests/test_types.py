@@ -33,7 +33,7 @@ class TestTypes(object):
 
     def test_snippet(self):
         import pybitbucket.snippet  # noqa
-        s = "%s" % self.object_from_file('example_single_snippet.json')
+        s = "%s" % self.object_from_file('Snippet.json')
         assert s.startswith('Snippet id:')
 
     def test_team(self):

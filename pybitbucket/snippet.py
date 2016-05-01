@@ -2,8 +2,10 @@
 Provides classes for manipulating Snippet resources.
 """
 from uritemplate import expand
+from voluptuous import Schema, Optional, In
 
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
+from pybitbucket.bitbucket import (
+    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder, RepositoryType)
 
 
 def open_files(filelist):
@@ -20,9 +22,64 @@ SnippetRole = enum(
     MEMBER='member')
 
 
+class SnippetPayload(PayloadBuilder):
+    """
+    A builder object to help create payloads
+    for creating and updating snippets.
+    """
+
+    schema = Schema({
+        Optional('title'): str,
+        Optional('scm'): In(RepositoryType.values()),
+        Optional('is_private'): bool
+    })
+
+    def __init__(
+            self,
+            payload=None,
+            owner=None):
+        super(self.__class__, self).__init__(payload=payload)
+        self._owner = owner
+
+    @property
+    def owner(self):
+        return self._owner
+
+    def add_owner(self, owner):
+        return SnippetPayload(
+            payload=self._payload.copy(),
+            owner=owner)
+
+    def add_title(self, title):
+        new = self._payload.copy()
+        new['title'] = title
+        return SnippetPayload(
+            payload=new,
+            owner=self.owner)
+
+    def add_scm(self, scm):
+        new = self._payload.copy()
+        new['scm'] = scm
+        return SnippetPayload(
+            payload=new,
+            owner=self.owner)
+
+    def add_is_private(self, is_private):
+        new = self._payload.copy()
+        new['is_private'] = is_private
+        return SnippetPayload(
+            payload=new,
+            owner=self.owner)
+
+
 class Snippet(BitbucketBase):
+    """Represents a snippet."""
+
     id_attribute = 'id'
     resource_type = 'snippets'
+    templates = {
+        'create': '{+bitbucket_url}/2.0/snippets'
+    }
 
     @staticmethod
     def is_type(data):
@@ -55,102 +112,96 @@ class Snippet(BitbucketBase):
         if data.get('files'):
             self.filenames = [str(f) for f in data['files']]
 
-    @staticmethod
-    def make_payload(
-            is_private=None,
-            title=None,
-            scm=None):
-        # Since server defaults may change, method defaults are None.
-        # If the parameters are not provided, then don't send them
-        # so the server can decide what defaults to use.
-        payload = {}
-        if is_private is not None:
-            payload.update({'is_private': is_private})
-        if title is not None:
-            payload.update({'title': title})
-        if scm is not None:
-            payload.update({'scm': scm})
-        return payload
+    @classmethod
+    def create(cls, files, payload=None, client=None):
+        """Create a new snippet.
 
-    @staticmethod
-    def create_snippet(
-            files,
-            is_private=None,
-            title=None,
-            scm=None,
-            client=Client()):
-        template = '{+bitbucket_url}/2.0/snippets{/username}'
+        :param files:
+        :type files:
+        :param payload: the options for creating the new snippet.
+        :type payload: SnippetPayload
+        :param client: the configured connection to Bitbucket.
+            If not provided, assumes an Anonymous connection.
+        :type client: bitbucket.Client
+        :returns: the new build status object.
+        :rtype: BuildStatus
+        :raises: ValueError
+        """
+        client = client or Client()
+        payload = payload or SnippetPayload()
+        json = payload.validate().build()
         api_url = expand(
-            template, {
+            cls.templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'username': client.get_username()
             })
-        payload = Snippet.make_payload(is_private, title, scm)
-        response = client.session.post(api_url, data=payload, files=files)
-        Client.expect_ok(response)
-        return Snippet(response.json(), client=client)
+        return cls.post(api_url, json=json, files=files, client=client)
 
-    @staticmethod
-    def find_snippets_for_role(role=SnippetRole.OWNER, client=Client()):
-        """
-        A convenience method for finding snippets by the user's role.
-        The method is a generator Snippet objects.
-        """
-        SnippetRole.expect_valid_value(role)
-        return Bitbucket(client=client).snippetsForRole(role=role)
-
-    @staticmethod
-    def find_my_snippet_by_id(id, client=Client()):
-        """
-        A convenience method for finding a specific snippet.
-        In contrast to the pure hypermedia driven method on the Bitbucket
-        class, this method returns a Snippet object, instead of the
-        generator.
-        """
-        return next(Bitbucket(client=client).snippetByOwnerAndSnippetId(
-            owner=client.get_username(),
-            snippet_id=id))
-
-    @staticmethod
-    def find_snippet_by_owner_and_id(owner, id, client=Client()):
-        """
-        A convenience method for finding a specific snippet.
-        In contrast to the pure hypermedia driven method on the Bitbucket
-        class, this method returns a Snippet object, instead of the
-        generator.
-        """
-        return next(Bitbucket(client=client).snippetByOwnerAndSnippetId(
-            owner=owner,
-            snippet_id=id))
-
-    def modify(
-            self,
-            files=None,
-            is_private=None,
-            is_unlisted=None,
-            title=None):
+    def modify(self, files=None, payload=None):
         """
         A convenience method for changing the current snippet.
         The parameters make it easier to know what can be changed
         and allow references with file names instead of File objects.
         """
         files = files or open_files([])
-        payload = self.make_payload(is_private, is_unlisted, title)
-        return self.put(payload, files=files)
-
-    def isPrivate(self):
-        """
-        A convenience method that compensates for a bug in the Bitbucket API.
-        """
-        return (self.data['is_private'] == 'True')
+        payload = payload or SnippetPayload()
+        json = payload.validate().build()
+        return self.put(json=json, files=files)
 
     def content(self, filename):
+        """
+        A method for obtaining the contents of a file on a snippet.
+        If the filename is not on the snippet, no content is returned.
+        """
         if not self.files.get(filename):
             return
         url = self.files[filename]['links']['self']['href']
         response = self.client.session.get(url)
         Client.expect_ok(response)
         return response.content
+
+    @staticmethod
+    def find_snippets_for_role(role=SnippetRole.OWNER, client=None):
+        """
+        A convenience method for finding snippets by the user's role.
+        The method is a generator Snippet objects.
+
+        :param role: the role of the current user on the snippets.
+            If not provided, assumes the relationship owner.
+        :type role: SnippetRole
+        :param client: the configured connection to Bitbucket.
+            If not provided, assumes an Anonymous connection.
+        :type client: bitbucket.Client
+        :returns: an iterator over the selected snippets.
+        :rtype: iterator
+        """
+        client = client or Client()
+        SnippetRole.expect_valid_value(role)
+        return Bitbucket(client=client).snippetsForRole(role=role)
+
+    @staticmethod
+    def find_snippet_by_id_and_owner(id, owner=None, client=None):
+        """
+        A convenience method for finding a specific snippet.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Snippet object, instead of the
+        generator.
+
+        :param id: the id of the snippet.
+        :type id: str
+        :param owner: the owner of the snippet.
+            If not provided, assumes the current user.
+        :type owner: str
+        :param client: the configured connection to Bitbucket.
+            If not provided, assumes an Anonymous connection.
+        :type client: bitbucket.Client
+        :returns: the snippet referenced by the id.
+        :rtype: bitbucket.Snippet
+        """
+        client = client or Client()
+        owner = owner or client.get_username()
+        return next(Bitbucket(client=client).snippetByOwnerAndSnippetId(
+            owner=owner,
+            snippet_id=id))
 
 
 Client.bitbucket_types.add(Snippet)

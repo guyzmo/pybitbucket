@@ -14,7 +14,7 @@ from uritemplate import expand
 from voluptuous import Schema, Required, Optional, In
 
 from pybitbucket.bitbucket import (
-    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
+    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder, RepositoryType)
 from pybitbucket.user import User
 
 
@@ -31,12 +31,6 @@ RepositoryForkPolicy = enum(
     ALLOW_FORKS='allow_forks',
     NO_PUBLIC_FORKS='no_public_forks',
     NO_FORKS='no_forks')
-
-
-RepositoryType = enum(
-    'RepositoryType',
-    GIT='git',
-    HG='hg')
 
 
 class RepositoryPayload(PayloadBuilder):

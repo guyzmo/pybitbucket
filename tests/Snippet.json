@@ -1,0 +1,88 @@
+{
+  "scm": "git",
+  "files": {
+    "one.txt": {
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/9qa8b/78c44b6fdd709dd35cd81347c021eb9eef6f3377/files/one.txt"
+        },
+        "html": {
+          "href": "https://bitbucket.org/snippets/ianbuchanan/9qa8b/revisions/78c44b6fdd709dd35cd81347c021eb9eef6f3377#one.txt"
+        }
+      }
+    }
+  },
+  "links": {
+    "watchers": {
+      "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/9qa8b/watchers"
+    },
+    "commits": {
+      "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/9qa8b/commits"
+    },
+    "self": {
+      "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/9qa8b"
+    },
+    "comments": {
+      "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/9qa8b/comments"
+    },
+    "patch": {
+      "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/9qa8b/78c44b6fdd709dd35cd81347c021eb9eef6f3377/patch"
+    },
+    "html": {
+      "href": "https://bitbucket.org/snippets/ianbuchanan/9qa8b"
+    },
+    "diff": {
+      "href": "https://api.bitbucket.org/2.0/snippets/ianbuchanan/9qa8b/78c44b6fdd709dd35cd81347c021eb9eef6f3377/diff"
+    },
+    "clone": [
+      {
+        "href": "https://ianbuchanan@bitbucket.org/snippets/ianbuchanan/9qa8b/my-first-snippet.git",
+        "name": "https"
+      },
+      {
+        "href": "ssh://git@bitbucket.org/snippets/ianbuchanan/9qa8b/my-first-snippet.git",
+        "name": "ssh"
+      }
+    ]
+  },
+  "creator": {
+    "username": "ianbuchanan",
+    "type": "user",
+    "display_name": "Ian Buchanan",
+    "uuid": "{8317ffb8-8e21-4641-8f05-8ce1d074ea6e}",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/ianbuchanan"
+      },
+      "html": {
+        "href": "https://bitbucket.org/ianbuchanan/"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/account/ianbuchanan/avatar/32/"
+      }
+    }
+  },
+  "title": "My first snippet",
+  "created_on": "2015-12-02T19:06:59.555123+00:00",
+  "owner": {
+    "username": "ianbuchanan",
+    "type": "user",
+    "display_name": "Ian Buchanan",
+    "uuid": "{8317ffb8-8e21-4641-8f05-8ce1d074ea6e}",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/ianbuchanan"
+      },
+      "html": {
+        "href": "https://bitbucket.org/ianbuchanan/"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/account/ianbuchanan/avatar/32/"
+      }
+    }
+  },
+  "updated_on": "2015-12-02T19:06:59.555149+00:00",
+  "type": "snippet",
+  "id": "9qa8b",
+  "is_private": true
+}

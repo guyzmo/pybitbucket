@@ -101,6 +101,12 @@ BitbucketSpecialAction = enum(
     DIFF='diff')
 
 
+RepositoryType = enum(
+    'RepositoryType',
+    GIT='git',
+    HG='hg')
+
+
 @python_2_unicode_compatible
 class BitbucketBase(object):
     id_attribute = 'id'

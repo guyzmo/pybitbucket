@@ -5,7 +5,8 @@ Classes:
 - RepositoryRole: enumerates the roles a user can have on a repository
 - RepositoryForkPolicy: enumerates the forking policies on a repository
 - RepositoryType: enumerates the SCM types for Bitbucket repositories
-- RepositoryPayload: a value type for creating and updating repositories
+- RepositoryPayload: encapsulates payload for creating
+    and modifying repositories
 - Repository: represents a repository
 - RepositoryAdapter: a bridge between 1.0 and 2.0 API representations
 - RepositoryV1: represents a repository in the 1.0 API
@@ -375,7 +376,7 @@ class RepositoryV1(BitbucketBase):
         client = client or Client()
         super(RepositoryV1, self).__init__(data, client)
         self.v2 = RepositoryAdapter(data, client)
-        # TODO: src and wiki links are broken.
+        # TODO: Repository src and wiki links are broken.
         # When the uritemplates are filled out,
         # those 2 don't have enough parameters
         # to construct a valid URL.

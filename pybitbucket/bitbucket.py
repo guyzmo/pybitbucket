@@ -6,7 +6,9 @@ Classes:
 - Enumeration: abstraction for a set of enumerated values
 - Client: abstraction over HTTP requests to Bitbucket API
 - BitbucketSpecialAction: an enum of special actions to be handled by children
+- RepositoryType: an enum of repository types (Git, Hg)
 - BitbucketBase: parent class for Bitbucket resources
+- PayloadBuilder: parent class for payloads
 - Bitbucket: root resource for the whole Bitbucket instance
 - BadRequestError: exception wrapping bad HTTP requests
 - ServerError: exception wrapping server errors

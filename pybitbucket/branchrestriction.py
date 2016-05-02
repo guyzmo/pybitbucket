@@ -24,6 +24,7 @@ class BranchRestriction(BitbucketBase):
     def is_type(data):
         return (BranchRestriction.has_v2_self_url(data))
 
+    # TODO: convert BranchRestriction to PayloadBuilder pattern.
     @staticmethod
     def payload(
             kind=None,

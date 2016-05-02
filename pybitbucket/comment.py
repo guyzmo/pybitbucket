@@ -14,6 +14,7 @@ class Comment(BitbucketBase):
     def is_type(data):
         return (Comment.has_v2_self_url(data))
 
+    # TODO: convert Comment to PayloadBuilder pattern.
     @staticmethod
     def make_payload(content):
         return {'content': {'raw': content}}

@@ -4,6 +4,8 @@ Defines the BuildStatus resource and registers the type with the Client.
 
 Classes:
 - BuildStatusStates: enumerates the possible states of a build status
+- BuildStatusPayload: encapsulates payload for creating
+    and modifying build status
 - BuildStatus: represents the result of a build
 """
 from uritemplate import expand

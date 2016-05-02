@@ -1,5 +1,10 @@
 """
 Provides classes for manipulating Snippet resources.
+
+Classes:
+- SnippetRole: enumerates the possible roles a user can have with a snippet
+- SnippetPayload: encapsulates payload for creating and modifying snippets
+- Snippet: represents a snippet
 """
 from uritemplate import expand
 from voluptuous import Schema, Optional, In
@@ -111,6 +116,8 @@ class Snippet(BitbucketBase):
         super(Snippet, self).__init__(data, client=client)
         if data.get('files'):
             self.filenames = [str(f) for f in data['files']]
+        # TODO: Snippet has patch & diff links but I don't know what they do.
+
 
     @classmethod
     def create(cls, files, payload=None, client=None):

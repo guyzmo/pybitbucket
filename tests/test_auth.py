@@ -216,7 +216,7 @@ class TestUsingAnonymous(AnonymousFixture):
         assert not self.auth.session.headers.get('Authorization')
 
     def test_username_is_blank(self):
-        # TODO: Is this really the right behavior?
+        # TODO: Should auth for anonymous return blank username?
         # Since the username is used in some methods
         # perhaps Anonymous should raise an exception?
         assert '' == self.auth.get_username()

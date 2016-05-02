@@ -59,6 +59,7 @@ class Consumer(BitbucketBase):
         self.links = expanded_links.get('_links', {})
         self.add_remote_relationship_methods(expanded_links)
 
+    # TODO: convert Consumer to PayloadBuilder pattern.
     @staticmethod
     def payload(
             name=None,

@@ -347,7 +347,7 @@ class TestAccessingLinks(SnippetFixture):
         cls.commits_data = cls.resource_list_data('Commit')
         cls.comments_url = cls.get_link_url('comments')
         cls.comments_data = cls.resource_list_data('Comment')
-        # TODO: patch and diff relationships
+        # TODO: Missing tests for patch and diff relationships on Snippet
 
     @httpretty.activate
     def test_watchers_returns_a_user_generator(self):

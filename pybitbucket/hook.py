@@ -18,6 +18,7 @@ class Hook(BitbucketBase):
     def is_type(data):
         return (Hook.has_v2_self_url(data))
 
+    # TODO: convert Hook to PayloadBuilder pattern.
     @staticmethod
     def make_payload(
             description,

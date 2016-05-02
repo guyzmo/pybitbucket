@@ -11,7 +11,7 @@ from pybitbucket.user import User
 from pybitbucket.comment import Comment
 from pybitbucket.commit import Commit
 
-# old style
+# TODO: Fix TestSnippetPaging so it doesn't need following dependencies
 from os import path
 from test_auth import TestAuth
 from util import data_from_file

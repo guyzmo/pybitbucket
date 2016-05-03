@@ -11,39 +11,19 @@ import httpretty
 
 
 class BranchRestrictionFixture(BitbucketFixture):
-    # GIVEN: An example repository owner and name
-    owner = 'ianbuchanan'
-    repository_name = 'example'
+    # GIVEN: a class under test
+    class_under_test = 'BranchRestriction'
 
-    # GIVEN: An ID for an example branch-restriction resource
-    restriction_id = 913351
-
-    # GIVEN: Example data for a branch-restriction resource
-    @classmethod
-    def resource_data(cls):
-        return cls.data_from_file('example_single_branchrestriction.json')
-
-    # GIVEN: Example data for a set of branch-restriction resources
-    @classmethod
-    def resources_data(cls):
-        return cls.data_from_file('example_branchrestrictions.json')
-
-    # GIVEN: An example BranchRestriction object created from example data
+    # GIVEN: An example object created from example data
     @classmethod
     def example_object(cls):
         return BranchRestriction(
             json.loads(cls.resource_data()),
             client=cls.test_client)
 
-    # GIVEN: The URL for the example branch-restriction resource
-    @classmethod
-    def resource_url(cls):
-        o = cls.example_object()
-        return o.links['self']['href']
-
     # GIVEN: The URL for posting branch-restriction resources
     @classmethod
-    def resources_url(cls):
+    def resource_list_url(cls):
         bitbucket = Bitbucket(cls.test_client)
         t = bitbucket.data['_links']['repositoryBranchRestrictions']['href']
         url = expand(
@@ -52,6 +32,11 @@ class BranchRestrictionFixture(BitbucketFixture):
                 'repository_name': cls.repository_name,
             })
         return url
+
+    # GIVEN: Example data attributes for a build status
+    owner = 'ianbuchanan'
+    repository_name = 'example'
+    restriction_id = 913351
 
 
 class TestGettingTheStringRepresentation(BranchRestrictionFixture):
@@ -98,7 +83,7 @@ class TestCreatingNewBranchRestriction(BranchRestrictionFixture):
     def test_response_is_a_branchrestriction(self):
         httpretty.register_uri(
             httpretty.POST,
-            self.resources_url(),
+            self.resource_list_url(),
             content_type='application/json',
             body=self.resource_data(),
             status=200)
@@ -134,9 +119,9 @@ class TestFindingBranchRestrictions(BranchRestrictionFixture):
     def test_response_is_a_branchrestriction_generator(self):
         httpretty.register_uri(
             httpretty.GET,
-            self.resources_url(),
+            self.resource_list_url(),
             content_type='application/json',
-            body=self.resources_data(),
+            body=self.resource_list_data(),
             status=200)
         response = BranchRestriction.find_branchrestrictions_for_repository(
             owner=self.owner,

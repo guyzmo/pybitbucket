@@ -118,7 +118,6 @@ class Snippet(BitbucketBase):
             self.filenames = [str(f) for f in data['files']]
         # TODO: Snippet has patch & diff links but I don't know what they do.
 
-
     @classmethod
     def create(cls, files, payload=None, client=None):
         """Create a new snippet.

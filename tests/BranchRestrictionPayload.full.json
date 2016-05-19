@@ -1,0 +1,17 @@
+{
+  "kind": "delete",
+  "pattern": "feature/*",
+  "groups": [
+    {
+      "owner": {
+        "username": "ian_buchanan"
+      },
+      "slug": "developer-relations"
+    }
+  ],
+  "users": [
+    {
+      "username": "ian_buchanan"
+    }
+  ]
+}

@@ -3,10 +3,16 @@
 Defines the BranchRestriction resource and registers the type with the Client.
 
 Classes:
+- BranchRestrictionKind: enumerates the possible restrictions for a branch.
+- BranchRestrictionPayload: encapsulates payload for creating
+    and modifying branch restrictions.
 - BranchRestriction: represents a restriction on a branch for a repository.
 """
 from uritemplate import expand
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
+from voluptuous import Schema, Required, Optional, In, Invalid
+
+from pybitbucket.bitbucket import (
+    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
 
 
 BranchRestrictionKind = enum(
@@ -16,77 +22,172 @@ BranchRestrictionKind = enum(
     FORCE='force')
 
 
+class BranchRestrictionPayload(PayloadBuilder):
+    """
+    A builder object to help create payloads
+    for creating and updating branch restrictions.
+    """
+
+    schema = Schema({
+        Required('kind'): In(BranchRestrictionKind.values()),
+        Optional('pattern'): str,
+        Optional('groups'): [{
+            Required('owner'):
+                {Required('username'): str},
+            Required('slug'): str,
+        }],
+        Optional('users'): [{Required('username'): str}],
+    })
+
+    def __init__(
+            self,
+            payload=None,
+            owner=None,
+            repository_name=None):
+        super(self.__class__, self).__init__(payload=payload)
+        self._owner = owner
+        self._repository_name = repository_name
+
+    @property
+    def owner(self):
+        return self._owner
+
+    @property
+    def repository_name(self):
+        return self._repository_name
+
+    def add_owner(self, owner):
+        return BranchRestrictionPayload(
+            payload=self._payload.copy(),
+            owner=owner,
+            repository_name=self.repository_name)
+
+    def add_repository_name(self, repository_name):
+        return BranchRestrictionPayload(
+            payload=self._payload.copy(),
+            owner=self.owner,
+            repository_name=repository_name)
+
+    def add_kind(self, kind):
+        new = self._payload.copy()
+        new['kind'] = kind
+        return BranchRestrictionPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def add_pattern(self, pattern):
+        new = self._payload.copy()
+        new['pattern'] = pattern
+        return BranchRestrictionPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    # TODO: implement Group resource
+    def add_group(self, group):
+        return self.add_group_by_username_and_groupname(
+            group.owner.username,
+            group.name)
+
+    def add_group_by_username_and_groupname(self, username, groupname):
+        new = self._payload.copy()
+        groups = self._payload.get('groups', [])
+        groups.append({
+            'owner': {'username': username},
+            'slug': groupname})
+        new['groups'] = groups
+        return BranchRestrictionPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def add_user(self, user):
+        return self.add_user_by_username(user.username)
+
+    def add_user_by_username(self, username):
+        new = self._payload.copy()
+        users = self._payload.get('users', [])
+        users.append({'username': username})
+        new['users'] = users
+        return BranchRestrictionPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def add_users_from_usernames(self, usernames):
+        new = self._payload.copy()
+        users = self._payload.get('users', [])
+        for username in usernames:
+            if {'username': username} not in users:
+                users.append({'username': username})
+        new['users'] = users
+        return BranchRestrictionPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+
 class BranchRestriction(BitbucketBase):
     id_attribute = 'id'
     resource_type = 'branch-restrictions'
+    templates = {
+        'create': (
+            '{+bitbucket_url}' +
+            '/2.0/repositories' +
+            '{/owner,repository_name}' +
+            '/branch-restrictions')
+    }
 
     @staticmethod
     def is_type(data):
         return (BranchRestriction.has_v2_self_url(data))
 
-    # TODO: convert BranchRestriction to PayloadBuilder pattern.
-    @staticmethod
-    def payload(
-            kind=None,
-            pattern=None,
-            groups=None,
-            users=None):
-        payload = {}
-        # Since server defaults may change, method defaults are None.
-        # If the parameters are not provided, then don't send them
-        # so the server can decide what defaults to use.
-        if kind is not None:
-            BranchRestrictionKind.expect_valid_value(kind)
-            payload.update({'kind': kind})
-        if pattern is not None:
-            payload.update({'pattern': pattern})
-        if groups is not None:
-            BranchRestriction.expect_list('groups', groups)
-            payload.update({'groups': groups})
-        if users is not None:
-            BranchRestriction.expect_list('users', users)
-            payload.update({'users': [{'username': u} for u in users]})
-        return payload
-
-    @staticmethod
+    @classmethod
     def create(
-            owner,
-            repository_name,
-            kind,
-            pattern=None,
-            groups=None,
-            users=None,
-            client=Client()):
-        template = (
-            '{+bitbucket_url}' +
-            '/2.0/repositories{/owner,repository_name}' +
-            '/branch-restrictions')
+            cls,
+            payload,
+            repository_name=None,
+            owner=None,
+            client=None):
+        """Create a new branch-restriction.
+
+        :param payload: the options for creating the new Branch Restriction
+        :type payload: BranchRestrictionPayload
+        :param repository_name: name of the destination repository,
+            also known as repo_slug. Optional, if provided in the payload.
+        :type repository_name: str
+        :param owner: the owner of the destination repository.
+            If not provided, assumes the current user.
+        :type owner: str
+        :param client: the configured connection to Bitbucket.
+            If not provided, assumes an Anonymous connection.
+        :type client: bitbucket.Client
+        :returns: the new BranchRestriction object.
+        :rtype: BranchRestriction
+        :raises: MultipleInvalid, Invalid
+        """
+        client = client or Client()
+        owner = owner or payload.owner
+        repository_name = repository_name or payload.repository_name
+        if not (owner and repository_name):
+            raise Invalid('owner and repository_name are required')
+        json = payload.validate().build()
         api_url = expand(
-            template, {
+            cls.templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),
                 'owner': owner,
                 'repository_name': repository_name,
             })
-        payload = BranchRestriction.payload(
-            kind=kind,
-            pattern=pattern,
-            groups=groups,
-            users=users)
-        return BranchRestriction.post(api_url, json=payload, client=client)
+        return cls.post(api_url, json=json, client=client)
 
-    def update(
-            self,
-            kind=None,
-            pattern=None,
-            groups=None,
-            users=None):
+    def modify(self, payload):
         """
         A convenience method for changing the current branch-restriction.
         The parameters make it easier to know what can be changed.
         """
-        kwargs = {k: v for k, v in locals().items() if k != 'self'}
-        payload = self.payload(**kwargs)
-        return self.put(payload)
+        json = payload.validate().build()
+        return self.put(json=json)
 
     @staticmethod
     def find_branchrestrictions_for_repository(

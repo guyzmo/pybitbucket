@@ -1,0 +1,4 @@
+{
+  "kind": "push",
+  "pattern": "feature/*"
+}

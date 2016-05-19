@@ -193,13 +193,13 @@ class BranchRestriction(BitbucketBase):
     def find_branchrestrictions_for_repository(
             repository_name,
             owner=None,
-            client=Client()):
+            client=None):
         """
         A convenience method for finding branch-restrictions for a repository.
         The method is a generator BranchRestriction objects.
         """
-        if (owner is None):
-            owner = client.get_username()
+        client = client or Client()
+        owner = owner or client.get_username()
         return Bitbucket(client=client).repositoryBranchRestrictions(
             owner=owner,
             repository_name=repository_name)
@@ -209,15 +209,15 @@ class BranchRestriction(BitbucketBase):
             repository_name,
             restriction_id,
             owner=None,
-            client=Client()):
+            client=None):
         """
         A convenience method for finding a specific branch-restriction.
         In contrast to the pure hypermedia driven method on the Bitbucket
         class, this method returns a BranchRestriction object, instead of the
         generator.
         """
-        if (owner is None):
-            owner = client.get_username()
+        client = client or Client()
+        owner = owner or client.get_username()
         return next(
             Bitbucket(
                 client=client).repositoryBranchRestrictionByRestrictionId(

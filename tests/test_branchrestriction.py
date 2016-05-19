@@ -112,12 +112,10 @@ class TestCreatingNewBranchRestriction(BranchRestrictionFixture):
         payload = BranchRestrictionPayload() \
             .add_kind(self.kind) \
             .add_pattern(self.pattern) \
-            .add_user_by_username(self.user)
-        response = BranchRestriction.create(
-            payload,
-            owner=self.owner,
-            repository_name=self.repository_name,
-            client=self.test_client)
+            .add_user_by_username(self.user) \
+            .add_owner(self.owner) \
+            .add_repository_name(self.repository_name)
+        response = BranchRestriction.create(payload, client=self.test_client)
         assert 'application/json' == \
             httpretty.last_request().headers.get('Content-Type')
         assert isinstance(response, BranchRestriction)

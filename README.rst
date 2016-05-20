@@ -191,7 +191,6 @@ TODO
 
 * :code:`PUT` and :code:`DELETE` for :code:`snippet.watch` from `snippets Endpoint <https://confluence.atlassian.com/display/BITBUCKET/snippets+endpoint>`_.
 * Wrap the `version 1 endpoints <https://confluence.atlassian.com/display/BITBUCKET/Version+1>`_ for:
-    - privileges
     - groups
     - group-privileges
     - invitations

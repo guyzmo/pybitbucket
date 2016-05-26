@@ -137,7 +137,7 @@ class TestNavigatingToOAuthConsumers(UserFixture):
         from pybitbucket.consumer import Consumer
         user = self.example_object()
         url = user.v1.links.get('consumers', {}).get('href')
-        example = self.data_from_file('example_consumers.json')
+        example = self.data_from_file('Consumer_list.json')
         httpretty.register_uri(
             httpretty.GET,
             url,

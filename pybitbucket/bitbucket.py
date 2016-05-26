@@ -203,6 +203,19 @@ class BitbucketBase(object):
                     setattr(self, name, body)
 
     @classmethod
+    def extract_templates_from_json(cls):
+        """
+        A helper method for 1.0 API resources that extracts uri templates
+        found in links into a template that would be found
+        on a 2.0 API resource.
+        """
+        links = loads(cls.links_json)
+        return {
+            name: url
+            for (name, url)
+            in cls.links_from(links)}
+
+    @classmethod
     def expand_link_urls(cls, **kwargs):
         """
         A helper method for 1.0 API resources that expands uri templates

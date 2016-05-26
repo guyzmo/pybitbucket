@@ -37,6 +37,9 @@ class Consumer(BitbucketBase):
     },
     "consumers": {
       "href": "{+bitbucket_url}/1.0/users{/username}/consumers"
+    },
+    "create": {
+      "href": "{+bitbucket_url}/1.0/users{/username}/consumers"
     }
   }
 }
@@ -50,13 +53,15 @@ class Consumer(BitbucketBase):
             (data.get('secret') is not None) and
             (data.get('key') is not None))
 
-    def __init__(self, data, client=Client()):
+    def __init__(self, data={}, client=None):
+        client = client or Client()
         super(Consumer, self).__init__(data, client=client)
         expanded_links = self.expand_link_urls(
             bitbucket_url=client.get_bitbucket_url(),
             username=client.get_username(),
             consumer_id=data.get('id'))
         self.links = expanded_links.get('_links', {})
+        self.templates = self.extract_templates_from_json()
         self.add_remote_relationship_methods(expanded_links)
 
     # TODO: convert Consumer to PayloadBuilder pattern.

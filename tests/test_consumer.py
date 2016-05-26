@@ -9,41 +9,39 @@ import httpretty
 
 
 class ConsumerFixture(BitbucketFixture):
-    # GIVEN: Example data for a consumer resource
-    @classmethod
-    def resource_data(cls):
-        return cls.data_from_file('example_single_consumer.json')
+    # GIVEN: a class under test
+    class_under_test = 'Consumer'
 
-    # GIVEN: Example data for a set of consumer resources
-    @classmethod
-    def resources_data(cls):
-        return cls.data_from_file('example_consumers.json')
-
-    # GIVEN: An example Consumer object created from example data
+    # GIVEN: An example object created from example data
     @classmethod
     def example_object(cls):
         return Consumer(
             json.loads(cls.resource_data()),
             client=cls.test_client)
 
-    # GIVEN: The URL for the example consumer resource
+    # GIVEN: The URL for the example resource
     @classmethod
     def resource_url(cls):
-        o = cls.example_object()
-        return o.links['self']['href']
-
-    # GIVEN: The URL for posting consumer resources
-    @classmethod
-    def resources_url(cls):
         return expand(
-            Consumer.get_link_template('consumers'), {
+            Consumer(client=cls.test_client).templates['self'], {
                 'bitbucket_url': cls.test_client.get_bitbucket_url(),
-                'username': cls.test_client.get_username()})
+                'username': cls.test_client.get_username(),
+                'consumer_id': cls.consumer_id
+            })
+
+    # GIVEN: The URL for listing example resources
+    @classmethod
+    def resource_list_url(cls):
+        return expand(
+            Consumer(client=cls.test_client).templates['self'], {
+                'bitbucket_url': cls.test_client.get_bitbucket_url(),
+                'username': cls.test_client.get_username(),
+            })
 
     # GIVEN: Example inputs for creating a new consumer
     name = 'code-registered-client'
     description = 'Some code added this consumer via the REST API.'
-    url = 'http://example.com/'
+    consumer_url = 'http://example.com/'
     callback_url = 'http://localhost'
     scopes = [PermissionScope.REPOSITORY_READ, PermissionScope.EMAIL]
     consumer_id = 302126
@@ -121,7 +119,7 @@ class TestCreatingPayload(ConsumerFixture):
             name=cls.name,
             scopes=cls.scopes,
             description=cls.description,
-            url=cls.url,
+            url=cls.consumer_url,
             callback_url=cls.callback_url)
 
     def test_payload_structure_has_2_scopes(self):
@@ -133,11 +131,19 @@ class TestCreatingPayload(ConsumerFixture):
 
 
 class TestCreatingNewConsumer(ConsumerFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.url = expand(
+            Consumer(client=cls.test_client).templates['create'], {
+                'bitbucket_url': cls.test_client.get_bitbucket_url(),
+                'username': cls.test_client.get_username(),
+            })
+
     @httpretty.activate
     def test_response_is_a_consumer(self):
         httpretty.register_uri(
             httpretty.POST,
-            self.resources_url(),
+            self.url,
             content_type='application/json',
             body=self.resource_data(),
             status=200)
@@ -207,9 +213,9 @@ class TestFindingConsumers(ConsumerFixture):
     def test_response_is_a_consumer_generator(self):
         httpretty.register_uri(
             httpretty.GET,
-            self.resources_url(),
+            self.resource_list_url(),
             content_type='application/json',
-            body=self.resources_data(),
+            body=self.resource_list_data(),
             status=200)
         response = Consumer.find_consumers(client=self.test_client)
         assert isinstance(next(response), Consumer)

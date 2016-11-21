@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from test_bitbucketbase import BitbucketFixture
-
 import json
-from uritemplate import expand, variables
-from pybitbucket.consumer import Consumer, PermissionScope
 
 import httpretty
+from uritemplate import expand, variables
+from pybitbucket.consumer import Consumer, ConsumerPayload, PermissionScope
+from voluptuous import MultipleInvalid
 
 
 class ConsumerFixture(BitbucketFixture):
@@ -45,6 +45,20 @@ class ConsumerFixture(BitbucketFixture):
     callback_url = 'http://localhost'
     scopes = [PermissionScope.REPOSITORY_READ, PermissionScope.EMAIL]
     consumer_id = 302126
+    consumer_key = '6qErCQRtk2nmVHuemM'
+    shared_secret = '96ztLLDzvrT5zmchsdZZLKCkTMkUkb4W'
+
+
+class ConsumerPayloadFixture(ConsumerFixture):
+    builder = ConsumerPayload()
+
+    # GIVEN: a class under test
+    class_under_test = 'ConsumerPayload'
+
+    # GIVEN: An example object created from example data
+    @classmethod
+    def example_object(cls):
+        return ConsumerPayload(json.loads(cls.resource_data()))
 
 
 class TestGettingTheStringRepresentation(ConsumerFixture):
@@ -85,6 +99,18 @@ class TestGettingLinks(ConsumerFixture):
     def test_consumers_only_needs_bitbucket_url_and_username(self):
         assert set(['username', 'bitbucket_url']) == \
             variables(self._consumers)
+
+
+class TestCreatingConsumerPayload(ConsumerPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.payload = ConsumerPayload() \
+            .add_name(cls.name)
+
+    def test_payload_structure(self):
+        assert self.payload.validate().build() == {
+                "name": self.name,
+            }
 
 
 class TestCreatingPayloadWithInvalidPermissionScope(ConsumerFixture):
@@ -219,3 +245,49 @@ class TestFindingConsumers(ConsumerFixture):
             status=200)
         response = Consumer.find_consumers(client=self.test_client)
         assert isinstance(next(response), Consumer)
+
+
+class TestCreatingDefaultConsumerPayload(ConsumerPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.data = cls.builder.build()
+
+    def test_default_payload_is_empty_dictionary(self):
+        assert {} == self.data
+
+    def test_default_is_invalid(self):
+        try:
+            self.builder.validate()
+            assert False
+        except Exception as e:
+            assert isinstance(e, MultipleInvalid)
+
+
+class TestCreatingMinimalConsumerPayload(ConsumerPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.payload = ConsumerPayload() \
+            .add_name(cls.name)
+        cls.expected = json.loads(cls.resource_data(
+            'ConsumerPayload.minimal'))
+
+    def test_minimum_viable_payload_structure_for_create(self):
+        assert self.payload.validate().build() == self.expected
+
+
+class TestCreatingFullConsumerPayload(ConsumerPayloadFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.payload = ConsumerPayload() \
+            .add_name(cls.name) \
+            .add_description(cls.description) \
+            .add_url(cls.consumer_url) \
+            .add_key(cls.consumer_key) \
+            .add_secret(cls.shared_secret) \
+            .add_callback_url(cls.callback_url) \
+            .add_consumer_id(cls.consumer_id)
+        cls.expected = json.loads(cls.resource_data(
+            'ConsumerPayload.full'))
+
+    def test_full_payload_structure(self):
+        assert self.payload.validate().build() == self.expected

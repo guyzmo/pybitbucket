@@ -1,7 +1,18 @@
 # -*- coding: utf-8 -*-
-from uritemplate import expand
+"""
+Defines the Consumer resource and registers the type with the Client.
 
-from pybitbucket.bitbucket import BitbucketBase, Client, enum
+Classes:
+- PermissionScope: enumerates the possible scopes for an OAuth consumer.
+- ConsumerPayload: encapsulates payload for creating
+    and modifying consumers.
+- Consumer: represents an OAuth consumer.
+"""
+from uritemplate import expand
+from voluptuous import Schema, Required, Optional
+
+from pybitbucket.bitbucket import (
+    BitbucketBase, Client, enum, PayloadBuilder)
 
 
 PermissionScope = enum(
@@ -22,6 +33,114 @@ PermissionScope = enum(
     SNIPPET_READ='snippet',
     SNIPPET_WRITE='snippet:write',
     WEBHOOK='webhook')
+
+
+class ConsumerPayload(PayloadBuilder):
+    """
+    A builder object to help create payloads
+    for creating and updating consumers.
+    """
+
+    schema = Schema({
+        Required('name'): str,
+        Optional('description'): str,
+        Optional('url'): str,
+        Optional('key'): str,
+        # Undocumented attributes
+        Optional('secret'): str,
+        Optional('callback_url'): str,
+        Optional('id'): int,
+    })
+
+    def __init__(
+            self,
+            payload=None,
+            owner=None,
+            consumer_id=None):
+        super(self.__class__, self).__init__(payload=payload)
+        self._owner = owner
+        self._consumer_id = consumer_id
+
+    @property
+    def owner(self):
+        return self._owner
+
+    @property
+    def consumer_id(self):
+        return self._consumer_id
+
+    def add_owner(self, owner):
+        return ConsumerPayload(
+            payload=self._payload.copy(),
+            owner=owner,
+            consumer_id=self._consumer_id)
+
+    def add_consumer_id(self, consumer_id):
+        new = self._payload.copy()
+        new['id'] = consumer_id
+        return ConsumerPayload(
+            payload=new,
+            owner=self.owner,
+            consumer_id=consumer_id)
+
+    def add_name(self, name):
+        new = self._payload.copy()
+        new['name'] = name
+        return ConsumerPayload(
+            payload=new,
+            owner=self.owner,
+            consumer_id=self.consumer_id)
+
+    def copy_all_but_payload(self, new_payload):
+        return self.__class__(
+            payload=new_payload,
+            owner=self.owner,
+            consumer_id=self.consumer_id)
+
+    def add_string_attribute(self, attribute_name, value):
+        new = self._payload.copy()
+        new[attribute_name] = value
+        return self.copy_all_but_payload(new)
+
+    def add_description(self, description):
+        new = self._payload.copy()
+        new['description'] = description
+        return ConsumerPayload(
+            payload=new,
+            owner=self.owner,
+            consumer_id=self.consumer_id)
+
+    def add_url(self, url):
+        new = self._payload.copy()
+        new['url'] = url
+        return ConsumerPayload(
+            payload=new,
+            owner=self.owner,
+            consumer_id=self.consumer_id)
+
+    def add_key(self, key):
+        new = self._payload.copy()
+        new['key'] = key
+        return ConsumerPayload(
+            payload=new,
+            owner=self.owner,
+            consumer_id=self.consumer_id)
+
+    def add_secret(self, secret):
+        new = self._payload.copy()
+        new['secret'] = secret
+        return ConsumerPayload(
+            payload=new,
+            owner=self.owner,
+            consumer_id=self.consumer_id)
+
+    def add_callback_url(self, callback_url):
+        new = self._payload.copy()
+        new['callback_url'] = callback_url
+        return ConsumerPayload(
+            payload=new,
+            owner=self.owner,
+            consumer_id=self.consumer_id)
 
 
 class Consumer(BitbucketBase):

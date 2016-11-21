@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from os import path
-from test_auth import TestAuth
+from test_auth import FakeAuth
 
 from pybitbucket.bitbucket import Client
 
@@ -10,7 +10,7 @@ class TestTypes(object):
 
     def setup_class(cls):
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client(TestAuth())
+        cls.client = Client(FakeAuth())
 
     def object_from_file(self, filename):
         example_path = path.join(

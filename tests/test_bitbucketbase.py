@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from util import JsonSampleDataFixture
-from test_auth import TestAuth
+from test_auth import FakeAuth
 from pybitbucket.bitbucket import Client
 
 import json
@@ -9,7 +9,7 @@ from pybitbucket.bitbucket import BitbucketBase
 
 class BitbucketFixture(JsonSampleDataFixture):
     # GIVEN: A test Bitbucket client with test credentials
-    test_client = Client(TestAuth())
+    test_client = Client(FakeAuth())
 
     @classmethod
     def get_link_url(cls, name):

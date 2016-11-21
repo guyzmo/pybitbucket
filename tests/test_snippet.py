@@ -13,7 +13,7 @@ from pybitbucket.commit import Commit
 
 # TODO: Fix TestSnippetPaging so it doesn't need following dependencies
 from os import path
-from test_auth import TestAuth
+from test_auth import FakeAuth
 from util import data_from_file
 from pybitbucket.bitbucket import Client
 
@@ -433,7 +433,7 @@ class TestSnippetPaging(object):
     @classmethod
     def setup_class(cls):
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client(TestAuth())
+        cls.client = Client(FakeAuth())
 
     def load_example_snippet(self):
         example_path = path.join(

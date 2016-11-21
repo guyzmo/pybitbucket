@@ -10,7 +10,7 @@ from pybitbucket.auth import (
     OAuth2Grant, OAuth2Authenticator)
 
 
-class TestAuth(Authenticator):
+class FakeAuth(Authenticator):
     server_base_uri = 'https://staging.bitbucket.org/api'
     username = 'pybitbucket'
     password = 'secret'
@@ -28,7 +28,7 @@ class AuthFixture(JsonSampleDataFixture):
     username = 'evzijst'
     email = 'pybitbucket@mailinator.com'
     server_base_uri = 'https://staging.bitbucket.org/api'
-    auth = TestAuth()
+    auth = FakeAuth()
 
     @httpretty.activate
     def get_username_for_authenticator(self, auth):
@@ -58,7 +58,7 @@ class AuthFixture(JsonSampleDataFixture):
 
 
 class TestAuthFixture(AuthFixture):
-    auth = TestAuth()
+    auth = FakeAuth()
 
 
 class AnonymousFixture(AuthFixture):

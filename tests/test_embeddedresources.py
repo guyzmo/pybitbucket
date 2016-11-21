@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from os import path
-from test_auth import TestAuth
+from test_auth import FakeAuth
 
 from util import data_from_file
 from pybitbucket.bitbucket import Client
@@ -17,7 +17,7 @@ class TestEmbeddedResources(object):
 
     def setup_class(cls):
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client(TestAuth())
+        cls.client = Client(FakeAuth())
 
         example_commit = json.loads(
                 data_from_file(

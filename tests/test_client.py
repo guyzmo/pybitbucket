@@ -3,14 +3,14 @@ import httpretty
 
 from pybitbucket.bitbucket import Client, BadRequestError, ServerError
 
-from test_auth import TestAuth
+from test_auth import FakeAuth
 
 
 class TestClient(object):
 
     @httpretty.activate
     def test_exceptions(self):
-        a = TestAuth()
+        a = FakeAuth()
         session = a.start_http_session()
 
         httpretty.register_uri(
@@ -39,7 +39,7 @@ class TestClient(object):
 
     @httpretty.activate
     def test_expect_ok(self):
-        a = TestAuth()
+        a = FakeAuth()
         httpretty.register_uri(httpretty.GET, a.server_base_uri)
         session = a.start_http_session()
         response = session.get(a.server_base_uri)
@@ -50,7 +50,7 @@ class TestClient(object):
 
     @httpretty.activate
     def test_structured_exception(self):
-        a = TestAuth()
+        a = FakeAuth()
         client = Client(a)
         http_error_code = 400
         url = a.server_base_uri + '/1.0/user'
@@ -74,7 +74,7 @@ class TestClient(object):
 
     @httpretty.activate
     def test_client_construction(self):
-        client = Client(TestAuth())
+        client = Client(FakeAuth())
         assert 'https://staging.bitbucket.org/api' == \
             client.get_bitbucket_url()
         url = client.get_bitbucket_url() + '/1.0/user'

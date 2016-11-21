@@ -2,7 +2,7 @@
 import httpretty
 import json
 from os import path
-from test_auth import TestAuth
+from test_auth import FakeAuth
 
 from util import data_from_file
 
@@ -17,7 +17,7 @@ class TestCommit(object):
     @classmethod
     def setup_class(cls):
         cls.test_dir, current_file = path.split(path.abspath(__file__))
-        cls.client = Client(TestAuth())
+        cls.client = Client(FakeAuth())
 
     def load_example_commit(self):
         example_path = path.join(

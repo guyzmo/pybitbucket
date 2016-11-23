@@ -9,7 +9,7 @@ Classes:
 - Consumer: represents an OAuth consumer.
 """
 from uritemplate import expand
-from voluptuous import Schema, Required, Optional
+from voluptuous import Schema, Required, Optional, In
 
 from pybitbucket.bitbucket import (
     BitbucketBase, Client, enum, PayloadBuilder)
@@ -47,6 +47,7 @@ class ConsumerPayload(PayloadBuilder):
         Optional('url'): str,
         Optional('key'): str,
         # Undocumented attributes
+        Optional('scopes'): [In(PermissionScope.values())],
         Optional('secret'): str,
         Optional('callback_url'): str,
         Optional('id'): int,
@@ -55,32 +56,19 @@ class ConsumerPayload(PayloadBuilder):
     def __init__(
             self,
             payload=None,
-            owner=None,
             consumer_id=None):
         super(self.__class__, self).__init__(payload=payload)
-        self._owner = owner
         self._consumer_id = consumer_id
-
-    @property
-    def owner(self):
-        return self._owner
 
     @property
     def consumer_id(self):
         return self._consumer_id
-
-    def add_owner(self, owner):
-        return ConsumerPayload(
-            payload=self._payload.copy(),
-            owner=owner,
-            consumer_id=self._consumer_id)
 
     def add_consumer_id(self, consumer_id):
         new = self._payload.copy()
         new['id'] = consumer_id
         return ConsumerPayload(
             payload=new,
-            owner=self.owner,
             consumer_id=consumer_id)
 
     def add_name(self, name):
@@ -88,26 +76,13 @@ class ConsumerPayload(PayloadBuilder):
         new['name'] = name
         return ConsumerPayload(
             payload=new,
-            owner=self.owner,
             consumer_id=self.consumer_id)
-
-    def copy_all_but_payload(self, new_payload):
-        return self.__class__(
-            payload=new_payload,
-            owner=self.owner,
-            consumer_id=self.consumer_id)
-
-    def add_string_attribute(self, attribute_name, value):
-        new = self._payload.copy()
-        new[attribute_name] = value
-        return self.copy_all_but_payload(new)
 
     def add_description(self, description):
         new = self._payload.copy()
         new['description'] = description
         return ConsumerPayload(
             payload=new,
-            owner=self.owner,
             consumer_id=self.consumer_id)
 
     def add_url(self, url):
@@ -115,7 +90,6 @@ class ConsumerPayload(PayloadBuilder):
         new['url'] = url
         return ConsumerPayload(
             payload=new,
-            owner=self.owner,
             consumer_id=self.consumer_id)
 
     def add_key(self, key):
@@ -123,7 +97,27 @@ class ConsumerPayload(PayloadBuilder):
         new['key'] = key
         return ConsumerPayload(
             payload=new,
-            owner=self.owner,
+            consumer_id=self.consumer_id)
+
+    def add_scope(self, scope):
+        new = self._payload.copy()
+        new_scopes = self._payload.get('scopes', [])
+        if scope not in new_scopes:
+            new_scopes.append(scope)
+        new['scopes'] = new_scopes
+        return ConsumerPayload(
+            payload=new,
+            consumer_id=self.consumer_id)
+
+    def add_scopes(self, scopes):
+        new = self._payload.copy()
+        new_scopes = self._payload.get('scopes', [])
+        for scope in scopes:
+            if scope not in new_scopes:
+                new_scopes.append(scope)
+        new['scopes'] = new_scopes
+        return ConsumerPayload(
+            payload=new,
             consumer_id=self.consumer_id)
 
     def add_secret(self, secret):
@@ -131,7 +125,6 @@ class ConsumerPayload(PayloadBuilder):
         new['secret'] = secret
         return ConsumerPayload(
             payload=new,
-            owner=self.owner,
             consumer_id=self.consumer_id)
 
     def add_callback_url(self, callback_url):
@@ -139,7 +132,6 @@ class ConsumerPayload(PayloadBuilder):
         new['callback_url'] = callback_url
         return ConsumerPayload(
             payload=new,
-            owner=self.owner,
             consumer_id=self.consumer_id)
 
 
@@ -183,77 +175,51 @@ class Consumer(BitbucketBase):
         self.templates = self.extract_templates_from_json()
         self.add_remote_relationship_methods(expanded_links)
 
-    # TODO: convert Consumer to PayloadBuilder pattern.
-    @staticmethod
-    def payload(
-            name=None,
-            scopes=None,
-            description=None,
-            url=None,
-            callback_url=None):
-        payload = []
-        # Since server defaults may change, method defaults are None.
-        # If the parameters are not provided, then don't send them
-        # so the server can decide what defaults to use.
-        if name is not None:
-            payload.append(('name', name))
-        if scopes is not None:
-            Consumer.expect_list('scopes', scopes)
-            [PermissionScope.expect_valid_value(s) for s in scopes]
-            [payload.append(('scope', s)) for s in scopes]
-        if description is not None:
-            payload.append(('description', description))
-        if url is not None:
-            payload.append(('url', url))
-        if callback_url is not None:
-            payload.append(('callback_url', callback_url))
-        return payload
-
-    @staticmethod
+    @classmethod
     def create(
-            name,
-            scopes,
-            description=None,
-            url=None,
-            callback_url=None,
-            client=Client()):
+            cls,
+            payload,
+            client=None):
+        """Create a new consumer.
+
+        :param payload: the options for creating the new consumer
+        :type payload: ConsumerPayload
+        :param client: the configured connection to Bitbucket.
+            If not provided, assumes an Anonymous connection.
+        :type client: bitbucket.Client
+        :returns: the new consumer object.
+        :rtype: Consumer
+        :raises: ValueError
         """
-        A convenience method for creating a new consumer.
-        The parameters make it easier to know what can be changed.
-        Consumers can only be created for the currently authenticated user.
-        """
-        post_url = expand(
-            Consumer.get_link_template('consumers'), {
+        client = client or Client()
+        owner = client.get_username()
+        if not owner:
+            raise ValueError('owner is required')
+        data = payload.validate().build()
+        templates = cls.extract_templates_from_json()
+        api_url = expand(
+            templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'username': client.get_username()
+                'username': owner
             })
-        payload = Consumer.payload(
-            name=name,
-            scopes=scopes,
-            description=description,
-            url=url,
-            callback_url=callback_url)
-        # Note: The Bitbucket API expects a urlencoded-form, not json.
+        # Note: This Bitbucket API expects a urlencoded-form, not json.
         # Hence, use `data` instead of `json`.
-        return Consumer.post(post_url, data=payload, client=client)
+        return cls.post(api_url, data=data, client=client)
 
     def update(
             self,
-            name=None,
-            scopes=None,
-            description=None,
-            url=None,
-            callback_url=None):
+            payload):
+        """Update current consumer.
+
+        :param payload: the options for updating the new consumer
+        :type payload: ConsumerPayload
+        :returns: the new consumer object.
+        :rtype: Consumer
+        :raises: ValueError
         """
-        A convenience method for changing the current consumer.
-        The parameters make it easier to know what can be changed.
-        Consumers can only be modified for the currently authenticated user.
-        """
-        kwargs = {k: v for k, v in locals().items() if k != 'self'}
-        payload = self.payload(**kwargs)
         # Note: The Bitbucket API expects a urlencoded-form, not json.
         # Hence, use `data` instead of `json`.
-        return self.put(data=payload)
+        return self.put(data=payload.validate().build())
 
     @staticmethod
     def find_consumers(client=Client()):

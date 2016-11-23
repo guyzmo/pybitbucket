@@ -114,17 +114,26 @@ class TestCreatingConsumerPayload(ConsumerPayloadFixture):
 
 
 class TestCreatingPayloadWithInvalidPermissionScope(ConsumerFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.builder = ConsumerPayload() \
+            .add_name(cls.name)
+
     def test_raising_exception_for_not_an_array(self):
         try:
-            Consumer.payload(scopes='invalid')
+            self.builder = self.builder.add_scopes('invalid')
+            self.builder = self.builder.validate()
+            assert False
         except Exception as e:
-            assert isinstance(e, TypeError)
+            assert isinstance(e, MultipleInvalid)
 
     def test_raising_exception_for_invalid_permission_scope_name(self):
         try:
-            Consumer.payload(scopes=['invalid'])
+            self.builder = self.builder.add_scope('invalid')
+            self.builder = self.builder.validate()
+            assert False
         except Exception as e:
-            assert isinstance(e, NameError)
+            assert isinstance(e, MultipleInvalid)
 
 
 class TestDeletingConsumer(ConsumerFixture):
@@ -141,19 +150,17 @@ class TestDeletingConsumer(ConsumerFixture):
 class TestCreatingPayload(ConsumerFixture):
     @classmethod
     def setup_class(cls):
-        cls.payload = Consumer.payload(
-            name=cls.name,
-            scopes=cls.scopes,
-            description=cls.description,
-            url=cls.consumer_url,
-            callback_url=cls.callback_url)
+        cls.payload = ConsumerPayload() \
+            .add_name(cls.name) \
+            .add_description(cls.description) \
+            .add_url(cls.consumer_url) \
+            .add_callback_url(cls.callback_url) \
+            .add_scopes(cls.scopes) \
+            .validate() \
+            .build()
 
     def test_payload_structure_has_2_scopes(self):
-        assert 2 == len([
-            v
-            for (k, v)
-            in self.payload
-            if k == 'scope'])
+        assert 2 == len(self.payload.get('scopes'))
 
 
 class TestCreatingNewConsumer(ConsumerFixture):
@@ -173,17 +180,17 @@ class TestCreatingNewConsumer(ConsumerFixture):
             content_type='application/json',
             body=self.resource_data(),
             status=200)
-        response = Consumer.create(
-            name=self.name,
-            scopes=self.scopes,
-            description=self.description,
-            url=self.url,
-            callback_url=self.callback_url,
-            client=self.test_client)
+        payload = ConsumerPayload() \
+            .add_name(self.name) \
+            .add_description(self.description) \
+            .add_url(self.consumer_url) \
+            .add_callback_url(self.callback_url) \
+            .add_scopes(self.scopes)
+        response = Consumer.create(payload, client=self.test_client)
         assert 'application/x-www-form-urlencoded' == \
             httpretty.last_request().headers.get('Content-Type')
         assert 2 == \
-            len(httpretty.last_request().parsed_body.get('scope'))
+            len(httpretty.last_request().parsed_body.get('scopes'))
         assert isinstance(response, Consumer)
 
 
@@ -209,11 +216,13 @@ class TestUpdatingConsumer(ConsumerFixture):
             content_type='application/json',
             body=self.resource_data(),
             status=200)
-        response = self.example_object().update(
-            callback_url=self.new_url)
+        payload = ConsumerPayload() \
+            .add_name(self.name) \
+            .add_callback_url(self.callback_url)
+        response = self.example_object().update(payload=payload)
         assert 'application/x-www-form-urlencoded' == \
             httpretty.last_request().headers.get('Content-Type')
-        assert self.new_url == \
+        assert self.callback_url == \
             httpretty.last_request().parsed_body['callback_url'][0]
         assert isinstance(response, Consumer)
 

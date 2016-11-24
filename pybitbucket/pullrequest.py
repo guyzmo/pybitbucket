@@ -306,7 +306,7 @@ class PullRequest(BitbucketBase):
             also known as repo_slug. Optional, if provided in the payload.
         :type repository_name: str
         :param owner: the owner of the destination repository.
-            If not provided, assumes the current user.
+            Optional, if provided in the payload.
         :type owner: str
         :param client: the configured connection to Bitbucket.
             If not provided, assumes an Anonymous connection.

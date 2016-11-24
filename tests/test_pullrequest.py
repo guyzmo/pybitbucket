@@ -242,7 +242,6 @@ class TestFindingPullRequestById(PullRequestFixture):
             content_type='application/json',
             body=self.resource_data(),
             status=200)
-        print(self.resource_url())
         response = PullRequest.find_pullrequest_by_id_in_repository(
             pullrequest_id=self.pullrequest_id,
             repository_name=self.source_repository_name,

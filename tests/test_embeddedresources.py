@@ -29,7 +29,7 @@ class TestEmbeddedResources(object):
         example = json.loads(
                 data_from_file(
                     self.test_dir,
-                    'example_webhook.json'))
+                    'Hook.json'))
         my_hook = self.client.convert_to_object(example)
         assert isinstance(my_hook, Hook)
         assert isinstance(my_hook.subject, Repository)

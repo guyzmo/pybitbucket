@@ -1,0 +1,7 @@
+{
+  "url": "https://example.com/bitbucket/",
+  "skip_cert_verification": false,
+  "active": true,
+  "events": ["repo:push"],
+  "description": "WebHook Description"
+}

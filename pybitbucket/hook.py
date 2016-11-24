@@ -3,117 +3,271 @@
 Defines the Hook resource and registers the type with the Client.
 
 Classes:
+- HookEvent: enumerates the possible events for subscription.
+- HookPayload: encapsulates payload for creating
+    and modifying hooks.
 - Hook: represents a web hook for a repository
 """
 from uritemplate import expand
+from voluptuous import Schema, Required, Optional, In
 
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
+from pybitbucket.bitbucket import (
+    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
+
+
+HookEvent = enum(
+    'HookEvent',
+    REPOSITORY_PUSH='repo:push',
+    REPOSITORY_FORK='repo:fork',
+    REPOSITORY_UPDATED='repo:updated',
+    REPOSITORY_COMMIT_COMMENT_CREATED='repo:commit_comment_created',
+    REPOSITORY_BUILD_STATUS_CREATED='repo:commit_status_created',
+    REPOSITORY_BUILD_STATUS_UPDATE='repo:commit_status_updated',
+    ISSUE_CREATED='issue:created',
+    ISSUE_UPDATED='issue:updated',
+    ISSUE_COMMENT_CREATED='issue:comment_created',
+    PULL_REQUEST_CREATED='pullrequest:created',
+    PULL_REQUEST_UPDATED='pullrequest:updated',
+    PULL_REQUEST_APPROVED='pullrequest:approved',
+    PULL_REQUEST_APPROVAL_REMOVED='pullrequest:unapproved',
+    PULL_REQUEST_MERGED='pullrequest:fulfilled',
+    PULL_REQUEST_DECLINED='pullrequest:rejected',
+    PULL_REQUEST_COMMENT_CREATED='pullrequest:comment_created',
+    PULL_REQUEST_COMMENT_UPDATED='pullrequest:comment_updated',
+    PULL_REQUEST_COMMENT_DELETED='pullrequest:comment_deleted')
+
+
+class HookPayload(PayloadBuilder):
+    """
+    A builder object to help create payloads
+    for creating and updating hooks.
+    """
+
+    schema = Schema({
+        Required('description'): str,
+        Required('url'): str,
+        Optional('active'): bool,
+        Optional('events'): [In(HookEvent.values())],
+        # Undocumented attributes
+        Optional('skip_cert_verification'): bool,
+    })
+
+    def __init__(
+            self,
+            payload=None,
+            owner=None,
+            repository_name=None):
+        super(self.__class__, self).__init__(payload=payload)
+        self._owner = owner
+        self._repository_name = repository_name
+
+    @property
+    def owner(self):
+        return self._owner
+
+    @property
+    def repository_name(self):
+        return self._repository_name
+
+    def add_owner(self, owner):
+        return HookPayload(
+            payload=self._payload.copy(),
+            owner=owner,
+            repository_name=self._repository_name)
+
+    def add_repository_name(self, name):
+        return HookPayload(
+            payload=self._payload.copy(),
+            owner=self._owner,
+            repository_name=name)
+
+    def add_repository_full_name(self, full_name):
+        owner, name = full_name.split('/', 1)
+        return HookPayload(
+            payload=self._payload.copy(),
+            owner=owner,
+            repository_name=name)
+
+    def add_description(self, description):
+        new = self._payload.copy()
+        new['description'] = description
+        return HookPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def add_callback_url(self, callback_url):
+        new = self._payload.copy()
+        new['url'] = callback_url
+        return HookPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def activate(self):
+        new = self._payload.copy()
+        new['active'] = True
+        return HookPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def deactivate(self):
+        new = self._payload.copy()
+        new['active'] = False
+        return HookPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def add_event(self, event):
+        new = self._payload.copy()
+        new_events = self._payload.get('events', [])
+        if event not in new_events:
+            new_events.append(event)
+        new['events'] = new_events
+        return HookPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def add_events(self, events):
+        new = self._payload.copy()
+        new_events = self._payload.get('events', [])
+        for event in events:
+            if event not in new_events:
+                new_events.append(event)
+        new['events'] = new_events
+        return HookPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def enable_cert_verification(self):
+        new = self._payload.copy()
+        new['skip_cert_verification'] = False
+        return HookPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
+
+    def disable_cert_verification(self):
+        new = self._payload.copy()
+        new['skip_cert_verification'] = True
+        return HookPayload(
+            payload=new,
+            owner=self.owner,
+            repository_name=self.repository_name)
 
 
 class Hook(BitbucketBase):
     id_attribute = 'uuid'
     resource_type = 'hooks'
+    templates = {
+        'create': (
+            '{+bitbucket_url}' +
+            '/2.0/repositories' +
+            '{/owner,repository_name}' +
+            '/hooks')
+    }
 
     @staticmethod
     def is_type(data):
         return (Hook.has_v2_self_url(data))
 
-    # TODO: convert Hook to PayloadBuilder pattern.
-    @staticmethod
-    def make_payload(
-            description,
-            callback_url,
-            active=True,
-            events=('repo:push',)
-    ):
-        payload = {
-            'description': description,
-            'url': callback_url,
-        }
-        Hook.expect_bool('active', active)
-        payload.update({'active': active})
-        Hook.expect_list('events', events)
-        payload.update({'events': events})
-        return payload
+    @classmethod
+    def create(
+            cls,
+            payload,
+            repository_name=None,
+            owner=None,
+            client=None):
+        """Create a new hook.
 
-    @staticmethod
-    def create_hook(
-            repository_name,
-            description,
-            callback_url,
-            active=None,
-            events=None,
-            username=None,
-            client=Client()):
-        template = (
-            '{+bitbucket_url}' +
-            '/2.0/repositories/{username}/{repository_name}/hooks')
-        if username is None:
-            username = client.get_username()
+        :param payload: the options for creating the new hook
+        :type payload: HookPayload
+        :param repository_name: name of the repository,
+            also known as repo_slug. Optional, if provided in the payload.
+        :type repository_name: str
+        :param owner: the owner of the repository.
+            Optional, if provided in the payload.
+            If not explicit as parameter or available in payload,
+            uses the current user.
+        :type owner: str
+        :param client: the configured connection to Bitbucket.
+            If not provided, assumes an Anonymous connection.
+        :type client: bitbucket.Client
+        :returns: the new hook object.
+        :rtype: Hook
+        :raises: MultipleInvalid
+        """
+        client = client or Client()
+        owner = (
+            owner or
+            payload.owner or
+            client.get_username())
+        repository_name = (
+            repository_name or
+            payload.repository_name)
+        if not (owner and repository_name):
+            raise ValueError('owner and repository_name are required')
+        json = payload.validate().build()
         api_url = expand(
-            template, {
+            cls.templates['create'], {
                 'bitbucket_url': client.get_bitbucket_url(),
-                'username': username,
-                'repository_name': repository_name
+                'owner': owner,
+                'repository_name': repository_name,
             })
-        payload = Hook.make_payload(description, callback_url, active, events)
-        return Hook.post(api_url, json=payload, client=client)
+        return cls.post(api_url, json=json, client=client)
 
-    @staticmethod
-    def find_hook_in_repository_by_uuid(
-            owner,
-            repository_name,
-            uuid,
-            client=Client()):
-        """
-        A convenience method for finding a hook by uuid and repo name.
-        The method returns a Hook object.
-        """
-        return next(Bitbucket(client=client).repositoryHookById(
-            owner=owner, repository_name=repository_name, uuid=uuid))
-
-    @staticmethod
-    def find_hooks_in_repository(
-            owner,
-            repository_name,
-            client=Client()):
-        """
-        A convenience method for finding hooks by repo name.
-        The method is a generator for Hook objects
-        """
-        return Bitbucket(client=client).repositoryHooks(
-            owner=owner, repository_name=repository_name)
-
-    def modify(
+    def update(
             self,
-            description=None,
-            callback_url=None,
-            active=None,
-            events=None):
-        """
-        A convenience method for changing the current hook.
-        The parameters make it easier to know what can be changed.
-        """
-        if (description is None):
-            description = self.description
-        if (callback_url is None):
-            callback_url = self.callback_url
-        if (active is None):
-            active = self.active
-        if (events is None):
-            events = self.events
-        payload = self.make_payload(
-            description=description,
-            callback_url=callback_url,
-            active=active,
-            events=events)
-        return self.put(json=payload)
+            payload):
+        """Update current hook.
 
-    def delete(self):
+        :param payload: the options for updating the new hook
+        :type payload: HookPayload
+        :returns: the new hook object.
+        :rtype: Hook
+        :raises: MultipleInvalid
         """
-        A convenience method for deleting the current hook.
+        return self.put(json=payload.validate().build())
+
+    @staticmethod
+    def find_hook_by_uuid_in_repository(
+            uuid,
+            repository_name,
+            owner=None,
+            client=None):
         """
-        return super(Hook, self).delete()
+        A convenience method for finding a specific hook.
+        In contrast to the pure hypermedia driven method on the Bitbucket
+        class, this method returns a Hook object, instead of the
+        generator.
+        """
+        client = client or Client()
+        owner = owner or client.get_username()
+        return next(
+            Bitbucket(client=client).repositoryHookById(
+                owner=owner,
+                repository_name=repository_name,
+                uuid=uuid))
+
+    @staticmethod
+    def find_hooks_for_repository(
+            repository_name,
+            owner=None,
+            client=None):
+        """
+        A convenience method for finding hooks for a repository.
+        The method is a generator Hooks objects.
+        If no owner is provided, this method assumes client can provide one.
+        """
+        client = client or Client()
+        owner = owner or client.get_username()
+        return Bitbucket(client=client).repositoryHooks(
+            owner=owner,
+            repository_name=repository_name)
 
 
 Client.bitbucket_types.add(Hook)

@@ -1,0 +1,247 @@
+{
+  "pagelen": 6,
+  "size": 6,
+  "values": [{
+    "read_only": null,
+    "description": "Request Bin",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket/hooks/%7Bd3e1bf15-09f9-4068-88a3-d4d6f4653e7d%7D"
+      }
+    },
+    "url": "http://requestb.in/zknmxgzk",
+    "created_at": "2016-11-23T20:37:03.510587Z",
+    "skip_cert_verification": true,
+    "source": null,
+    "active": true,
+    "subject": {
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/atlassian/python-bitbucket"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/atlassian/python-bitbucket/avatar/32/"
+        }
+      },
+      "type": "repository",
+      "name": "python-bitbucket",
+      "full_name": "atlassian/python-bitbucket",
+      "uuid": "{677bb9b7-473d-4934-96bd-5810f8a0d153}"
+    },
+    "type": "webhook_subscription",
+    "events": [
+      "pullrequest:unapproved",
+      "pullrequest:fulfilled",
+      "pullrequest:rejected"
+    ],
+    "uuid": "{d3e1bf15-09f9-4068-88a3-d4d6f4653e7d}"
+  }, {
+    "read_only": true,
+    "description": "Bonsai",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/teams/atlassian/hooks/%7Be7bca246-2837-44ed-957e-36f79b3fc113%7D"
+      }
+    },
+    "url": "https://bonsai.useast.staging.atlassian.io/webhook",
+    "created_at": "2016-09-27T23:58:04.843255Z",
+    "skip_cert_verification": false,
+    "source": "connect",
+    "active": true,
+    "subject": {
+      "username": "atlassian",
+      "display_name": "Atlassian",
+      "type": "team",
+      "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/atlassian/avatar/32/"
+        }
+      }
+    },
+    "type": "webhook_subscription",
+    "events": [
+      "project:updated",
+      "repo:imported",
+      "repo:deleted",
+      "repo:updated",
+      "repo:created",
+      "repo:commit_status_updated",
+      "repo:commit_status_created",
+      "repo:commit_comment_created",
+      "user:account_property_changed",
+      "repo:branch_deleted",
+      "repo:branch_created",
+      "issue:comment_created",
+      "issue:updated",
+      "issue:created",
+      "repo:push",
+      "repo:commit",
+      "repo:fork",
+      "pullrequest:created",
+      "pullrequest:unapproved",
+      "pullrequest:approved",
+      "pullrequest:updated",
+      "pullrequest:rejected",
+      "pullrequest:fulfilled",
+      "pullrequest:superseded",
+      "pullrequest:comment_deleted",
+      "pullrequest:comment_created"
+    ],
+    "uuid": "{e7bca246-2837-44ed-957e-36f79b3fc113}"
+  }, {
+    "read_only": true,
+    "description": "JIRA",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/teams/atlassian/hooks/%7B09fb9f9f-ba7e-40e7-a08a-32320d6fe1af%7D"
+      }
+    },
+    "url": "https://product-fabric.atlassian.net/rest/bitbucket/1.0/repository/webhook",
+    "created_at": "2016-08-18T00:54:27.903107Z",
+    "skip_cert_verification": false,
+    "source": "connect",
+    "active": true,
+    "subject": {
+      "username": "atlassian",
+      "display_name": "Atlassian",
+      "type": "team",
+      "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/atlassian/avatar/32/"
+        }
+      }
+    },
+    "type": "webhook_subscription",
+    "events": [
+      "pullrequest:created",
+      "repo:push"
+    ],
+    "uuid": "{09fb9f9f-ba7e-40e7-a08a-32320d6fe1af}"
+  }, {
+    "read_only": true,
+    "description": "JIRA",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/teams/atlassian/hooks/%7Bb9e3d610-3e8b-4d0d-9a5c-a10e4bbebfc6%7D"
+      }
+    },
+    "url": "https://jdog.jira-dev.com/rest/bitbucket/1.0/repository/webhook",
+    "created_at": "2016-08-12T04:07:05.232926Z",
+    "skip_cert_verification": false,
+    "source": "connect",
+    "active": true,
+    "subject": {
+      "username": "atlassian",
+      "display_name": "Atlassian",
+      "type": "team",
+      "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/atlassian/avatar/32/"
+        }
+      }
+    },
+    "type": "webhook_subscription",
+    "events": [
+      "pullrequest:created",
+      "repo:push"
+    ],
+    "uuid": "{b9e3d610-3e8b-4d0d-9a5c-a10e4bbebfc6}"
+  }, {
+    "read_only": true,
+    "description": "JIRA",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/teams/atlassian/hooks/%7B9303a389-6fdf-4c42-a6ea-f3f7ae8d9e4d%7D"
+      }
+    },
+    "url": "https://shipit.atlassian.net/rest/bitbucket/1.0/repository/webhook",
+    "created_at": "2016-06-28T22:48:19.838125Z",
+    "skip_cert_verification": false,
+    "source": "connect",
+    "active": true,
+    "subject": {
+      "username": "atlassian",
+      "display_name": "Atlassian",
+      "type": "team",
+      "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/atlassian/avatar/32/"
+        }
+      }
+    },
+    "type": "webhook_subscription",
+    "events": [
+      "pullrequest:created",
+      "repo:push"
+    ],
+    "uuid": "{9303a389-6fdf-4c42-a6ea-f3f7ae8d9e4d}"
+  }, {
+    "read_only": true,
+    "description": "JIRA",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/teams/atlassian/hooks/%7B4c3024d3-9c6a-48d2-ad0e-ab1c7240836b%7D"
+      }
+    },
+    "url": "https://ecosystem.atlassian.net/rest/bitbucket/1.0/repository/webhook",
+    "created_at": "2016-05-30T06:51:22.537805Z",
+    "skip_cert_verification": false,
+    "source": "connect",
+    "active": true,
+    "subject": {
+      "username": "atlassian",
+      "display_name": "Atlassian",
+      "type": "team",
+      "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/teams/atlassian"
+        },
+        "html": {
+          "href": "https://bitbucket.org/atlassian/"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/atlassian/avatar/32/"
+        }
+      }
+    },
+    "type": "webhook_subscription",
+    "events": [
+      "pullrequest:created",
+      "repo:push"
+    ],
+    "uuid": "{4c3024d3-9c6a-48d2-ad0e-ab1c7240836b}"
+  }],
+  "page": 1
+}

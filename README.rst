@@ -47,6 +47,9 @@ To "plug in" your implementation or a standard one, just do:
             'your_secret_password_here',
             'pybitbucket@mailinator.com'))
 
+If you have enabled `two-step verification <https://confluence.atlassian.com/bitbucket/two-step-verification-777023203.html>`_,
+then you will need to use an `app password <https://developer.atlassian.com/bitbucket/api/2/reference/meta/authentication#app-pw>`_ with the :code:`BasicAuthenticator`,
+not your regular user password.
 The :code:`OAuth2Authenticator` is intended as an example and superclass.
 It may work for some command-line clients.
 Other clients like web applications
@@ -84,9 +87,9 @@ For example, to create a new snippet:
 
 ::
 
-    snip = Snippet.create_snippet(
+    snip = Snippet.create(
         files=open_files(["README.rst"]),
-        title="My New Snippet",
+        payload=SnippetPayload().add_title("My New Snippet"),
         client=bitbucket)
 
 The resources you can create are:
@@ -179,12 +182,6 @@ Project Setup
 2. *(Optional, but good practice)* Create a `virtual environment <http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_: :code:`mkvirtualenv python-bitbucket` Once created, use :code:`workon python-bitbucket` to restore the virtual environment.
 3. :code:`pip install -r requirements-dev.txt` Loads required libraries into the virtual environment.
 4. :code:`paver test_all` Run all the unit tests and analyze the source code.
-
-Continuous Integration
-======================
-
-* `PyBitbucket on Bamboo <https://opensource.atlassian.net/builds/browse/PY-PYBB/>`_
-* `PyBitbucket with multiple Docker containers on Bamboo <https://opensource.atlassian.net/builds/browse/PY-PYBBN/>`_
 
 ----
 TODO

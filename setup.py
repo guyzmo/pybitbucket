@@ -265,8 +265,8 @@ setup_dict = dict(
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: DFSG approved',
         'License :: OSI Approved :: Apache Software License',
+        'License :: DFSG approved',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
@@ -279,11 +279,13 @@ setup_dict = dict(
     packages=find_packages(exclude=(TESTS_DIRECTORY,)),
     install_requires=[
         'six >= 1.10, < 2',
-        'future >= 0.14, < 1',
-        'requests >= 2.7, < 3',
-        'oauthlib >= 1, < 2',
-        'requests_oauthlib >= 0.5, < 1',
-        'uritemplate >= 0.6, < 1'
+        'future >= 0.16, < 1',
+        'requests >= 2.12, < 3',
+        'oauthlib >= 2.0, < 3',
+        'requests_oauthlib >= 0.7, < 1',
+        'uritemplate >= 0.6, < 1',
+        'simplejson >= 3.10, < 4',
+        'voluptuous >= 0.9, < 1'
         # your module dependencies
     ] + python_version_specific_requires,
     # Allow tests to be run with `python setup.py test'.

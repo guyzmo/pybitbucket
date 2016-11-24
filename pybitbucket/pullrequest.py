@@ -241,7 +241,7 @@ class PullRequest(BitbucketBase):
 
     @staticmethod
     def is_type(data):
-        return PullRequest.has_v2_self_url(data)
+        return (PullRequest.has_v2_self_url(data))
 
     def attr_from_subchild(self, target_attribute, child, child_object):
         if self.data.get(child, {}).get(child_object, {}):
@@ -367,7 +367,7 @@ class PullRequest(BitbucketBase):
         """
         client = client or Client()
         owner = owner or client.get_username()
-        if state is not None:
+        if (state is not None):
             PullRequestState.expect_valid_value(state)
         return Bitbucket(client=client).repositoryPullRequestsInState(
             owner=owner,

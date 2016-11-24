@@ -256,6 +256,7 @@ setup_dict = dict(
     maintainer=metadata.authors[0],
     maintainer_email=metadata.emails[0],
     url=metadata.url,
+    bugtrack_url=metadata.bugtrack_url,
     description=metadata.description,
     long_description=read('README.rst'),
     # Find a list of classifiers here:

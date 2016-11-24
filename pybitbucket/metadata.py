@@ -8,7 +8,7 @@ Information describing the project.
 package = 'pybitbucket'
 project = "PyBitbucket"
 project_no_spaces = project.replace(' ', '')
-version = '0.10.0'
+version = '0.11.1'
 description = 'A Python wrapper for the Bitbucket API'
 authors = ['Ian Buchanan']
 authors_string = ', '.join(authors)
@@ -16,3 +16,4 @@ emails = ['ibuchanan@atlassian.com']
 license = 'Apache'
 copyright = '2015 ' + 'Atlassian'
 url = 'https://bitbucket.org/atlassian/python-bitbucket'
+bugtrack_url = 'https://bitbucket.org/atlassian/python-bitbucket/issues'

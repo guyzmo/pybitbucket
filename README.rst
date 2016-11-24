@@ -5,9 +5,10 @@
 A Python wrapper for the Bitbucket Cloud REST API.
 This is not known to work with Bitbucket Server,
 previously known as Stash.
+To start working with this library, just do: :code:`pip install pybitbucket`
 
 .. image:: https://img.shields.io/pypi/v/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket/0.10.0
+    :target: https://pypi.python.org/pypi/pybitbucket/0.11.1
 
 .. image:: https://img.shields.io/pypi/status/pybitbucket.svg
     :target: https://pypi.python.org/pypi/pybitbucket
@@ -194,4 +195,3 @@ TODO
     - groups
     - group-privileges
     - invitations
-* :code:`POST` for :code:`commit` from `REST Browser <http://restbrowser.bitbucket.org/>`_. What does this even mean?

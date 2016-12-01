@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Program entry point"""
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
+
+"""Program entry point"""
 
 import argparse
 import sys

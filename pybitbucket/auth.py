@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Classes for abstracting over different forms of Bitbucket authentication.
 

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Defines the Commit resource and registers the type with the Client.
 

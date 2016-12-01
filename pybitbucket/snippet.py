@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Provides classes for manipulating Snippet resources.
 
@@ -6,11 +10,12 @@ Classes:
 - SnippetPayload: encapsulates payload for creating and modifying snippets
 - Snippet: represents a snippet
 """
+
 from uritemplate import expand
 from voluptuous import Schema, Optional, In
 
 from pybitbucket.bitbucket import (
-    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder, RepositoryType)
+    Bitbucket, BitbucketBase, Client, PayloadBuilder, RepositoryType, Enum)
 
 
 def open_files(filelist):
@@ -20,11 +25,10 @@ def open_files(filelist):
     return files
 
 
-SnippetRole = enum(
-    'SnippetRole',
-    OWNER='owner',
-    CONTRIBUTOR='contributor',
-    MEMBER='member')
+class SnippetRole(Enum):
+    OWNER = 'owner'
+    CONTRIBUTOR = 'contributor'
+    MEMBER = 'member'
 
 
 class SnippetPayload(PayloadBuilder):
@@ -35,7 +39,7 @@ class SnippetPayload(PayloadBuilder):
 
     schema = Schema({
         Optional('title'): str,
-        Optional('scm'): In(RepositoryType.values()),
+        Optional('scm'): In(RepositoryType),
         Optional('is_private'): bool
     })
 
@@ -43,7 +47,7 @@ class SnippetPayload(PayloadBuilder):
             self,
             payload=None,
             owner=None):
-        super(self.__class__, self).__init__(payload=payload)
+        super(SnippetPayload, self).__init__(payload=payload)
         self._owner = owner
 
     @property
@@ -181,7 +185,7 @@ class Snippet(BitbucketBase):
         :rtype: iterator
         """
         client = client or Client()
-        SnippetRole.expect_valid_value(role)
+        SnippetRole(role)
         return Bitbucket(client=client).snippetsForRole(role=role)
 
     @staticmethod

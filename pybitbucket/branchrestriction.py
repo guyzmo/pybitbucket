@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Defines the BranchRestriction resource and registers the type with the Client.
 
@@ -8,18 +11,18 @@ Classes:
     and modifying branch restrictions.
 - BranchRestriction: represents a restriction on a branch for a repository.
 """
+
 from uritemplate import expand
 from voluptuous import Schema, Required, Optional, In, Invalid
 
 from pybitbucket.bitbucket import (
-    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
+    Bitbucket, BitbucketBase, Client, PayloadBuilder, Enum)
 
 
-BranchRestrictionKind = enum(
-    'BranchRestrictionKind',
-    PUSH='push',
-    DELETE='delete',
-    FORCE='force')
+class BranchRestrictionKind(Enum):
+    PUSH = 'push'
+    DELETE = 'delete'
+    FORCE = 'force'
 
 
 class BranchRestrictionPayload(PayloadBuilder):
@@ -29,7 +32,7 @@ class BranchRestrictionPayload(PayloadBuilder):
     """
 
     schema = Schema({
-        Required('kind'): In(BranchRestrictionKind.values()),
+        Required('kind'): In(BranchRestrictionKind),
         Optional('pattern'): str,
         Optional('groups'): [{
             Required('owner'):
@@ -44,7 +47,7 @@ class BranchRestrictionPayload(PayloadBuilder):
             payload=None,
             owner=None,
             repository_name=None):
-        super(self.__class__, self).__init__(payload=payload)
+        super(BranchRestrictionPayload, self).__init__(payload=payload)
         self._owner = owner
         self._repository_name = repository_name
 

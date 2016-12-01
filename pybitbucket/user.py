@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Provides a class for manipulating User resources on Bitbucket.
 """
+
 from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client
 
 

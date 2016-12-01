@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Defines the Ref, Tag, and Branch resources
 and registers those type with the Client.

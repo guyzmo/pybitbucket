@@ -130,11 +130,11 @@ class RepositoryPayload(PayloadBuilder):
 class RepositoryForkPayload(RepositoryPayload):
     schema = Schema({
         Required('name'): str,
-        Optional('scm'): In(RepositoryType.values()),
+        Optional('scm'): In(RepositoryType),
         Optional('is_private'): bool,
         Optional('description'): str,
         Optional('language'): str,
-        Optional('fork_policy'): In(RepositoryForkPolicy.values()),
+        Optional('fork_policy'): In(RepositoryForkPolicy),
     })
 
 

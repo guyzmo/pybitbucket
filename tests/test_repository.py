@@ -192,7 +192,7 @@ class TestForkingRepository(RepositoryFixture):
             .add_fork_policy(self.fork_policy) \
             .add_is_private(self.is_private)
         response = Repository.fork(payload, client=self.test_client)
-        assert 'application/json' == \
+        assert 'application/x-www-form-urlencoded' == \
             httpretty.last_request().headers.get('Content-Type')
         assert isinstance(response, Repository)
 

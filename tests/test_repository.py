@@ -168,7 +168,8 @@ class TestCreatingNewRepository(RepositoryFixture):
             httpretty.last_request().headers.get('Content-Type')
         assert isinstance(response, Repository)
 
-class TestCreatingNewRepository(RepositoryFixture):
+
+class TestForkingRepository(RepositoryFixture):
     @classmethod
     def setup_class(cls):
         cls.url = expand(

@@ -144,8 +144,15 @@ class Repository(BitbucketBase):
     id_attribute = 'full_name'
     resource_type = 'repositories'
     templates = {
-        'create': '{+bitbucket_url}/2.0/repositories{/owner,repository_name}',
-        'fork': '{+bitbucket_url}/1.0/repositories{/owner,repository_name}/fork'
+        'create': (
+            '{+bitbucket_url}' +
+            '/2.0/repositories' +
+            '{/owner,repository_name}'),
+        'fork': (
+            '{+bitbucket_url}' +
+            '/1.0/repositories' +
+            '{/owner,repository_name}' +
+            '/fork')
     }
 
     @staticmethod

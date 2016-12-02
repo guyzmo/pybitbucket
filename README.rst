@@ -8,7 +8,7 @@ previously known as Stash.
 To start working with this library, just do: :code:`pip install pybitbucket`
 
 .. image:: https://img.shields.io/pypi/v/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket/0.11.1
+    :target: https://pypi.python.org/pypi/pybitbucket/0.12.0
 
 .. image:: https://img.shields.io/pypi/status/pybitbucket.svg
     :target: https://pypi.python.org/pypi/pybitbucket

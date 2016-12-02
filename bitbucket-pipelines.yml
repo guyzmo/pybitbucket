@@ -1,6 +1,7 @@
 image: python:3.5
-pipeline:
-    - job:
+pipelines:
+  default:
+    - step:
         script:
             - pip install tox
             - tox -e py35

@@ -1,14 +1,18 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Provides a class for manipulating Team resources on Bitbucket.
 """
-from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, enum
+
+from pybitbucket.bitbucket import Bitbucket, BitbucketBase, Client, Enum
 
 
-TeamRole = enum(
-    'TeamRole',
-    ADMIN='admin',
-    CONTRIBUTOR='contributor',
-    MEMBER='member')
+class TeamRole(Enum):
+    ADMIN = 'admin'
+    CONTRIBUTOR = 'contributor'
+    MEMBER = 'member'
 
 
 class Team(BitbucketBase):
@@ -25,7 +29,7 @@ class Team(BitbucketBase):
         A convenience method for finding teams by the user's role.
         The method is a generator Team objects.
         """
-        TeamRole.expect_valid_value(role)
+        TeamRole(role)
         return Bitbucket(client=client).teamsForRole(role=role)
 
     @staticmethod

@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from os import path
+import sys
+
+if sys.version_info < (3, 0):
+    import io
+    open = io.open
 
 
 def data_from_file(directory, filename):
@@ -7,7 +15,7 @@ def data_from_file(directory, filename):
     Deprecated. Moving to class fixtures, like JsonSampleDataFixture below.
     """
     filepath = path.join(directory, filename)
-    with open(filepath) as f:
+    with open(filepath, encoding='utf-8') as f:
         data = f.read()
     return data
 
@@ -28,7 +36,7 @@ class JsonSampleDataFixture(object):
         if (directory is None):
             directory = cls.test_dir()
         filepath = path.join(directory, filename)
-        with open(filepath) as f:
+        with open(filepath, encoding='utf-8') as f:
             data = f.read()
         return data
 

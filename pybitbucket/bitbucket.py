@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Core classes for communicating with the Bitbucket API.
 
@@ -13,10 +16,11 @@ Classes:
 - BadRequestError: exception wrapping bad HTTP requests
 - ServerError: exception wrapping server errors
 """
-from json import loads
-from future.utils import python_2_unicode_compatible
+
+from enum import Enum as EnumBase
+from json import loads, dumps, JSONEncoder as JSONEncoderBase
 from functools import partial
-from requests import codes
+from requests import codes, models as requests_models
 from requests.exceptions import HTTPError
 from uritemplate import expand
 from voluptuous import Schema
@@ -25,25 +29,21 @@ from pybitbucket.auth import Anonymous
 from pybitbucket.entrypoints import entrypoints_json
 
 
-class Enumeration(object):
-    @classmethod
-    def values(cls):
-        return [
-            v
-            for (k, v)
-            in vars(cls).items()
-            if not k.startswith('__')]
-
-    @classmethod
-    def expect_valid_value(cls, value):
-        if value not in cls.values():
-            raise NameError(
-                "Value '{0}' is not in expected set [{1}]."
-                .format(value, '|'.join(str(x) for x in cls.values())))
+# subclass Enum to make it behave the same way as the former custom Enum class
+class Enum(EnumBase):
+    def __eq__(self, o):
+        return self is o or self.__class__(o).value == self.value
 
 
-def enum(type_name, **named_values):
-    return type(type_name, (Enumeration,), named_values)
+class JSONEncoder(JSONEncoderBase):
+    def default(self, obj):
+        if isinstance(obj, Enum):
+            return obj.value
+        return super(JSONEncoder, self).default(obj)
+
+
+# monkey patch request's json handler
+requests_models.complexjson.dumps = partial(dumps, cls=JSONEncoder)
 
 
 class Client(object):
@@ -61,6 +61,8 @@ class Client(object):
             response.raise_for_status()
 
     def convert_to_object(self, data):
+        if isinstance(data, Enum):
+            return data.value()
         for t in Client.bitbucket_types:
             if t.is_type(data):
                 return t(data, client=self)
@@ -95,21 +97,18 @@ class Client(object):
         self.session = self.config.session
 
 
-BitbucketSpecialAction = enum(
-    'BitbucketSpecialAction',
-    APPROVE='approve',
-    DECLINE='decline',
-    MERGE='merge',
-    DIFF='diff')
+class BitbucketSpecialAction(Enum):
+    APPROVE = 'approve'
+    DECLINE = 'decline'
+    MERGE = 'merge'
+    DIFF = 'diff'
 
 
-RepositoryType = enum(
-    'RepositoryType',
-    GIT='git',
-    HG='hg')
+class RepositoryType(Enum):
+    GIT = 'git'
+    HG = 'hg'
 
 
-@python_2_unicode_compatible
 class BitbucketBase(object):
     id_attribute = 'id'
 
@@ -170,7 +169,7 @@ class BitbucketBase(object):
 
     def add_remote_relationship_methods(self, data):
         for name, url in BitbucketBase.links_from(data):
-            if (name not in BitbucketSpecialAction.values()):
+            if (name not in BitbucketSpecialAction):
                 setattr(self, name, partial(
                     self.client.remote_relationship,
                     template=url))
@@ -306,7 +305,13 @@ class PayloadBuilder(object):
         self._payload = payload or {}
 
     def build(self):
-        return self._payload
+        payload = {}
+        for k, v in self._payload.items():
+            if isinstance(v, Enum):
+                payload[k] = v.value
+            else:
+                payload[k] = v
+        return payload
 
     def validate(self):
         self.schema(self._payload)
@@ -325,13 +330,12 @@ class BitbucketError(HTTPError):
     interpretation = "The client encountered an error."
 
     def format_message(self):
-        return u'''Attempted to request {url}. \
-{interpretation} {code} - {text}\
-'''.format(
-            url=self.url,
-            interpretation=self.interpretation,
-            code=self.code,
-            text=self.text)
+        return ('Attempted to request {url}.'
+                '{interpretation} {code} - {text}').format(
+                        url=self.url,
+                        interpretation=self.interpretation,
+                        code=self.code,
+                        text=self.text)
 
     def __init__(self, response):
         self.url = response.url

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Defines the Consumer resource and registers the type with the Client.
 
@@ -8,31 +11,30 @@ Classes:
     and modifying consumers.
 - Consumer: represents an OAuth consumer.
 """
+
 from uritemplate import expand
 from voluptuous import Schema, Required, Optional, In
 
-from pybitbucket.bitbucket import (
-    BitbucketBase, Client, enum, PayloadBuilder)
+from pybitbucket.bitbucket import BitbucketBase, Client, PayloadBuilder, Enum
 
 
-PermissionScope = enum(
-    'PermissionScope',
-    EMAIL='email',
-    ACCOUNT_READ='account',
-    ACCOUNT_WRITE='account:write',
-    TEAM_READ='team',
-    TEAM_WRITE='team:write',
-    REPOSITORY_READ='repository',
-    REPOSITORY_WRITE='repository:write',
-    REPOSITORY_ADMIN='repository:admin',
-    PULLREQUEST_READ='pullrequest',
-    PULLREQUEST_WRITE='pullrequest:write',
-    ISSUE_READ='issue',
-    ISSUE_WRITE='issue:write',
-    WIKI='wiki',
-    SNIPPET_READ='snippet',
-    SNIPPET_WRITE='snippet:write',
-    WEBHOOK='webhook')
+class PermissionScope(Enum):
+    EMAIL = 'email'
+    ACCOUNT_READ = 'account'
+    ACCOUNT_WRITE = 'account:write'
+    TEAM_READ = 'team'
+    TEAM_WRITE = 'team:write'
+    REPOSITORY_READ = 'repository'
+    REPOSITORY_WRITE = 'repository:write'
+    REPOSITORY_ADMIN = 'repository:admin'
+    PULLREQUEST_READ = 'pullrequest'
+    PULLREQUEST_WRITE = 'pullrequest:write'
+    ISSUE_READ = 'issue'
+    ISSUE_WRITE = 'issue:write'
+    WIKI = 'wiki'
+    SNIPPET_READ = 'snippet'
+    SNIPPET_WRITE = 'snippet:write'
+    WEBHOOK = 'webhook'
 
 
 class ConsumerPayload(PayloadBuilder):
@@ -47,7 +49,7 @@ class ConsumerPayload(PayloadBuilder):
         Optional('url'): str,
         Optional('key'): str,
         # Undocumented attributes
-        Optional('scopes'): [In(PermissionScope.values())],
+        Optional('scopes'): [In(PermissionScope)],
         Optional('secret'): str,
         Optional('callback_url'): str,
         Optional('id'): int,

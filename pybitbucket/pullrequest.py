@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Defines the PullRequest resource and registers the type with the Client.
 
@@ -8,19 +11,19 @@ Classes:
     and modifying pull requests
 - PullRequest: represents a pull request for code review
 """
+
 from functools import partial
 from uritemplate import expand
 from voluptuous import Schema, Required, Optional
 
 from pybitbucket.bitbucket import (
-    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
+        Bitbucket, BitbucketBase, Client, PayloadBuilder, Enum)
 
 
-PullRequestState = enum(
-    'PullRequestState',
-    OPEN='OPEN',
-    MERGED='MERGED',
-    DECLINED='DECLINED')
+class PullRequestState(Enum):
+    OPEN = 'OPEN'
+    MERGED = 'MERGED'
+    DECLINED = 'DECLINED'
 
 
 class PullRequestPayload(PayloadBuilder):
@@ -368,7 +371,7 @@ class PullRequest(BitbucketBase):
         client = client or Client()
         owner = owner or client.get_username()
         if (state is not None):
-            PullRequestState.expect_valid_value(state)
+            PullRequestState(state)
         return Bitbucket(client=client).repositoryPullRequestsInState(
             owner=owner,
             repository_name=repository_name,

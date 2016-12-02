@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Provides classes for manipulating Repository resources on Bitbucket.
 
@@ -15,23 +19,21 @@ from uritemplate import expand
 from voluptuous import Schema, Required, Optional, In
 
 from pybitbucket.bitbucket import (
-    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder, RepositoryType)
+    Bitbucket, BitbucketBase, Client, PayloadBuilder, RepositoryType, Enum)
 from pybitbucket.user import User
 
 
-RepositoryRole = enum(
-    'RepositoryRole',
-    OWNER='owner',
-    ADMIN='admin',
-    CONTRIBUTOR='contributor',
-    MEMBER='member')
+class RepositoryRole(Enum):
+    OWNER = 'owner'
+    ADMIN = 'admin'
+    CONTRIBUTOR = 'contributor'
+    MEMBER = 'member'
 
 
-RepositoryForkPolicy = enum(
-    'RepositoryForkPolicy',
-    ALLOW_FORKS='allow_forks',
-    NO_PUBLIC_FORKS='no_public_forks',
-    NO_FORKS='no_forks')
+class RepositoryForkPolicy(Enum):
+    ALLOW_FORKS = 'allow_forks'
+    NO_PUBLIC_FORKS = 'no_public_forks'
+    NO_FORKS = 'no_forks'
 
 
 class RepositoryPayload(PayloadBuilder):
@@ -41,11 +43,11 @@ class RepositoryPayload(PayloadBuilder):
     """
 
     schema = Schema({
-        Optional('scm'): In(RepositoryType.values()),
+        Optional('scm'): In(RepositoryType),
         Optional('name'): str,
         Required('is_private'): bool,
         Optional('description'): str,
-        Required('fork_policy'): In(RepositoryForkPolicy.values()),
+        Required('fork_policy'): In(RepositoryForkPolicy),
         Optional('language'): str,
         Optional('has_issues'): bool,
         Optional('has_wiki'): bool
@@ -335,7 +337,7 @@ class Repository(BitbucketBase):
         """
         client = client or Client()
         owner = owner or client.get_username()
-        RepositoryRole.expect_valid_value(role)
+        RepositoryRole(role)
         return Bitbucket(client=client).repositoriesByOwnerAndRole(
             owner=owner,
             role=role)

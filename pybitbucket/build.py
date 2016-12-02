@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Defines the BuildStatus resource and registers the type with the Client.
 
@@ -8,18 +11,18 @@ Classes:
     and modifying build status
 - BuildStatus: represents the result of a build
 """
+
 from uritemplate import expand
 from voluptuous import Schema, Required, Optional, In, Url
 
 from pybitbucket.bitbucket import (
-    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
+    Bitbucket, BitbucketBase, Client, PayloadBuilder, Enum)
 
 
-BuildStatusStates = enum(
-    'BuildStatusStates',
-    INPROGRESS='INPROGRESS',
-    SUCCESSFUL='SUCCESSFUL',
-    FAILED='FAILED')
+class BuildStatusStates(Enum):
+    INPROGRESS = 'INPROGRESS'
+    SUCCESSFUL = 'SUCCESSFUL'
+    FAILED = 'FAILED'
 
 
 class BuildStatusPayload(PayloadBuilder):
@@ -30,7 +33,7 @@ class BuildStatusPayload(PayloadBuilder):
 
     schema = Schema({
         Required('key'): str,
-        Required('state'): In(BuildStatusStates.values()),
+        Required('state'): In(list(BuildStatusStates)),
         Required('url'): Url(),
         Optional('name'): str,
         Optional('description'): str

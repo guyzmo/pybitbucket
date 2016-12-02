@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Defines the Hook resource and registers the type with the Client.
 
@@ -8,33 +11,33 @@ Classes:
     and modifying hooks.
 - Hook: represents a web hook for a repository
 """
+
 from uritemplate import expand
 from voluptuous import Schema, Required, Optional, In
 
 from pybitbucket.bitbucket import (
-    Bitbucket, BitbucketBase, Client, enum, PayloadBuilder)
+    Bitbucket, BitbucketBase, Client, PayloadBuilder, Enum)
 
 
-HookEvent = enum(
-    'HookEvent',
-    REPOSITORY_PUSH='repo:push',
-    REPOSITORY_FORK='repo:fork',
-    REPOSITORY_UPDATED='repo:updated',
-    REPOSITORY_COMMIT_COMMENT_CREATED='repo:commit_comment_created',
-    REPOSITORY_BUILD_STATUS_CREATED='repo:commit_status_created',
-    REPOSITORY_BUILD_STATUS_UPDATE='repo:commit_status_updated',
-    ISSUE_CREATED='issue:created',
-    ISSUE_UPDATED='issue:updated',
-    ISSUE_COMMENT_CREATED='issue:comment_created',
-    PULL_REQUEST_CREATED='pullrequest:created',
-    PULL_REQUEST_UPDATED='pullrequest:updated',
-    PULL_REQUEST_APPROVED='pullrequest:approved',
-    PULL_REQUEST_APPROVAL_REMOVED='pullrequest:unapproved',
-    PULL_REQUEST_MERGED='pullrequest:fulfilled',
-    PULL_REQUEST_DECLINED='pullrequest:rejected',
-    PULL_REQUEST_COMMENT_CREATED='pullrequest:comment_created',
-    PULL_REQUEST_COMMENT_UPDATED='pullrequest:comment_updated',
-    PULL_REQUEST_COMMENT_DELETED='pullrequest:comment_deleted')
+class HookEvent(Enum):
+    REPOSITORY_PUSH = 'repo:push'
+    REPOSITORY_FORK = 'repo:fork'
+    REPOSITORY_UPDATED = 'repo:updated'
+    REPOSITORY_COMMIT_COMMENT_CREATED = 'repo:commit_comment_created'
+    REPOSITORY_BUILD_STATUS_CREATED = 'repo:commit_status_created'
+    REPOSITORY_BUILD_STATUS_UPDATE = 'repo:commit_status_updated'
+    ISSUE_CREATED = 'issue:created'
+    ISSUE_UPDATED = 'issue:updated'
+    ISSUE_COMMENT_CREATED = 'issue:comment_created'
+    PULL_REQUEST_CREATED = 'pullrequest:created'
+    PULL_REQUEST_UPDATED = 'pullrequest:updated'
+    PULL_REQUEST_APPROVED = 'pullrequest:approved'
+    PULL_REQUEST_APPROVAL_REMOVED = 'pullrequest:unapproved'
+    PULL_REQUEST_MERGED = 'pullrequest:fulfilled'
+    PULL_REQUEST_DECLINED = 'pullrequest:rejected'
+    PULL_REQUEST_COMMENT_CREATED = 'pullrequest:comment_created'
+    PULL_REQUEST_COMMENT_UPDATED = 'pullrequest:comment_updated'
+    PULL_REQUEST_COMMENT_DELETED = 'pullrequest:comment_deleted'
 
 
 class HookPayload(PayloadBuilder):
@@ -47,7 +50,7 @@ class HookPayload(PayloadBuilder):
         Required('description'): str,
         Required('url'): str,
         Optional('active'): bool,
-        Optional('events'): [In(HookEvent.values())],
+        Optional('events'): [In(HookEvent)],
         # Undocumented attributes
         Optional('skip_cert_verification'): bool,
     })

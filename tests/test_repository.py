@@ -168,6 +168,33 @@ class TestCreatingNewRepository(RepositoryFixture):
             httpretty.last_request().headers.get('Content-Type')
         assert isinstance(response, Repository)
 
+class TestCreatingNewRepository(RepositoryFixture):
+    @classmethod
+    def setup_class(cls):
+        cls.url = expand(
+            Repository.templates['fork'], {
+                'bitbucket_url': cls.test_client.get_bitbucket_url(),
+                'owner': cls.test_client.get_username(),
+                'repository_name': cls.name,
+            })
+
+    @httpretty.activate
+    def test_response_is_a_repository(self):
+        httpretty.register_uri(
+            httpretty.POST,
+            self.url,
+            content_type='application/json',
+            body=self.resource_data(),
+            status=200)
+        payload = RepositoryPayload() \
+            .add_name(self.name) \
+            .add_fork_policy(self.fork_policy) \
+            .add_is_private(self.is_private)
+        response = Repository.fork(payload, client=self.test_client)
+        assert 'application/json' == \
+            httpretty.last_request().headers.get('Content-Type')
+        assert isinstance(response, Repository)
+
 
 class TestFindingRepositoryByFullName(RepositoryFixture):
     @httpretty.activate

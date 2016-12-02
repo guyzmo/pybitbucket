@@ -52,7 +52,7 @@ class RepositoryPayload(PayloadBuilder):
     })
 
     def __init__(self, payload=None, owner=None):
-        super(self.__class__, self).__init__(payload=payload)
+        super(RepositoryPayload, self).__init__(payload=payload)
         self._owner = owner
 
     @property
@@ -125,13 +125,25 @@ class RepositoryPayload(PayloadBuilder):
             owner=self._owner)
 
 
+class RepositoryForkPayload(RepositoryPayload):
+    schema = Schema({
+        Required('name'): str,
+        Optional('scm'): In(RepositoryType.values()),
+        Optional('is_private'): bool,
+        Optional('description'): str,
+        Optional('language'): str,
+        Optional('fork_policy'): In(RepositoryForkPolicy.values()),
+    })
+
+
 class Repository(BitbucketBase):
     """Represents a repository."""
 
     id_attribute = 'full_name'
     resource_type = 'repositories'
     templates = {
-        'create': '{+bitbucket_url}/2.0/repositories{/owner,repository_name}'
+        'create': '{+bitbucket_url}/2.0/repositories{/owner,repository_name}',
+        'fork': '{+bitbucket_url}/1.0/repositories{/owner,repository_name}/fork'
     }
 
     @staticmethod
@@ -187,6 +199,44 @@ class Repository(BitbucketBase):
                 'repository_name': repository_name,
             })
         return cls.post(api_url, json=json, client=client)
+
+    @classmethod
+    def fork(
+            cls,
+            payload,
+            repository_name=None,
+            owner=None,
+            client=None):
+        """Forks a repository.
+
+        :param payload: the options for forking repository as a new one
+        :type payload: RepositoryForkPayload
+        :param repository_name: name of the repository,
+            also known as repo_slug. Optional, if provided in the payload.
+        :type repository_name: str
+        :param owner: the owner of the repository.
+            If not provided, assumes the current user.
+        :type owner: str
+        :param client: the configured connection to Bitbucket.
+            If not provided, assumes an Anonymous connection.
+        :type client: bitbucket.Client
+        :returns: the new repository object.
+        :rtype: Repository
+        :raises: ValueError
+        """
+        client = client or Client()
+        owner = owner or client.get_username()
+        repository_name = repository_name or payload.name
+        if not (owner and repository_name):
+            raise ValueError('owner and repository_name are required')
+        data = payload.validate().build()
+        api_url = expand(
+            cls.templates['fork'], {
+                'bitbucket_url': client.get_bitbucket_url(),
+                'owner': owner,
+                'repository_name': repository_name,
+            })
+        return cls.post(api_url, data=data, client=client)
 
     @staticmethod
     def find_repository_by_name_and_owner(

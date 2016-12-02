@@ -259,8 +259,11 @@ class BitbucketBase(object):
         return self.client.convert_to_object(response.json())
 
     @staticmethod
-    def post(url, json=None, client=Client(), **kwargs):
-        response = client.session.post(url, json=json, **kwargs)
+    def post(url, json=None, data=None, client=Client(), **kwargs):
+        if data:
+            response = client.session.post(url, data=data, **kwargs)
+        else:
+            response = client.session.post(url, json=json, **kwargs)
         Client.expect_ok(response)
         return client.convert_to_object(response.json())
 

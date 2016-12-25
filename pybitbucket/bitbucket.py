@@ -90,7 +90,7 @@ class Client(object):
         return self.config.server_base_uri
 
     def get_username(self):
-        return self.config.username
+        return self.config.get_username()
 
     def __init__(self, config=None):
         self.config = config or Anonymous()

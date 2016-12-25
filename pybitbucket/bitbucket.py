@@ -368,3 +368,16 @@ class ServerError(BitbucketError):
 
     def __init__(self, response):
         super(ServerError, self).__init__(response)
+
+from pybitbucket.repository import Repository
+from pybitbucket.branchrestriction import BranchRestriction
+from pybitbucket.build import BuildStatus
+from pybitbucket.comment import Comment
+from pybitbucket.commit import Commit
+from pybitbucket.consumer import Consumer
+from pybitbucket.hook import Hook
+from pybitbucket.pullrequest import PullRequest
+from pybitbucket.ref import Ref
+from pybitbucket.snippet import Snippet
+from pybitbucket.team import Team
+from pybitbucket.user import User

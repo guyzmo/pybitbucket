@@ -55,7 +55,7 @@ class Authenticator(object):
         self.who_am_i_url = expand(
             '{+server_base_uri}/2.0/user',
             {'server_base_uri': self.server_base_uri})
-        self.session = self.start_http_session(session or Session())
+        self.session = self.start_http_session(session)
 
 
 class Anonymous(Authenticator):

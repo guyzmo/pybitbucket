@@ -5,22 +5,24 @@
 A Python wrapper for the Bitbucket Cloud REST API.
 This is not known to work with Bitbucket Server,
 previously known as Stash.
-To start working with this library, just do: :code:`pip install pybitbucket`
+To start working with this library, just do: :code:`pip install pybitbucket_fork`
 
-.. image:: https://img.shields.io/pypi/v/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket/0.12.0
+.. image:: https://img.shields.io/pypi/v/pybitbucket_fork.svg
+    :target: https://pypi.python.org/pypi/pybitbucket_fork/0.12.0
 
-.. image:: https://img.shields.io/pypi/status/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket
+.. image:: https://img.shields.io/pypi/status/pybitbucket_fork.svg
+    :target: https://pypi.python.org/pypi/pybitbucket_fork
 
-.. image:: https://img.shields.io/pypi/pyversions/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket
+.. image:: https://img.shields.io/pypi/pyversions/pybitbucket_fork.svg
+    :target: https://pypi.python.org/pypi/pybitbucket_fork
 
-.. image:: https://img.shields.io/pypi/l/pybitbucket.svg
-    :target: https://bitbucket.org/atlassian/python-bitbucket/src/master/LICENSE.txt
+.. image:: https://img.shields.io/pypi/l/pybitbucket_fork.svg
+    :target: https://github.com/guyzmo/pybitbucket_fork/src/master/LICENSE.txt
 
-.. image:: https://img.shields.io/pypi/dm/pybitbucket.svg
-    :target: https://pypi.python.org/pypi/pybitbucket
+.. image:: https://img.shields.io/pypi/dm/pybitbucket_fork.svg
+    :target: https://pypi.python.org/pypi/pybitbucket_fork
+
+This is a fork of `pybitbucket <https://bitbucket.org/atlassian/python-bitbucket>`.
 
 ---------------------
 Adopting this library

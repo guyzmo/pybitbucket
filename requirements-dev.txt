@@ -1,5 +1,10 @@
 # Runtime requirements
---requirement requirements.txt
+-r requirements.txt
+
+testscenarios
+testresources
+virtualenv
+contextlib2
 
 # Testing
 pytest

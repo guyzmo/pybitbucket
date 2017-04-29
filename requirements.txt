@@ -1,8 +1,8 @@
-future==0.16.0
-six==1.10.0
-requests==2.12.1
-requests_oauthlib==0.7.0
-oauthlib==2.0.1
-uritemplate==0.6
-simplejson==3.10.0
-voluptuous==0.9.3
+future
+six
+requests
+requests_oauthlib
+oauthlib
+uritemplate
+simplejson
+voluptuous
